@@ -1,0 +1,16 @@
+export enum FormFieldType {
+  INPUT = "input",
+  PASSWORD = "password",
+  NUMBER = "number",
+  FILE = "file",
+  CHECKBOX = "checkbox",
+  TEXTAREA = "textarea",
+  PHONE_INPUT = "phoneInput",
+  DATE = "date",
+  MONTH = "month",
+  YEAR = "year",
+  SELECT = "select",
+  SELECT_ITEM = "selectItem",
+  SKELETON = "skeleton",
+  DATETIME = "datetime",
+}
