@@ -7,14 +7,19 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form"
-import { FormFieldType } from "@/lib/types"
+import { ComboXSelect, FormFieldType } from "@/lib/types"
 import { Control } from "react-hook-form"
 import classNames from "classnames"
 import { Input } from "../ui/input"
+import { SelectItemField } from "./SelectItemField"
+import { Select } from "@radix-ui/react-select"
+import { cn } from "@/lib/utils"
+import { SelectContent, SelectTrigger, SelectValue } from "../ui/select"
 
 interface CustomFormFieldProps {
   className?: string
-  control: Control<any>
+  form?: any
+  control?: Control<any>
   fieldType: FormFieldType
   fieldTypeType?: string
   maxFiles?: number
@@ -23,6 +28,14 @@ interface CustomFormFieldProps {
   label?: string
   description?: string
   placeholder?: string
+
+  children?: React.ReactNode
+
+  fieldValues?: ComboXSelect[]
+  onScrollBottom?: () => void
+  onSearchChange?: (value: string) => void
+
+  readonly?: boolean
 }
 
 const RenderField = ({
@@ -35,12 +48,16 @@ const RenderField = ({
   if (!props) return null
 
   const {
+    form,
     fieldType,
-    fieldTypeType,
     placeholder,
-    maxFiles,
-    acceptedFiles,
     className,
+    fieldValues,
+    readonly,
+    onScrollBottom,
+    onSearchChange,
+
+    children,
   } = props
 
   switch (fieldType) {
@@ -51,6 +68,30 @@ const RenderField = ({
             {...field}
             placeholder={placeholder}
             className={classNames("shad-input", className)}
+            readOnly={readonly}
+          />
+        </FormControl>
+      )
+    case FormFieldType.TEXT:
+      return (
+        <FormControl>
+          <Input
+            {...field}
+            placeholder={placeholder}
+            className={classNames("shad-input", className)}
+            readOnly={readonly}
+          />
+        </FormControl>
+      )
+    case FormFieldType.NUMBER:
+      return (
+        <FormControl>
+          <Input
+            {...field}
+            placeholder={placeholder}
+            type="number"
+            className={classNames("shad-input", className)}
+            readOnly={readonly}
           />
         </FormControl>
       )
@@ -60,10 +101,32 @@ const RenderField = ({
           <Input
             {...field}
             placeholder={placeholder}
-            type="password" 
+            type="password"
             className={classNames("shad-input", className)}
           />
         </FormControl>
+      )
+    case FormFieldType.SELECT:
+      return (
+        <Select onValueChange={field.onChange} defaultValue={field.value}>
+          <FormControl className={cn(className)}>
+            <SelectTrigger>
+              <SelectValue placeholder={placeholder} />
+            </SelectTrigger>
+          </FormControl>
+          <SelectContent>{children}</SelectContent>
+        </Select>
+      )
+    case FormFieldType.SELECT_ITEM:
+      return (
+        <SelectItemField
+          field={field}
+          form={form}
+          placeholder={placeholder}
+          fieldValues={fieldValues!}
+          onSearchChange={props.onSearchChange}
+          onScrollBottom={props.onScrollBottom}
+        />
       )
     default:
       break
@@ -71,13 +134,13 @@ const RenderField = ({
 }
 
 const CustomFormField = (props: CustomFormFieldProps) => {
-  const { control, fieldType, name, label, description } = props
+  const { control, fieldType, name, label, description, className } = props
   return (
     <FormField
       control={control}
       name={name}
       render={({ field }) => (
-        <FormItem className={classNames("flex flex-col")}>
+        <FormItem className={classNames("flex flex-col", className)}>
           {label && <FormLabel> {label} </FormLabel>}
 
           <RenderField field={field} props={props} />

@@ -1,5 +1,6 @@
 export enum FormFieldType {
   INPUT = "input",
+  TEXT = "text",
   PASSWORD = "password",
   NUMBER = "number",
   FILE = "file",
@@ -13,4 +14,9 @@ export enum FormFieldType {
   SELECT_ITEM = "selectItem",
   SKELETON = "skeleton",
   DATETIME = "datetime",
+}
+
+export type ComboXSelect = {
+  value: string | number
+  label?: string
 }

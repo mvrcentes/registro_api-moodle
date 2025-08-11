@@ -1,4 +1,5 @@
 "use client"
+
 import React, { useState } from "react"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
@@ -22,7 +23,6 @@ const SigninForm = () => {
 
   async function onSubmit(data: z.infer<typeof SigninSchema>) {
     setIsLoading(true)
-    console.log(data)
     try {
       const response = await signin(data)
       if (!response.success) {
