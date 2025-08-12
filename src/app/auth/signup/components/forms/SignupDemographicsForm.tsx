@@ -23,9 +23,18 @@ type CRCountry = {
 
 type Props = {
   onValidityChange?: (valid: boolean) => void
+  prefilledFields?: {
+    cui?: boolean
+    edad?: boolean
+    sexo?: boolean
+    departamento_residencia?: boolean
+    municipio_residencia?: boolean
+    nit?: boolean
+    celular?: boolean
+  }
 }
 
-const SignupDemographicsForm = ({ onValidityChange }: Props) => {
+const SignupDemographicsForm = ({ onValidityChange, prefilledFields = {} }: Props) => {
   countries.registerLocale(EsLocale as any)
 
   const form = useFormContext()
@@ -189,40 +198,45 @@ const SignupDemographicsForm = ({ onValidityChange }: Props) => {
     <Form {...form}>
       <div className="grid grid-cols-2 gap-4 space-y-4">
         <CustomFormField
+          control={form.control}
           name="cui"
-          fieldType={FormFieldType.TEXT}
-          form={form}
+          fieldType={FormFieldType.INPUT}
           label="CUI"
           placeholder="Ingrese su CUI"
-          readonly={true}
+          readonly={prefilledFields.cui || false}
+          description={prefilledFields.cui ? "Este campo se llenó automáticamente con el DPI consultado" : undefined}
         />
         <CustomFormField
+          control={form.control}
           name="nit"
-          fieldType={FormFieldType.TEXT}
-          form={form}
+          fieldType={FormFieldType.INPUT}
           label="NIT"
           placeholder="Ingrese su NIT"
+          readonly={prefilledFields.nit || false}
         />
         <CustomFormField
+          control={form.control}
           name="sexo"
           fieldType={FormFieldType.SELECT}
-          form={form}
           label="Género"
-          placeholder="Ingrese su género">
-          <SelectItem value={"Masculino"}>Masculino</SelectItem>
-          <SelectItem value={"Femenino"}>Femenino</SelectItem>
+          placeholder="Seleccione su género"
+          readonly={prefilledFields.sexo || false}>
+          <SelectItem value={"MASCULINO"}>Masculino</SelectItem>
+          <SelectItem value={"FEMENINO"}>Femenino</SelectItem>
         </CustomFormField>
         <CustomFormField
+          control={form.control}
           name="edad"
           fieldType={FormFieldType.NUMBER}
-          form={form}
           label="Edad"
           placeholder="Ingrese su edad"
+          readonly={prefilledFields.edad || false}
+          description={prefilledFields.edad ? "Calculada automáticamente desde la fecha de nacimiento" : undefined}
         />
         <CustomFormField
+          control={form.control}
           name="departamento_residencia"
           fieldType={FormFieldType.SELECT_ITEM}
-          form={form}
           label="Departamento de Residencia"
           placeholder={
             countryCode
@@ -230,11 +244,12 @@ const SignupDemographicsForm = ({ onValidityChange }: Props) => {
               : "Seleccione un país primero"
           }
           fieldValues={deptoOptions}
+          readonly={prefilledFields.departamento_residencia || false}
         />
         <CustomFormField
+          control={form.control}
           name="municipio_residencia"
           fieldType={FormFieldType.SELECT_ITEM}
-          form={form}
           label="Municipio de Residencia"
           placeholder={
             selectedStateCode
@@ -244,21 +259,23 @@ const SignupDemographicsForm = ({ onValidityChange }: Props) => {
               : "Seleccione un departamento primero"
           }
           fieldValues={municipioOptions}
+          readonly={prefilledFields.municipio_residencia || false}
         />
         <CustomFormField
+          control={form.control}
           name="etnia"
           fieldType={FormFieldType.SELECT_ITEM}
-          form={form}
           label="Etnia"
           placeholder="Seleccione su etnia"
           fieldValues={ETNIA_OPTIONS}
         />
         <CustomFormField
+          control={form.control}
           name="celular"
-          fieldType={FormFieldType.TEXT}
-          form={form}
+          fieldType={FormFieldType.INPUT}
           label="Número de Celular"
           placeholder="Ingrese su número de celular"
+          readonly={prefilledFields.celular || false}
         />
       </div>
     </Form>

@@ -26,6 +26,7 @@ interface SelectItemFieldProps {
   fieldValues: ComboXSelect[]
   onScrollBottom?: () => void
   onSearchChange?: (value: string) => void
+  readonly?: boolean
 }
 
 export const SelectItemField = ({
@@ -35,6 +36,7 @@ export const SelectItemField = ({
   fieldValues,
   onScrollBottom,
   onSearchChange,
+  readonly = false,
 }: SelectItemFieldProps) => {
   const [open, setOpen] = useState(false)
 
@@ -45,60 +47,64 @@ export const SelectItemField = ({
           <Button
             variant="outline"
             role="combobox"
+            disabled={readonly}
             className={cn(
               "max-w-full overflow-hidden whitespace-nowrap text-ellipsis",
               "w-full justify-between",
-              !field.value && "text-muted-foreground"
+              !field.value && "text-muted-foreground",
+              readonly && "cursor-not-allowed opacity-50"
             )}
-            onClick={() => setOpen(true)}>
+            onClick={() => !readonly && setOpen(true)}>
             <span className="truncate">
               {field.value
                 ? fieldValues.find((item) => item.value === field.value)?.label
                 : placeholder}
             </span>
-            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+            {!readonly && <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />}
           </Button>
         </FormControl>
       </PopoverTrigger>
-      <PopoverContent className="w-[300px] p-0 overflow-hidden">
-        <Command className="max-h-[300px] overflow-y-auto">
-          <CommandInput
-            placeholder="Buscar..."
-            onValueChange={(value) => {
-              onSearchChange?.(value)
-            }}
-          />
-          <CommandList
-            onScroll={(e) => {
-              const el = e.currentTarget
-              if (el.scrollTop + el.clientHeight >= el.scrollHeight - 10) {
-                onScrollBottom?.() // solo si se llegó al fondo
-              }
-            }}>
-            <CommandEmpty>No se encontraron resultados.</CommandEmpty>
-            <CommandGroup>
-              {fieldValues.map((item) => (
-                <CommandItem
-                  key={item.value}
-                  value={item.label}
-                  onSelect={() => {
-                    form.setValue(field.name, item.value)
-                    field.onChange(item.value)
-                    setOpen(false)
-                  }}>
-                  <Check
-                    className={cn(
-                      "mr-2 h-4 w-4",
-                      item.value === field.value ? "opacity-100" : "opacity-0"
-                    )}
-                  />
-                  {item.label}
-                </CommandItem>
-              ))}
-            </CommandGroup>
-          </CommandList>
-        </Command>
-      </PopoverContent>
+      {!readonly && (
+        <PopoverContent className="w-[300px] p-0 overflow-hidden">
+          <Command className="max-h-[300px] overflow-y-auto">
+            <CommandInput
+              placeholder="Buscar..."
+              onValueChange={(value) => {
+                onSearchChange?.(value)
+              }}
+            />
+            <CommandList
+              onScroll={(e) => {
+                const el = e.currentTarget
+                if (el.scrollTop + el.clientHeight >= el.scrollHeight - 10) {
+                  onScrollBottom?.() // solo si se llegó al fondo
+                }
+              }}>
+              <CommandEmpty>No se encontraron resultados.</CommandEmpty>
+              <CommandGroup>
+                {fieldValues.map((item) => (
+                  <CommandItem
+                    key={item.value}
+                    value={item.label}
+                    onSelect={() => {
+                      form.setValue(field.name, item.value)
+                      field.onChange(item.value)
+                      setOpen(false)
+                    }}>
+                    <Check
+                      className={cn(
+                        "mr-2 h-4 w-4",
+                        item.value === field.value ? "opacity-100" : "opacity-0"
+                      )}
+                    />
+                    {item.label}
+                  </CommandItem>
+                ))}
+              </CommandGroup>
+            </CommandList>
+          </Command>
+        </PopoverContent>
+      )}
     </Popover>
   )
 }

@@ -8,7 +8,7 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { ComboXSelect, FormFieldType } from "@/lib/types"
-import { Control } from "react-hook-form"
+import { Control, useFormContext } from "react-hook-form"
 import classNames from "classnames"
 import { Input } from "../ui/input"
 import { SelectItemField } from "./SelectItemField"
@@ -48,7 +48,7 @@ const RenderField = ({
   if (!props) return null
 
   const {
-    form,
+    form: propForm,
     fieldType,
     placeholder,
     className,
@@ -59,6 +59,10 @@ const RenderField = ({
 
     children,
   } = props
+
+  // Obtener la instancia del formulario desde el contexto si no se pasó como prop
+  const formContext = useFormContext()
+  const form = propForm || formContext
 
   switch (fieldType) {
     case FormFieldType.INPUT:
@@ -126,6 +130,7 @@ const RenderField = ({
           fieldValues={fieldValues!}
           onSearchChange={props.onSearchChange}
           onScrollBottom={props.onScrollBottom}
+          readonly={readonly}
         />
       )
     default:

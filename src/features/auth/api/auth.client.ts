@@ -182,6 +182,9 @@ export const prefill = async (
     // Obtener el token de autenticación
     const token = await getAuthToken()
 
+    console.log("Llamando al API con token:", token)
+    console.log("DPI a consultar:", data.dpi)
+
     // Consultar los datos del usuario usando el DPI
     const response = await externalApi.get(`/usuarios/${data.dpi}`, {
       headers: {
@@ -189,31 +192,74 @@ export const prefill = async (
       }
     })
 
-    if (response.data) {
-      const userData = response.data
+    console.log("Respuesta del API externa:", response.data)
+    console.log("Status de respuesta:", response.status)
+
+    if (response.data && response.data.list && response.data.list.length > 0) {
+      // Los datos están en response.data.list[0]
+      const userData = response.data.list[0]
+      console.log("Datos del usuario extraídos:", userData)
       
-      return {
+      // Mapear el país correctamente
+      let paisValue = userData.pais || userData.country || "Guatemala"
+      if (paisValue === "GUATEMALA") {
+        paisValue = "Guatemala"
+      }
+      
+      const result = {
         success: true,
         data: {
           dpi: userData.dpi || data.dpi,
-          primerNombre: userData.primerNombre || "",
-          segundoNombre: userData.segundoNombre || "",
-          primerApellido: userData.primerApellido || "",
-          segundoApellido: userData.segundoApellido || "",
-          email: userData.email || "",
-          fechaNacimiento: userData.fechaNacimiento || "",
-          sexo: userData.sexo || "",
-          pais: userData.pais || "GUATEMALA",
-          departamento: userData.departamento || "",
-          municipio: userData.municipio || "",
+          primerNombre: userData.primerNombre || userData.primer_nombre || userData.firstName || "",
+          segundoNombre: userData.segundoNombre || userData.segundo_nombre || userData.secondName || "",
+          primerApellido: userData.primerApellido || userData.primer_apellido || userData.lastName || "",
+          segundoApellido: userData.segundoApellido || userData.segundo_apellido || userData.secondLastName || "",
+          email: userData.email || userData.correo || "",
+          fechaNacimiento: userData.fechaNacimiento || userData.fecha_nacimiento || userData.birthDate || "",
+          sexo: userData.sexo || userData.genero || userData.gender || "",
+          pais: paisValue,
+          departamento: userData.departamento || userData.department || "",
+          municipio: userData.municipio || userData.municipality || "",
           nit: userData.nit || "",
-          telefono: userData.telefono || "",
-          entidad: userData.entidad || "",
-          dependencia: userData.dependencia || "",
-          renglon: userData.renglon || "",
-          colegio: userData.colegio || "",
-          numeroColegiado: userData.numeroColegiado || "",
+          telefono: userData.telefono || userData.phone || "",
+          entidad: userData.entidad || userData.entity || "",
+          dependencia: userData.dependencia || userData.dependency || "",
+          renglon: userData.renglon || userData.budget_line || "",
+          colegio: userData.colegio || userData.college || "",
+          numeroColegiado: userData.numeroColegiado || userData.numero_colegiado || userData.professional_number || "",
           message: "Datos encontrados"
+        }
+      }
+
+      console.log("Datos procesados para retornar:", result.data)
+      return result
+    }
+
+    // Si no hay datos en la lista o la lista está vacía
+    if (response.data && response.data.list && response.data.list.length === 0) {
+      console.log("Lista vacía, DPI no encontrado")
+      return {
+        success: true,
+        data: {
+          dpi: data.dpi,
+          primerNombre: "",
+          segundoNombre: "",
+          primerApellido: "",
+          segundoApellido: "",
+          email: "",
+          fechaNacimiento: "",
+          sexo: "",
+          pais: "Guatemala",
+          departamento: "",
+          municipio: "",
+          nit: "",
+          telefono: "",
+          entidad: "",
+          dependencia: "",
+          renglon: "",
+          colegio: "",
+          numeroColegiado: "",
+          message: "DPI no encontrado - complete los campos manualmente"
         }
       }
     }
@@ -228,8 +274,10 @@ export const prefill = async (
     }
   } catch (error: any) {
     console.error("Prefill error:", error)
+    console.error("Error response:", error.response?.data)
     
     if (error.response?.status === 404) {
+      console.log("DPI no encontrado (404), devolviendo formulario vacío")
       // DPI no encontrado, devolver formulario vacío para que el usuario llene manualmente
       return {
         success: true,
@@ -242,7 +290,7 @@ export const prefill = async (
           email: "",
           fechaNacimiento: "",
           sexo: "",
-          pais: "GUATEMALA",
+          pais: "Guatemala",
           departamento: "",
           municipio: "",
           nit: "",

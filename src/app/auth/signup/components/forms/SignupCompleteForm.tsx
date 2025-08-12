@@ -4,26 +4,31 @@ import { useFormContext } from "react-hook-form"
 import CustomFormField from "@/components/reusable/CustomFormField"
 import { Form } from "@/components/ui/form"
 import { FormFieldType } from "@/lib/types"
-import EsLocale from "i18n-iso-countries/langs/es.json"
-import countries from "i18n-iso-countries"
 import { SignupCompleteSchema } from "@/features/auth/schemas/auth.schema"
 
 type Props = {
   onValidityChange?: (valid: boolean) => void
+  isPrefilled?: boolean
+  prefilledFields?: {
+    nombres?: boolean
+    apellidos?: boolean
+    email?: boolean
+    pais?: boolean
+    ciudad?: boolean
+  }
 }
 
-export default function SignupCompleteForm({ onValidityChange }: Props) {
+export default function SignupCompleteForm({ 
+  onValidityChange, 
+  isPrefilled = false, 
+  prefilledFields = {} 
+}: Props) {
   const form = useFormContext()
 
-  // Registrar el locale ES para i18n-iso-countries
-  countries.registerLocale(EsLocale as any)
-
-  const collator = new Intl.Collator("es")
-  const countryOptions = Object.values(
-    countries.getNames("es") as Record<string, string>
-  )
-    .sort((a, b) => collator.compare(a, b))
-    .map((name) => ({ value: name, label: name }))
+  // Debug: log de los valores del formulario (remover en producción)
+  console.log("SignupCompleteForm - isPrefilled:", isPrefilled)
+  console.log("SignupCompleteForm - form values:", form.getValues())
+  console.log("SignupCompleteForm - form values:", form.getValues())
 
   useEffect(() => {
     if (onValidityChange) {
@@ -41,79 +46,86 @@ export default function SignupCompleteForm({ onValidityChange }: Props) {
 
   return (
     <Form {...form}>
-      <div className="grid grid-cols-2 gap-4 space-y-4">
+      <div className="space-y-4">
+        {/* DPI como solo lectura */}
         <CustomFormField
-          className="col-span-2"
           control={form.control}
           fieldType={FormFieldType.INPUT}
-          name="usuario"
-          label="Usuario"
+          name="dpi"
+          label="DPI (CUI)"
           readonly={true}
+          description="Este campo no puede ser modificado"
         />
 
-        <CustomFormField
-          control={form.control}
-          fieldType={FormFieldType.INPUT}
-          placeholder="Ingrese su correo"
-          name="email"
-          label="Email"
-        />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <CustomFormField
+            control={form.control}
+            fieldType={FormFieldType.INPUT}
+            placeholder="Ingrese su correo"
+            name="email"
+            label="Email"
+          />
 
-        <CustomFormField
-          control={form.control}
-          fieldType={FormFieldType.INPUT}
-          placeholder="Confirme su correo"
-          name="confirm_email"
-          label="Confirmación de correo"
-        />
+          <CustomFormField
+            control={form.control}
+            fieldType={FormFieldType.INPUT}
+            placeholder="Confirme su correo"
+            name="confirm_email"
+            label="Confirmación de correo"
+          />
 
-        <CustomFormField
-          control={form.control}
-          fieldType={FormFieldType.INPUT}
-          placeholder="Ingrese su nombres"
-          name="nombre"
-          label="Nombres"
-        />
-        <CustomFormField
-          control={form.control}
-          fieldType={FormFieldType.INPUT}
-          placeholder="Ingrese sus apellidos"
-          name="apellido"
-          label="Apellidos"
-        />
-        <CustomFormField
-          control={form.control}
-          fieldType={FormFieldType.PASSWORD}
-          placeholder="Ingrese su contraseña"
-          name="password"
-          label="Contraseña"
-        />
+          <CustomFormField
+            control={form.control}
+            fieldType={FormFieldType.INPUT}
+            placeholder="Ingrese sus nombres"
+            name="nombres"
+            label="Nombres"
+            readonly={prefilledFields.nombres || false}
+          />
 
-        <CustomFormField
-          control={form.control}
-          fieldType={FormFieldType.PASSWORD}
-          placeholder="Confirme su contraseña"
-          name="confirm_password"
-          label="Confirmación de contraseña"
-        />
+          <CustomFormField
+            control={form.control}
+            fieldType={FormFieldType.INPUT}
+            placeholder="Ingrese sus apellidos"
+            name="apellidos"
+            label="Apellidos"
+            readonly={prefilledFields.apellidos || false}
+          />
 
-        <CustomFormField
-          form={form}
-          control={form.control}
-          fieldType={FormFieldType.SELECT_ITEM}
-          placeholder="Seleccione su país"
-          name="pais"
-          label="País"
-          fieldValues={countryOptions}
-        />
+          <CustomFormField
+            control={form.control}
+            fieldType={FormFieldType.PASSWORD}
+            placeholder="Ingrese su contraseña"
+            name="password"
+            label="Contraseña"
+          />
 
-        <CustomFormField
-          control={form.control}
-          fieldType={FormFieldType.INPUT}
-          placeholder="Ingrese su ciudad"
-          name="ciudad"
-          label="Ciudad"
-        />
+          <CustomFormField
+            control={form.control}
+            fieldType={FormFieldType.PASSWORD}
+            placeholder="Confirme su contraseña"
+            name="confirm_password"
+            label="Confirmación de contraseña"
+          />
+
+          <CustomFormField
+            control={form.control}
+            fieldType={FormFieldType.INPUT}
+            placeholder="País"
+            name="pais"
+            label="País"
+            readonly={prefilledFields.pais || false}
+          />
+
+          <CustomFormField
+            control={form.control}
+            fieldType={FormFieldType.INPUT}
+            placeholder="Ingrese su ciudad"
+            name="ciudad"
+            label="Ciudad"
+            readonly={prefilledFields.ciudad || false}
+          />
+        </div>
       </div>
     </Form>
   )

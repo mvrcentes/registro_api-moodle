@@ -36,6 +36,21 @@ export default function SignupWizard() {
   const [step4Valid, setStep4Valid] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isPrefilling, setIsPrefilling] = useState(false)
+  const [isPrefilled, setIsPrefilled] = useState(false)
+  const [prefilledFields, setPrefilledFields] = useState<{
+    nombres?: boolean
+    apellidos?: boolean
+    email?: boolean
+    pais?: boolean
+    ciudad?: boolean
+    cui?: boolean
+    edad?: boolean
+    sexo?: boolean
+    departamento_residencia?: boolean
+    municipio_residencia?: boolean
+    nit?: boolean
+    celular?: boolean
+  }>({})
 
   const {
     nextStep,
@@ -56,20 +71,20 @@ export default function SignupWizard() {
       // Paso 1 (cuenta)
       email: "",
       confirm_email: "",
-      primerNombre: "",
-      segundoNombre: "",
-      primerApellido: "",
-      segundoApellido: "",
+      nombres: "",
+      apellidos: "",
       password: "",
       confirm_password: "",
       pais: "",
-      fechaNacimiento: "",
+      ciudad: "",
       // Paso 2 (demografía)
+      cui: "",
       nit: "",
       sexo: "",
-      departamento: "",
-      municipio: "",
-      telefono: "",
+      edad: undefined,
+      departamento_residencia: "",
+      municipio_residencia: "",
+      celular: "",
       // Paso 3 (institución)
       entidad: "",
       dependencia: "",
@@ -86,41 +101,143 @@ export default function SignupWizard() {
     dpi: watchedDpi ?? "",
   }).success
 
+  // Función para calcular la edad desde la fecha de nacimiento
+  const calculateAge = (birthDate: string): number | undefined => {
+    if (!birthDate) return undefined
+    
+    // Intentar varios formatos de fecha
+    let date: Date | null = null
+    
+    // Formato DD-MM-YYYY
+    if (birthDate.includes('-') && birthDate.length === 10) {
+      const [day, month, year] = birthDate.split('-')
+      date = new Date(parseInt(year), parseInt(month) - 1, parseInt(day))
+    }
+    // Formato DD/MM/YYYY
+    else if (birthDate.includes('/') && birthDate.length === 10) {
+      const [day, month, year] = birthDate.split('/')
+      date = new Date(parseInt(year), parseInt(month) - 1, parseInt(day))
+    }
+    // Formato YYYY-MM-DD
+    else if (birthDate.includes('-') && birthDate.indexOf('-') === 4) {
+      date = new Date(birthDate)
+    }
+    
+    if (!date || isNaN(date.getTime())) return undefined
+    
+    const today = new Date()
+    let age = today.getFullYear() - date.getFullYear()
+    const monthDiff = today.getMonth() - date.getMonth()
+    
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < date.getDate())) {
+      age--
+    }
+    
+    return age >= 0 ? age : undefined
+  }
+
   const handlePrefill = async () => {
     const dpi = methods.getValues("dpi")
     if (!dpi) return
 
     setIsPrefilling(true)
     try {
+      console.log("Consultando DPI:", dpi)
       const result = await prefill({ dpi })
+      console.log("Resultado del API:", result)
       
       if (result.success && result.data) {
+        console.log("Datos recibidos del API completos:", JSON.stringify(result.data, null, 2))
+        
+                // Verificar si hay datos reales
+        const hasData = Object.values(result.data).some(value => 
+          value && value !== '' && value !== result.data.dpi && value !== 'Guatemala'
+        )
+        
+        console.log("¿Tiene datos reales?:", hasData)
+
+        // Combinar nombres y apellidos
+        const nombresCompletos = [
+          result.data.primerNombre || "",
+          result.data.segundoNombre || ""
+        ].filter(Boolean).join(" ")
+
+        const apellidosCompletos = [
+          result.data.primerApellido || "",
+          result.data.segundoApellido || ""
+        ].filter(Boolean).join(" ")
+
+        // Calcular edad si hay fecha de nacimiento
+        const edad = calculateAge(result.data.fechaNacimiento || "")
+        
         // Prellenar los datos del formulario
-        methods.setValue("primerNombre", result.data.primerNombre || "")
-        methods.setValue("segundoNombre", result.data.segundoNombre || "")
-        methods.setValue("primerApellido", result.data.primerApellido || "")
-        methods.setValue("segundoApellido", result.data.segundoApellido || "")
+        methods.setValue("nombres", nombresCompletos)
+        methods.setValue("apellidos", apellidosCompletos)
         methods.setValue("email", result.data.email || "")
-        methods.setValue("fechaNacimiento", result.data.fechaNacimiento || "")
-        methods.setValue("sexo", result.data.sexo || "")
+        methods.setValue("confirm_email", result.data.email || "") // Confirmar email igual al email
         methods.setValue("pais", result.data.pais || "")
-        methods.setValue("departamento", result.data.departamento || "")
-        methods.setValue("municipio", result.data.municipio || "")
+        methods.setValue("ciudad", result.data.municipio || result.data.ciudad || "")
+        
+        // Demografía
+        methods.setValue("cui", result.data.dpi) // CUI es el mismo DPI
+        methods.setValue("sexo", result.data.sexo || "")
+        if (edad !== undefined) {
+          methods.setValue("edad", edad)
+        }
+        methods.setValue("departamento_residencia", result.data.departamento || "")
+        methods.setValue("municipio_residencia", result.data.municipio || "")
         methods.setValue("nit", result.data.nit || "")
-        methods.setValue("telefono", result.data.telefono || "")
+        methods.setValue("celular", result.data.telefono || "")
+        
+        // Institución
         methods.setValue("entidad", result.data.entidad || "")
         methods.setValue("dependencia", result.data.dependencia || "")
         methods.setValue("renglon", result.data.renglon || "")
+        
+        // Profesional
         methods.setValue("colegio", result.data.colegio || "")
         methods.setValue("numeroColegiado", result.data.numeroColegiado || "")
 
-        toast.success("Información prellenada exitosamente")
+        console.log("Valores después del setValue:", methods.getValues())
+        
+        // Crear objeto con información de qué campos fueron prellenados
+        // Solo marcar como readonly los campos que realmente tienen datos
+        const fieldsInfo = {
+          nombres: !!nombresCompletos,
+          apellidos: !!apellidosCompletos,
+          email: !!(result.data.email),
+          confirm_email: !!(result.data.email), // Confirmación de email también readonly si hay email
+          pais: !!(result.data.pais),
+          ciudad: !!(result.data.municipio || result.data.ciudad),
+          cui: true, // CUI siempre se prellena con el DPI
+          edad: edad !== undefined,
+          sexo: !!(result.data.sexo),
+          departamento_residencia: !!(result.data.departamento),
+          municipio_residencia: !!(result.data.municipio),
+          nit: !!(result.data.nit),
+          celular: false // Celular siempre editable
+        }
+        
+        setPrefilledFields(fieldsInfo)
+        setIsPrefilled(hasData) // Solo marcar como prellenado si hay datos reales
+        
+        if (hasData) {
+          toast.success("Información prellenada exitosamente")
+        } else {
+          toast.info("DPI consultado - complete todos los campos manualmente")
+        }
         nextStep()
       } else {
+        console.error("Error en la respuesta:", result.error)
         toast.error(result.error?.message || "Error al prellenar información")
+        // Avanzar al siguiente paso incluso si hay error en la consulta
+        nextStep()
       }
     } catch (error) {
+      console.error("Error en handlePrefill:", error)
       toast.error("Error al consultar DPI")
+      // Avanzar al siguiente paso incluso si hay error
+      nextStep()
     } finally {
       setIsPrefilling(false)
     }
@@ -134,6 +251,8 @@ export default function SignupWizard() {
       if (result.success) {
         toast.success("Usuario registrado exitosamente")
         resetSteps()
+        setIsPrefilled(false)
+        setPrefilledFields({})
         methods.reset()
       } else {
         toast.error(result.error?.message || "Error al registrar usuario")
@@ -151,15 +270,22 @@ export default function SignupWizard() {
         <form onSubmit={methods.handleSubmit(handleSubmit)}>
           <Steps activeStep={activeStep}>
             <Step index={0} label="DPI">
-              <SignupPreFillForm />
+              <SignupPreFillForm isPrefilled={isPrefilled} />
             </Step>
 
             <Step index={1} label="Datos de cuenta">
-              <SignupCompleteForm onValidityChange={setStep1Valid} />
+              <SignupCompleteForm 
+                onValidityChange={setStep1Valid} 
+                isPrefilled={isPrefilled}
+                prefilledFields={prefilledFields}
+              />
             </Step>
 
             <Step index={2} label="Demografía">
-              <SignupDemographicsForm onValidityChange={setStep2Valid} />
+              <SignupDemographicsForm 
+                onValidityChange={setStep2Valid}
+                prefilledFields={prefilledFields}
+              />
             </Step>
 
             <Step index={3} label="Institución">
@@ -180,7 +306,11 @@ export default function SignupWizard() {
             <h2 className="mr-auto text-sm font-medium">
               ¡Todos los pasos completados!
             </h2>
-            <Button onClick={resetSteps} variant="outline">
+            <Button onClick={() => {
+              resetSteps()
+              setIsPrefilled(false)
+              setPrefilledFields({})
+            }} variant="outline">
               Reiniciar
             </Button>
           </>
@@ -199,7 +329,7 @@ export default function SignupWizard() {
               <Button
                 onClick={handlePrefill}
                 disabled={!step0Valid || isPrefilling}>
-                {isPrefilling ? "Consultando..." : "Consultar DPI"}
+                {isPrefilling ? "Consultando..." : "Siguiente"}
               </Button>
             )}
 

@@ -25,10 +25,8 @@ export const SignupCompleteSchema = z
     email: z.email("Dirección de correo electrónico no válida"),
     confirm_email: z.email("Dirección de correo electrónico no válida"),
 
-    primerNombre: z.string().min(2, "El primer nombre es obligatorio"),
-    segundoNombre: z.string().optional(),
-    primerApellido: z.string().min(2, "El primer apellido es obligatorio"),
-    segundoApellido: z.string().optional(),
+    nombres: z.string().min(2, "Los nombres son obligatorios"),
+    apellidos: z.string().min(2, "Los apellidos son obligatorios"),
 
     // Reglas: mínimo 8, 1 mayúscula, 1 minúscula, 1 número, 1 símbolo
     password: z
@@ -42,7 +40,6 @@ export const SignupCompleteSchema = z
 
     pais: z.string().min(2, "El país es obligatorio"),
     ciudad: z.string().min(2, "La ciudad es obligatoria"),
-    fechaNacimiento: z.string().min(8, "La fecha de nacimiento es obligatoria"),
   })
   // Igualdad de emails
   .refine((data) => data.email === data.confirm_email, {
@@ -56,14 +53,19 @@ export const SignupCompleteSchema = z
   })
 
 export const SignupDemographicSchema = z.object({
+  cui: z
+    .string()
+    .min(13, "El CUI es obligatorio")
+    .max(13, "El CUI debe tener 13 caracteres"),
   nit: z
     .string()
     .min(8, "El NIT debe tener mínimo 8 dígitos")
     .max(9, "El NIT debe tener máximo 9 dígitos"),
   sexo: z.string().min(2, "El género es obligatorio"),
-  departamento: z.string().min(2, "El departamento es obligatorio"),
-  municipio: z.string().min(2, "El municipio es obligatorio"),
-  telefono: z.string().min(8, "El teléfono es obligatorio"),
+  edad: z.number().min(18, "La edad mínima es 18 años").max(100, "La edad máxima es 100 años").optional(),
+  departamento_residencia: z.string().min(2, "El departamento es obligatorio"),
+  municipio_residencia: z.string().min(2, "El municipio es obligatorio"),
+  celular: z.string().min(8, "El teléfono es obligatorio"),
 })
 
 export const SignupInstitutionSchema = z.object({

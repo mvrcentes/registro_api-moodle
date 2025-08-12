@@ -9,7 +9,11 @@ import { Form } from "@/components/ui/form"
 import CustomFormField from "@/components/reusable/CustomFormField"
 import { FormFieldType } from "@/lib/types"
 
-const SignupPreFillForm = () => {
+interface SignupPreFillFormProps {
+  isPrefilled?: boolean
+}
+
+const SignupPreFillForm = ({ isPrefilled = false }: SignupPreFillFormProps) => {
   const form = useFormContext()
 
   useEffect(() => {
@@ -27,8 +31,10 @@ const SignupPreFillForm = () => {
           control={form.control}
           fieldType={FormFieldType.INPUT}
           name="dpi"
-          label="DPI"
+          label="DPI (CUI)"
           placeholder="Ingrese su DPI"
+          readonly={isPrefilled}
+          description={isPrefilled ? "Este campo no puede ser modificado después de la consulta" : undefined}
         />
       </div>
     </Form>
