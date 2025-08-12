@@ -10,25 +10,22 @@ type Props = {
   onValidityChange?: (valid: boolean) => void
   isPrefilled?: boolean
   prefilledFields?: {
-    nombres?: boolean
-    apellidos?: boolean
+    primerNombre?: boolean
+    segundoNombre?: boolean
+    primerApellido?: boolean
+    segundoApellido?: boolean
     email?: boolean
     pais?: boolean
     ciudad?: boolean
   }
 }
 
-export default function SignupCompleteForm({ 
-  onValidityChange, 
-  isPrefilled = false, 
-  prefilledFields = {} 
+export default function SignupCompleteForm({
+  onValidityChange,
+  isPrefilled = false,
+  prefilledFields = {},
 }: Props) {
   const form = useFormContext()
-
-  // Debug: log de los valores del formulario (remover en producción)
-  console.log("SignupCompleteForm - isPrefilled:", isPrefilled)
-  console.log("SignupCompleteForm - form values:", form.getValues())
-  console.log("SignupCompleteForm - form values:", form.getValues())
 
   useEffect(() => {
     if (onValidityChange) {
@@ -77,19 +74,37 @@ export default function SignupCompleteForm({
           <CustomFormField
             control={form.control}
             fieldType={FormFieldType.INPUT}
-            placeholder="Ingrese sus nombres"
-            name="nombres"
-            label="Nombres"
-            readonly={prefilledFields.nombres || false}
+            placeholder="Ingrese su primer nombre"
+            name="primerNombre"
+            label="Primer Nombre"
+            readonly={prefilledFields.primerNombre || false}
           />
 
           <CustomFormField
             control={form.control}
             fieldType={FormFieldType.INPUT}
-            placeholder="Ingrese sus apellidos"
-            name="apellidos"
-            label="Apellidos"
-            readonly={prefilledFields.apellidos || false}
+            placeholder="Ingrese su segundo nombre"
+            name="segundoNombre"
+            label="Segundo Nombre"
+            readonly={prefilledFields.segundoNombre || false}
+          />
+
+          <CustomFormField
+            control={form.control}
+            fieldType={FormFieldType.INPUT}
+            placeholder="Ingrese su primer apellido"
+            name="primerApellido"
+            label="Primer Apellido"
+            readonly={prefilledFields.primerApellido || false}
+          />
+
+          <CustomFormField
+            control={form.control}
+            fieldType={FormFieldType.INPUT}
+            placeholder="Ingrese su segundo apellido"
+            name="segundoApellido"
+            label="Segundo Apellido"
+            readonly={prefilledFields.segundoApellido || false}
           />
 
           <CustomFormField

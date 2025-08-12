@@ -1,5 +1,5 @@
-import { NextResponse } from 'next/server'
-import { ZodError } from 'zod'
+import { NextResponse } from "next/server"
+import { ZodError } from "zod"
 
 export interface ApiError {
   status: number
@@ -16,7 +16,7 @@ export interface ApiResponse<T = any> {
 
 export class ApiErrorHandler {
   static handleError(error: unknown): NextResponse<ApiResponse> {
-    console.error('API Error:', error)
+    console.error("API Error:", error)
 
     // Error de validación de Zod
     if (error instanceof ZodError) {
@@ -24,10 +24,10 @@ export class ApiErrorHandler {
         success: false,
         error: {
           status: 400,
-          message: 'Datos de entrada inválidos',
-          error: 'Validation Error',
-          details: error.issues
-        }
+          message: "Datos de entrada inválidos",
+          error: "Validation Error",
+          details: error.issues,
+        },
       }
       return NextResponse.json(response, { status: 400 })
     }
@@ -38,13 +38,16 @@ export class ApiErrorHandler {
         success: false,
         error: {
           status: error.response?.status || 500,
-          message: error.response?.data?.message || error.message || 'Error en API externa',
-          error: 'External API Error',
-          details: error.response?.data
-        }
+          message:
+            error.response?.data?.message ||
+            error.message ||
+            "Error en API externa",
+          error: "External API Error",
+          details: error.response?.data,
+        },
       }
-      return NextResponse.json(response, { 
-        status: error.response?.status || 500 
+      return NextResponse.json(response, {
+        status: error.response?.status || 500,
       })
     }
 
@@ -53,20 +56,20 @@ export class ApiErrorHandler {
       success: false,
       error: {
         status: 500,
-        message: 'Error interno del servidor',
-        error: 'Internal Server Error'
-      }
+        message: "Error interno del servidor",
+        error: "Internal Server Error",
+      },
     }
     return NextResponse.json(response, { status: 500 })
   }
 
   static createSuccessResponse<T>(
-    data: T, 
+    data: T,
     status: number = 200
   ): NextResponse<ApiResponse<T>> {
     const response: ApiResponse<T> = {
       success: true,
-      data
+      data,
     }
     return NextResponse.json(response, { status })
   }
@@ -74,7 +77,7 @@ export class ApiErrorHandler {
   static createErrorResponse(
     message: string,
     status: number = 400,
-    error: string = 'Bad Request',
+    error: string = "Bad Request",
     details?: any
   ): NextResponse<ApiResponse> {
     const response: ApiResponse = {
@@ -83,8 +86,8 @@ export class ApiErrorHandler {
         status,
         message,
         error,
-        details
-      }
+        details,
+      },
     }
     return NextResponse.json(response, { status })
   }
@@ -110,13 +113,13 @@ export function withErrorHandler<T extends any[]>(
 // Utilidades para validación
 export class ValidationUtils {
   static validateRequiredFields(
-    data: Record<string, any>, 
+    data: Record<string, any>,
     requiredFields: string[]
   ): { isValid: boolean; missingFields: string[] } {
-    const missingFields = requiredFields.filter(field => !data[field])
+    const missingFields = requiredFields.filter((field) => !data[field])
     return {
       isValid: missingFields.length === 0,
-      missingFields
+      missingFields,
     }
   }
 
@@ -141,8 +144,7 @@ export class ValidationUtils {
 // Utilidades para logging
 export class LoggingUtils {
   static logApiCall(method: string, endpoint: string, data?: any) {
-    if (process.env.NODE_ENV === 'development') {
-      console.log(`[API ${method}] ${endpoint}`, data ? { data } : '')
+    if (process.env.NODE_ENV === "development") {
     }
   }
 
@@ -150,13 +152,12 @@ export class LoggingUtils {
     console.error(`[ERROR ${context}]`, {
       error: error.message || error,
       stack: error.stack,
-      ...additionalInfo
+      ...additionalInfo,
     })
   }
 
   static logSuccess(context: string, message: string, data?: any) {
-    if (process.env.NODE_ENV === 'development') {
-      console.log(`[SUCCESS ${context}] ${message}`, data || '')
+    if (process.env.NODE_ENV === "development") {
     }
   }
 }

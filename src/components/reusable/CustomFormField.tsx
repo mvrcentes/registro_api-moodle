@@ -112,7 +112,10 @@ const RenderField = ({
       )
     case FormFieldType.SELECT:
       return (
-        <Select onValueChange={field.onChange} defaultValue={field.value}>
+        <Select
+          onValueChange={field.onChange}
+          defaultValue={field.value}
+          disabled={readonly}>
           <FormControl className={cn(className)}>
             <SelectTrigger>
               <SelectValue placeholder={placeholder} />

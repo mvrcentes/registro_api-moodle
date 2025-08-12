@@ -25,8 +25,10 @@ export const SignupCompleteSchema = z
     email: z.email("Dirección de correo electrónico no válida"),
     confirm_email: z.email("Dirección de correo electrónico no válida"),
 
-    nombres: z.string().min(2, "Los nombres son obligatorios"),
-    apellidos: z.string().min(2, "Los apellidos son obligatorios"),
+    primerNombre: z.string().min(2, "El primer nombre es obligatorio"),
+    segundoNombre: z.string().optional(),
+    primerApellido: z.string().min(2, "El primer apellido es obligatorio"),
+    segundoApellido: z.string().min(2, "El segundo apellido es obligatorio"),
 
     // Reglas: mínimo 8, 1 mayúscula, 1 minúscula, 1 número, 1 símbolo
     password: z
@@ -62,20 +64,27 @@ export const SignupDemographicSchema = z.object({
     .min(8, "El NIT debe tener mínimo 8 dígitos")
     .max(9, "El NIT debe tener máximo 9 dígitos"),
   sexo: z.string().min(2, "El género es obligatorio"),
-  edad: z.number().min(18, "La edad mínima es 18 años").max(100, "La edad máxima es 100 años").optional(),
+  edad: z
+    .number()
+    .min(18, "La edad mínima es 18 años")
+    .max(100, "La edad máxima es 100 años")
+    .optional(),
   departamento_residencia: z.string().min(2, "El departamento es obligatorio"),
   municipio_residencia: z.string().min(2, "El municipio es obligatorio"),
-  celular: z.string().min(8, "El teléfono es obligatorio"),
+  telefono: z.string().min(8, "El teléfono es obligatorio"),
 })
 
 export const SignupInstitutionSchema = z.object({
   entidad: z.string().min(2, "La entidad es obligatoria"),
-  dependencia: z.string().min(2, "La dependencia es obligatoria"),
+  institucion: z.string().min(2, "La institución es obligatoria"),
+  dependencia: z.string().optional(),
   renglon: z.string().min(2, "El renglón presupuestario es obligatorio"),
 })
 
 export const SignupProfessionalInfoSchema = z.object({
-  colegio: z.string().min(2, "El nombre del colegio profesional es obligatorio"),
+  colegio: z
+    .string()
+    .min(2, "El nombre del colegio profesional es obligatorio"),
   numeroColegiado: z.string().min(1, "El número de colegiado es obligatorio"),
 })
 

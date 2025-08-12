@@ -8,23 +8,32 @@ import { useFormContext } from "react-hook-form"
 import {
   INSTITUCION_OPTIONS,
   RENGLON_OPTIONS,
-  SECTOR_OPTIONS,
-  UBICACION_CGC_OPTIONS,
+  ENTIDAD_OPTIONS,
+  DEPENDENCIA_OPTIONS,
 } from "./types"
+import { SignupInstitutionSchema } from "@/features/auth/schemas/auth.schema"
 
 type Props = {
   onValidityChange?: (valid: boolean) => void
+  prefilledFields?: {
+    entidad?: boolean
+    dependencia?: boolean
+    renglon?: boolean
+  }
 }
 
-const SignupInstitutionForm = ({ onValidityChange }: Props) => {
+const SignupInstitutionForm = ({
+  onValidityChange,
+  prefilledFields,
+}: Props) => {
   const form = useFormContext()
 
-  const selectedSector: String | undefined = form.watch("sector")
+  const selectedSector: String | undefined = form.watch("entidad")
 
   useEffect(() => {
     if (onValidityChange) {
       const computeValid = () =>
-        form.getValues("sector") && form.getValues("institucion")
+        SignupInstitutionSchema.safeParse(form.getValues()).success
 
       // Initial validity check
       onValidityChange(computeValid())
@@ -41,12 +50,13 @@ const SignupInstitutionForm = ({ onValidityChange }: Props) => {
     <Form {...form}>
       <div className="grid grid-cols-2 gap-4 space-y-4">
         <CustomFormField
-          name="sector"
+          name="entidad"
           fieldType={FormFieldType.SELECT_ITEM}
           form={form}
-          label="Sector"
-          placeholder="Seleccione el sector al que pertenece"
-          fieldValues={SECTOR_OPTIONS}
+          label="Entidad"
+          placeholder="Seleccione la entidad a la que pertenece"
+          fieldValues={ENTIDAD_OPTIONS}
+          readonly={prefilledFields?.entidad || false}
         />
 
         <CustomFormField
@@ -58,24 +68,25 @@ const SignupInstitutionForm = ({ onValidityChange }: Props) => {
           fieldValues={INSTITUCION_OPTIONS}
         />
 
-        {selectedSector === "CGC" && (
+        {selectedSector === "CONTRALORÍA GENERAL DE CUENTAS" && (
           <CustomFormField
-            name="ubicacionAdministrativa"
+            name="dependencia"
             fieldType={FormFieldType.SELECT_ITEM}
             form={form}
             label="Ubicación Administrativa"
             placeholder="Seleccione la ubicación administrativa"
-            fieldValues={UBICACION_CGC_OPTIONS}
+            fieldValues={DEPENDENCIA_OPTIONS}
           />
         )}
 
         <CustomFormField
-          name="renglon_presupuestario"
+          name="renglon"
           fieldType={FormFieldType.SELECT_ITEM}
           form={form}
           label="Renglón Presupuestario"
           placeholder="Seleccione el renglón presupuestario"
           fieldValues={RENGLON_OPTIONS}
+          readonly={prefilledFields?.renglon || false}
         />
       </div>
     </Form>

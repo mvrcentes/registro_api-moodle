@@ -1,12 +1,12 @@
 "use client"
 
 import axios from "axios"
-import { 
-  ISigninResponseDTO, 
+import {
+  ISigninResponseDTO,
   ISignupPreFillResponseDTO,
   ISignupCompleteResponseDTO,
   IUserListResponseDTO,
-  IUserDetailResponseDTO
+  IUserDetailResponseDTO,
 } from "./auth.dto"
 import {
   SigninSchema,
@@ -19,19 +19,19 @@ import { z } from "zod"
 const API_CONFIG = {
   baseURL: process.env.NEXT_PUBLIC_BASE_API_URL,
   credentials: {
-    username: process.env.NEXT_PUBLIC_BASE_API_USER || 'APIMOODLE',
-    password: process.env.NEXT_PUBLIC_BASE_API_PASSWORD || 'usr$API#MOODL3'
-  }
+    username: process.env.NEXT_PUBLIC_BASE_API_USER || "APIMOODLE",
+    password: process.env.NEXT_PUBLIC_BASE_API_PASSWORD || "usr$API#MOODL3",
+  },
 }
 
 // Cliente Axios configurado para la API externa
 const externalApi = axios.create({
   baseURL: API_CONFIG.baseURL,
   headers: {
-    'Content-Type': 'application/json',
-    'Accept': 'application/json'
+    "Content-Type": "application/json",
+    Accept: "application/json",
   },
-  timeout: 15000
+  timeout: 15000,
 })
 
 // Variable para almacenar el token y su tiempo de expiración
@@ -59,9 +59,9 @@ const getAuthToken = async (): Promise<string> => {
   }
 
   try {
-    const response = await externalApi.post('/login', {
+    const response = await externalApi.post("/login", {
       usuario: API_CONFIG.credentials.username,
-      clave: API_CONFIG.credentials.password
+      clave: API_CONFIG.credentials.password,
     })
 
     let extractedToken = null
@@ -69,22 +69,26 @@ const getAuthToken = async (): Promise<string> => {
     // Intentar extraer el token de varios campos posibles
     if (response.data && response.data.token) {
       extractedToken = response.data.token
-      
+
       // Si el token es un objeto con un campo 'value', extraer ese valor
-      if (typeof extractedToken === 'object' && extractedToken.value) {
+      if (typeof extractedToken === "object" && extractedToken.value) {
         extractedToken = extractedToken.value
       }
-    } else if (response.data && response.data.data && response.data.data.token) {
+    } else if (
+      response.data &&
+      response.data.data &&
+      response.data.data.token
+    ) {
       extractedToken = response.data.data.token
-      
-      if (typeof extractedToken === 'object' && extractedToken.value) {
+
+      if (typeof extractedToken === "object" && extractedToken.value) {
         extractedToken = extractedToken.value
       }
     } else if (response.data && response.data.accessToken) {
       extractedToken = response.data.accessToken
     } else if (response.data && response.data.access_token) {
       extractedToken = response.data.access_token
-    } else if (response.data && typeof response.data === 'string') {
+    } else if (response.data && typeof response.data === "string") {
       extractedToken = response.data
     }
 
@@ -92,29 +96,28 @@ const getAuthToken = async (): Promise<string> => {
       // Asegurar que es string y almacenarlo
       authToken = String(extractedToken)
       // Establecer expiración en 1 hora por defecto
-      tokenExpiry = Date.now() + (60 * 60 * 1000)
-      
+      tokenExpiry = Date.now() + 60 * 60 * 1000
+
       return authToken
     }
 
-    throw new Error('No token received from login')
-
+    throw new Error("No token received from login")
   } catch (error: any) {
-    console.error('Error getting auth token:', error)
-    
+    console.error("Error getting auth token:", error)
+
     // Limpiar token en caso de error
     clearStoredToken()
-    
+
     // Para error 409, podría ser que ya hay una sesión activa
     if (error.response?.status === 409) {
       // Si el error incluye un token, lo usamos
       if (error.response?.data?.token) {
         authToken = String(error.response.data.token)
-        tokenExpiry = Date.now() + (60 * 60 * 1000)
+        tokenExpiry = Date.now() + 60 * 60 * 1000
         return authToken
       }
     }
-    
+
     throw error
   }
 }
@@ -129,8 +132,8 @@ export const signin = async (
     // Verificamos que el usuario exista
     const userResponse = await externalApi.get(`/usuarios/${data.dpi}`, {
       headers: {
-        'Authorization': `Bearer ${token}`
-      }
+        Authorization: `Bearer ${token}`,
+      },
     })
 
     if (userResponse.data) {
@@ -141,15 +144,15 @@ export const signin = async (
         data: {
           user: {
             id: userData.dpi || data.dpi,
-            email: userData.email || '',
-            primerNombre: userData.primerNombre || '',
-            primerApellido: userData.primerApellido || '',
+            email: userData.email || "",
+            primerNombre: userData.primerNombre || "",
+            primerApellido: userData.primerApellido || "",
             dpi: data.dpi,
-            role: 'user'
+            role: "user",
           },
           token: token,
-          message: "Inicio de sesión exitoso"
-        }
+          message: "Inicio de sesión exitoso",
+        },
       }
     }
 
@@ -158,8 +161,8 @@ export const signin = async (
       error: {
         status: 401,
         message: "Usuario no encontrado",
-        error: "User Not Found"
-      }
+        error: "User Not Found",
+      },
     }
   } catch (error: any) {
     console.error("Signin error:", error)
@@ -168,9 +171,12 @@ export const signin = async (
       success: false,
       error: {
         status: error.response?.status || 500,
-        message: error.response?.data?.message || error.message || "Error al iniciar sesión",
-        error: "API Error"
-      }
+        message:
+          error.response?.data?.message ||
+          error.message ||
+          "Error al iniciar sesión",
+        error: "API Error",
+      },
     }
   }
 }
@@ -182,40 +188,53 @@ export const prefill = async (
     // Obtener el token de autenticación
     const token = await getAuthToken()
 
-    console.log("Llamando al API con token:", token)
-    console.log("DPI a consultar:", data.dpi)
-
     // Consultar los datos del usuario usando el DPI
     const response = await externalApi.get(`/usuarios/${data.dpi}`, {
       headers: {
-        'Authorization': `Bearer ${token}`
-      }
+        Authorization: `Bearer ${token}`,
+      },
     })
-
-    console.log("Respuesta del API externa:", response.data)
-    console.log("Status de respuesta:", response.status)
 
     if (response.data && response.data.list && response.data.list.length > 0) {
       // Los datos están en response.data.list[0]
       const userData = response.data.list[0]
-      console.log("Datos del usuario extraídos:", userData)
-      
+
       // Mapear el país correctamente
       let paisValue = userData.pais || userData.country || "Guatemala"
       if (paisValue === "GUATEMALA") {
         paisValue = "Guatemala"
       }
-      
+
       const result = {
         success: true,
         data: {
           dpi: userData.dpi || data.dpi,
-          primerNombre: userData.primerNombre || userData.primer_nombre || userData.firstName || "",
-          segundoNombre: userData.segundoNombre || userData.segundo_nombre || userData.secondName || "",
-          primerApellido: userData.primerApellido || userData.primer_apellido || userData.lastName || "",
-          segundoApellido: userData.segundoApellido || userData.segundo_apellido || userData.secondLastName || "",
+          primerNombre:
+            userData.primerNombre ||
+            userData.primer_nombre ||
+            userData.firstName ||
+            "",
+          segundoNombre:
+            userData.segundoNombre ||
+            userData.segundo_nombre ||
+            userData.secondName ||
+            "",
+          primerApellido:
+            userData.primerApellido ||
+            userData.primer_apellido ||
+            userData.lastName ||
+            "",
+          segundoApellido:
+            userData.segundoApellido ||
+            userData.segundo_apellido ||
+            userData.secondLastName ||
+            "",
           email: userData.email || userData.correo || "",
-          fechaNacimiento: userData.fechaNacimiento || userData.fecha_nacimiento || userData.birthDate || "",
+          fechaNacimiento:
+            userData.fechaNacimiento ||
+            userData.fecha_nacimiento ||
+            userData.birthDate ||
+            "",
           sexo: userData.sexo || userData.genero || userData.gender || "",
           pais: paisValue,
           departamento: userData.departamento || userData.department || "",
@@ -226,18 +245,24 @@ export const prefill = async (
           dependencia: userData.dependencia || userData.dependency || "",
           renglon: userData.renglon || userData.budget_line || "",
           colegio: userData.colegio || userData.college || "",
-          numeroColegiado: userData.numeroColegiado || userData.numero_colegiado || userData.professional_number || "",
-          message: "Datos encontrados"
-        }
+          numeroColegiado:
+            userData.numeroColegiado ||
+            userData.numero_colegiado ||
+            userData.professional_number ||
+            "",
+          message: "Datos encontrados",
+        },
       }
 
-      console.log("Datos procesados para retornar:", result.data)
       return result
     }
 
     // Si no hay datos en la lista o la lista está vacía
-    if (response.data && response.data.list && response.data.list.length === 0) {
-      console.log("Lista vacía, DPI no encontrado")
+    if (
+      response.data &&
+      response.data.list &&
+      response.data.list.length === 0
+    ) {
       return {
         success: true,
         data: {
@@ -259,8 +284,8 @@ export const prefill = async (
           renglon: "",
           colegio: "",
           numeroColegiado: "",
-          message: "DPI no encontrado - complete los campos manualmente"
-        }
+          message: "DPI no encontrado - complete los campos manualmente",
+        },
       }
     }
 
@@ -269,15 +294,14 @@ export const prefill = async (
       error: {
         status: 500,
         message: "No se recibieron datos del servidor",
-        error: "No Data"
-      }
+        error: "No Data",
+      },
     }
   } catch (error: any) {
     console.error("Prefill error:", error)
     console.error("Error response:", error.response?.data)
-    
+
     if (error.response?.status === 404) {
-      console.log("DPI no encontrado (404), devolviendo formulario vacío")
       // DPI no encontrado, devolver formulario vacío para que el usuario llene manualmente
       return {
         success: true,
@@ -300,8 +324,8 @@ export const prefill = async (
           renglon: "",
           colegio: "",
           numeroColegiado: "",
-          message: "DPI no encontrado - complete los campos manualmente"
-        }
+          message: "DPI no encontrado - complete los campos manualmente",
+        },
       }
     }
 
@@ -309,9 +333,12 @@ export const prefill = async (
       success: false,
       error: {
         status: error.response?.status || 500,
-        message: error.response?.data?.message || error.message || "Error al consultar DPI",
-        error: "API Error"
-      }
+        message:
+          error.response?.data?.message ||
+          error.message ||
+          "Error al consultar DPI",
+        error: "API Error",
+      },
     }
   }
 }
@@ -324,39 +351,43 @@ export const signup = async (
     const token = await getAuthToken()
 
     // Crear usuario usando el endpoint de usuarios
-    const response = await externalApi.post('/usuarios', {
-      dpi: data.dpi,
-      email: data.email,
-      password: data.password,
-      primerNombre: data.primerNombre,
-      segundoNombre: data.segundoNombre,
-      primerApellido: data.primerApellido,
-      segundoApellido: data.segundoApellido,
-      nit: data.nit,
-      sexo: data.sexo,
-      fechaNacimiento: data.fechaNacimiento,
-      departamento: data.departamento,
-      municipio: data.municipio,
-      telefono: data.telefono,
-      entidad: data.entidad,
-      dependencia: data.dependencia,
-      renglon: data.renglon,
-      colegio: data.colegio,
-      numeroColegiado: data.numeroColegiado,
-      pais: data.pais
-    }, {
-      headers: {
-        'Authorization': `Bearer ${token}`
+    const response = await externalApi.post(
+      "/usuarios",
+      {
+        dpi: data.dpi,
+        email: data.email,
+        password: data.password,
+        primerNombre: data.primerNombre,
+        segundoNombre: data.segundoNombre,
+        primerApellido: data.primerApellido,
+        segundoApellido: data.segundoApellido,
+        nit: data.nit,
+        sexo: data.sexo,
+        fechaNacimiento: data.fechaNacimiento,
+        departamento: data.departamento_residencia,
+        municipio: data.municipio_residencia,
+        telefono: data.telefono,
+        entidad: data.entidad,
+        dependencia: data.dependencia,
+        renglon: data.renglon,
+        colegio: data.colegio,
+        numeroColegiado: data.numeroColegiado,
+        pais: data.pais,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       }
-    })
+    )
 
     if (response.data && (response.status === 200 || response.status === 201)) {
       return {
         success: true,
         data: {
           userId: response.data.id || data.dpi,
-          message: "Usuario registrado exitosamente"
-        }
+          message: "Usuario registrado exitosamente",
+        },
       }
     }
 
@@ -365,8 +396,8 @@ export const signup = async (
       error: {
         status: 500,
         message: "No se recibió respuesta válida del servidor",
-        error: "No Response"
-      }
+        error: "No Response",
+      },
     }
   } catch (error: any) {
     console.error("Signup error:", error)
@@ -377,8 +408,8 @@ export const signup = async (
         error: {
           status: error.response.status,
           message: "El usuario ya existe o datos inválidos",
-          error: "User Already Exists"
-        }
+          error: "User Already Exists",
+        },
       }
     }
 
@@ -386,9 +417,12 @@ export const signup = async (
       success: false,
       error: {
         status: error.response?.status || 500,
-        message: error.response?.data?.message || error.message || "Error al crear usuario",
-        error: "API Error"
-      }
+        message:
+          error.response?.data?.message ||
+          error.message ||
+          "Error al crear usuario",
+        error: "API Error",
+      },
     }
   }
 }
@@ -401,20 +435,20 @@ export const getUsers = async (
 ): Promise<IUserListResponseDTO> => {
   try {
     const token = await getAuthToken()
-    
+
     const params = new URLSearchParams({
       page: page.toString(),
       limit: limit.toString(),
     })
-    
+
     if (search) {
-      params.append('search', search)
+      params.append("search", search)
     }
 
     const response = await externalApi.get(`/usuarios?${params.toString()}`, {
       headers: {
-        'Authorization': `Bearer ${token}`
-      }
+        Authorization: `Bearer ${token}`,
+      },
     })
 
     if (response.data && response.status === 200) {
@@ -427,12 +461,12 @@ export const getUsers = async (
             primerNombre: user.primerNombre,
             primerApellido: user.primerApellido,
             dpi: user.dpi,
-            created_at: user.created_at || new Date().toISOString()
+            created_at: user.created_at || new Date().toISOString(),
           })),
           total: response.data.total || 0,
           page,
-          limit
-        }
+          limit,
+        },
       }
     }
 
@@ -442,7 +476,7 @@ export const getUsers = async (
         status: response.status,
         message: "Error al obtener usuarios",
         error: "Fetch Failed",
-      }
+      },
     }
   } catch (error: any) {
     return {
@@ -451,7 +485,7 @@ export const getUsers = async (
         status: error.response?.status || 500,
         message: error.response?.data?.message || "Error al obtener usuarios",
         error: error.response?.data?.error || "Internal Server Error",
-      }
+      },
     }
   }
 }
@@ -461,11 +495,11 @@ export const getUserById = async (
 ): Promise<IUserDetailResponseDTO> => {
   try {
     const token = await getAuthToken()
-    
+
     const response = await externalApi.get(`/usuarios/${id}`, {
       headers: {
-        'Authorization': `Bearer ${token}`
-      }
+        Authorization: `Bearer ${token}`,
+      },
     })
 
     if (response.data && response.status === 200) {
@@ -481,7 +515,7 @@ export const getUserById = async (
         status: response.status,
         message: "Error al obtener usuario",
         error: "Fetch Failed",
-      }
+      },
     }
   } catch (error: any) {
     return {
@@ -490,7 +524,7 @@ export const getUserById = async (
         status: error.response?.status || 500,
         message: error.response?.data?.message || "Error al obtener usuario",
         error: error.response?.data?.error || "Internal Server Error",
-      }
+      },
     }
   }
 }
@@ -501,11 +535,11 @@ export const updateUser = async (
 ): Promise<IUserDetailResponseDTO> => {
   try {
     const token = await getAuthToken()
-    
+
     const response = await externalApi.put(`/usuarios/${id}`, data, {
       headers: {
-        'Authorization': `Bearer ${token}`
-      }
+        Authorization: `Bearer ${token}`,
+      },
     })
 
     if (response.data && response.status === 200) {
@@ -521,7 +555,7 @@ export const updateUser = async (
         status: response.status,
         message: "Error al actualizar usuario",
         error: "Update Failed",
-      }
+      },
     }
   } catch (error: any) {
     return {
@@ -530,7 +564,7 @@ export const updateUser = async (
         status: error.response?.status || 500,
         message: error.response?.data?.message || "Error al actualizar usuario",
         error: error.response?.data?.error || "Internal Server Error",
-      }
+      },
     }
   }
 }
@@ -540,11 +574,11 @@ export const deleteUser = async (
 ): Promise<IUserDetailResponseDTO> => {
   try {
     const token = await getAuthToken()
-    
+
     const response = await externalApi.delete(`/usuarios/${id}`, {
       headers: {
-        'Authorization': `Bearer ${token}`
-      }
+        Authorization: `Bearer ${token}`,
+      },
     })
 
     if (response.data && response.status === 200) {
@@ -560,7 +594,7 @@ export const deleteUser = async (
         status: response.status,
         message: "Error al eliminar usuario",
         error: "Delete Failed",
-      }
+      },
     }
   } catch (error: any) {
     return {
@@ -569,7 +603,7 @@ export const deleteUser = async (
         status: error.response?.status || 500,
         message: error.response?.data?.message || "Error al eliminar usuario",
         error: error.response?.data?.error || "Internal Server Error",
-      }
+      },
     }
   }
 }

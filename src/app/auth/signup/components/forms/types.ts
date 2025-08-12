@@ -22,51 +22,54 @@ export const ETNIA_OPTIONS: EtniaOption[] = [
 // #endregion Anexo 3
 
 // =======================
-// #region Anexo 4 – Sector al que pertenece
+// #region Anexo 4 – Entidad a la que pertenece
 // =======================
-export type SectorValue =
-  | "CGC"
-  | "SOCIEDAD_CIVIL"
-  | "FIDEICOMISOS"
-  | "DEFENSA_SEGURIDAD_JUSTICIA"
-  | "ECONOMIA_FINANZAS_TRABAJO_PREVISION"
-  | "EDUCACION_CIENCIA_CULTURA_DEPORTES"
-  | "GOBIERNOS_LOCALES_Y_CONSEJOS"
-  | "MEDIO_AMBIENTE_Y_RECURSOS_NATURALES"
-  | "ORGANISMOS_E_INSTITUCIONES_APOYO"
-  | "SALUD_Y_SEGURIDAD_SOCIAL"
+export type EntidadValue =
+  | "CONTRALORÍA GENERAL DE CUENTAS"
+  | "SOCIEDAD CIVIL"
+  | "SECTOR FIDEICOMISOS"
+  | "SECTOR DEFENSA, SEGURIDAD Y JUSTICIA"
+  | "SECTOR ECONOMÍA, FINANZAS, TRABAJO Y PREVISIÓN SOCIAL"
+  | "SECTOR EDUCACIÓN, CIENCIA, CULTURA Y DEPORTES"
+  | "SECTOR GOBIERNOS LOCALES Y CONSEJOS DE DESARROLLO"
+  | "SECTOR MEDIO AMBIENTE Y RECURSOS NATURALES"
+  | "SECTOR ORGANISMOS E INSTITUCIONES DE APOYO"
+  | "SECTOR SALUD Y SEGURIDAD SOCIAL"
 
-export const SECTOR_OPTIONS: Option<SectorValue>[] = [
-  { value: "CGC", label: "Contraloría General de Cuentas" },
-  { value: "SOCIEDAD_CIVIL", label: "Sociedad Civil" },
-  { value: "FIDEICOMISOS", label: "Sector Fideicomisos" },
+export const ENTIDAD_OPTIONS: Option<EntidadValue>[] = [
   {
-    value: "DEFENSA_SEGURIDAD_JUSTICIA",
-    label: "Sector Defensa, Seguridad y Justicia",
+    value: "CONTRALORÍA GENERAL DE CUENTAS",
+    label: "CONTRALORÍA GENERAL DE CUENTAS",
+  },
+  { value: "SOCIEDAD CIVIL", label: "SOCIEDAD CIVIL" },
+  { value: "SECTOR FIDEICOMISOS", label: "SECTOR FIDEICOMISOS" },
+  {
+    value: "SECTOR DEFENSA, SEGURIDAD Y JUSTICIA",
+    label: "SECTOR DEFENSA, SEGURIDAD Y JUSTICIA",
   },
   {
-    value: "ECONOMIA_FINANZAS_TRABAJO_PREVISION",
-    label: "Sector Economía, Finanzas, Trabajo y Previsión Social",
+    value: "SECTOR ECONOMÍA, FINANZAS, TRABAJO Y PREVISIÓN SOCIAL",
+    label: "SECTOR ECONOMÍA, FINANZAS, TRABAJO Y PREVISIÓN SOCIAL",
   },
   {
-    value: "EDUCACION_CIENCIA_CULTURA_DEPORTES",
-    label: "Sector Educación, Ciencia, Cultura y Deportes",
+    value: "SECTOR EDUCACIÓN, CIENCIA, CULTURA Y DEPORTES",
+    label: "SECTOR EDUCACIÓN, CIENCIA, CULTURA Y DEPORTES",
   },
   {
-    value: "GOBIERNOS_LOCALES_Y_CONSEJOS",
-    label: "Sector Gobiernos Locales y Consejos de Desarrollo",
+    value: "SECTOR GOBIERNOS LOCALES Y CONSEJOS DE DESARROLLO",
+    label: "SECTOR GOBIERNOS LOCALES Y CONSEJOS DE DESARROLLO",
   },
   {
-    value: "MEDIO_AMBIENTE_Y_RECURSOS_NATURALES",
-    label: "Sector Medio Ambiente y Recursos Naturales",
+    value: "SECTOR MEDIO AMBIENTE Y RECURSOS NATURALES",
+    label: "SECTOR MEDIO AMBIENTE Y RECURSOS NATURALES",
   },
   {
-    value: "ORGANISMOS_E_INSTITUCIONES_APOYO",
-    label: "Sector Organismos e Instituciones de Apoyo",
+    value: "SECTOR ORGANISMOS E INSTITUCIONES DE APOYO",
+    label: "SECTOR ORGANISMOS E INSTITUCIONES DE APOYO",
   },
   {
-    value: "SALUD_Y_SEGURIDAD_SOCIAL",
-    label: "Sector Salud y Seguridad Social",
+    value: "SECTOR SALUD Y SEGURIDAD SOCIAL",
+    label: "SECTOR SALUD Y SEGURIDAD SOCIAL",
   },
 ]
 
@@ -74,356 +77,461 @@ export const SECTOR_OPTIONS: Option<SectorValue>[] = [
 // #region Anexo 5 – Institución a la que pertenece
 // =======================
 export type InstitucionValue =
-  | "NO_APLICA"
-  | "ALMG"
-  | "ANADIE"
-  | "CVB"
-  | "CNEE"
-  | "COG"
-  | "CONGRESO"
-  | "CNA"
-  | "CONADI"
-  | "CGC"
-  | "CONRED"
-  | "CC"
-  | "EMPAGUA"
-  | "EPN_STC"
-  | "ENCA"
-  | "FNA"
-  | "IDPP"
-  | "INGUAT"
-  | "INAP"
-  | "INAB"
-  | "INTECAP"
-  | "MANCOMUNIDAD_CONO_SUR_JUTIAPA"
-  | "MSPAS"
-  | "MINEDUC"
-  | "MINGOB"
-  | "MUNI_GUATEMALA"
-  | "PDH"
-  | "RGP"
-  | "RENAP"
-  | "SAT"
-  | "TSE"
-  | "USAC"
-  | "IGSS"
+  | "NO APLICA"
+  | "ACADEMIA DE LENGUAS MAYAS DE GUATEMALA"
+  | "AGENCIA NACIONAL DE ALIANZA PARA EL DESARROLLO DE INFRAESTRUCTURA ECONÓMICA"
+  | "BENEMÉRITO CUERPO VOLUNTARIO DE BOMBEROS DE GUATEMALA"
+  | "COMISIÓN NACIONAL DE ENERGÍA ELÉCTRICA"
+  | "COMITÉ OLÍMPICO GUATEMALTECO"
+  | "CONGRESO DE LA REPÚBLICA DE GUATEMALA"
+  | "CONSEJO NACIONAL DE ADOPCIONES"
+  | "CONSEJO NACIONAL PARA LA ATENCIÓN DE LAS PERSONAS CON DISCAPACIDAD"
+  | "CONTRALORÍA GENERAL DE CUENTAS"
+  | "COORDINADORA NACIONAL PARA LA REDUCCIÓN DE DESASTRES"
+  | "CORTE DE CONSTITUCIONALIDAD"
+  | "EMPRESA MUNICIPAL DE AGUA"
+  | "EMPRESA PORTUARIA NACIONAL SANTO TOMÁS DE CASTILLA"
+  | "ESCUELA NACIONAL CENTRAL DE AGRICULTURA"
+  | "FEDERACIÓN NACIONAL DE AJEDREZ DE GUATEMALA"
+  | "INSTITUTO DE LA DEFENSA PÚBLICA PENAL"
+  | "INSTITUTO GUATEMALTECO DE TURISMO"
+  | "INSTITUTO NACIONAL DE ADMINISTRACIÓN PÚBLICA"
+  | "INSTITUTO NACIONAL DE BOSQUES"
+  | "INSTITUTO TÉCNICO DE CAPACITACIÓN Y PRODUCTIVIDAD"
+  | "MANCOMUNIDAD DE MUNICIPIOS DEL CONO SUR JUTIAPA"
+  | "MINISTERIO DE SALUD PÚBLICA Y ASISTENCIA SOCIAL"
+  | "MINISTERIO DE EDUCACIÓN"
+  | "MINISTERIO DE GOBERNACIÓN"
+  | "MUNICIPALIDAD DE GUATEMALA"
+  | "PROCURADURÍA DE LOS DERECHOS HUMANOS"
+  | "REGISTRO GENERAL DE LA PROPIEDAD"
+  | "REGISTRO NACIONAL DE LAS PERSONAS"
+  | "SUPERINTENDENCIA DE ADMINISTRACIÓN TRIBUTARIA"
+  | "TRIBUNAL SUPREMO ELECTORAL"
+  | "UNIVERSIDAD DE SAN CARLOS DE GUATEMALA"
+  | "INSTITUTO GUATEMALTECO DE SEGURIDAD SOCIAL"
 
 export const INSTITUCION_OPTIONS: Option<InstitucionValue>[] = [
-  { value: "NO_APLICA", label: "NO APLICA" },
-  { value: "ALMG", label: "Academia de Lenguas Mayas de Guatemala" },
+  { value: "NO APLICA", label: "NO APLICA" },
   {
-    value: "ANADIE",
+    value: "ACADEMIA DE LENGUAS MAYAS DE GUATEMALA",
+    label: "ACADEMIA DE LENGUAS MAYAS DE GUATEMALA",
+  },
+  {
+    value:
+      "AGENCIA NACIONAL DE ALIANZA PARA EL DESARROLLO DE INFRAESTRUCTURA ECONÓMICA",
     label:
-      "Agencia Nacional de Alianza para el Desarrollo de Infraestructura Económica (ANADIE)",
+      "AGENCIA NACIONAL DE ALIANZA PARA EL DESARROLLO DE INFRAESTRUCTURA ECONÓMICA",
   },
   {
-    value: "CVB",
-    label: "Benemérito Cuerpo Voluntario de Bomberos de Guatemala (CVB)",
-  },
-  { value: "CNEE", label: "Comisión Nacional de Energía Eléctrica" },
-  { value: "COG", label: "Comité Olímpico Guatemalteco (COG)" },
-  { value: "CONGRESO", label: "Congreso de la República de Guatemala" },
-  { value: "CNA", label: "Consejo Nacional de Adopciones (CNA)" },
-  {
-    value: "CONADI",
-    label:
-      "Consejo Nacional para la Atención de las Personas con Discapacidad (CONADI)",
-  },
-  { value: "CGC", label: "Contraloría General de Cuentas" },
-  {
-    value: "CONRED",
-    label: "Coordinadora Nacional para la Reducción de Desastres (CONRED)",
-  },
-  { value: "CC", label: "Corte de Constitucionalidad" },
-  { value: "EMPAGUA", label: "Empresa Municipal de Agua – EMPAGUA" },
-  {
-    value: "EPN_STC",
-    label: "Empresa Portuaria Nacional Santo Tomás de Castilla",
-  },
-  { value: "ENCA", label: "Escuela Nacional Central de Agricultura (ENCA)" },
-  { value: "FNA", label: "Federación Nacional de Ajedrez de Guatemala" },
-  { value: "IDPP", label: "Instituto de la Defensa Pública Penal (IDPP)" },
-  { value: "INGUAT", label: "Instituto Guatemalteco de Turismo (INGUAT)" },
-  {
-    value: "INAP",
-    label: "Instituto Nacional de Administración Pública (INAP)",
-  },
-  { value: "INAB", label: "Instituto Nacional de Bosques (INAB)" },
-  {
-    value: "INTECAP",
-    label: "Instituto Técnico de Capacitación y Productividad (INTECAP)",
+    value: "BENEMÉRITO CUERPO VOLUNTARIO DE BOMBEROS DE GUATEMALA",
+    label: "BENEMÉRITO CUERPO VOLUNTARIO DE BOMBEROS DE GUATEMALA",
   },
   {
-    value: "MANCOMUNIDAD_CONO_SUR_JUTIAPA",
-    label: "Mancomunidad de Municipios del Cono Sur Jutiapa",
+    value: "COMISIÓN NACIONAL DE ENERGÍA ELÉCTRICA",
+    label: "COMISIÓN NACIONAL DE ENERGÍA ELÉCTRICA",
   },
-  { value: "MSPAS", label: "Ministerio de Salud Pública y Asistencia Social" },
-  { value: "MINEDUC", label: "Ministerio de Educación" },
-  { value: "MINGOB", label: "Ministerio de Gobernación" },
-  { value: "MUNI_GUATEMALA", label: "Municipalidad de Guatemala" },
-  { value: "PDH", label: "Procuraduría de los Derechos Humanos (PDH)" },
-  { value: "RGP", label: "Registro General de la Propiedad (RGP)" },
-  { value: "RENAP", label: "Registro Nacional de las Personas (RENAP)" },
   {
-    value: "SAT",
-    label: "Superintendencia de Administración Tributaria (SAT)",
+    value: "COMITÉ OLÍMPICO GUATEMALTECO",
+    label: "COMITÉ OLÍMPICO GUATEMALTECO",
   },
-  { value: "TSE", label: "Tribunal Supremo Electoral (TSE)" },
-  { value: "USAC", label: "Universidad de San Carlos de Guatemala (USAC)" },
-  { value: "IGSS", label: "Instituto Guatemalteco de Seguridad Social (IGSS)" },
+  {
+    value: "CONGRESO DE LA REPÚBLICA DE GUATEMALA",
+    label: "CONGRESO DE LA REPÚBLICA DE GUATEMALA",
+  },
+  {
+    value: "CONSEJO NACIONAL DE ADOPCIONES",
+    label: "CONSEJO NACIONAL DE ADOPCIONES",
+  },
+  {
+    value: "CONSEJO NACIONAL PARA LA ATENCIÓN DE LAS PERSONAS CON DISCAPACIDAD",
+    label: "CONSEJO NACIONAL PARA LA ATENCIÓN DE LAS PERSONAS CON DISCAPACIDAD",
+  },
+  {
+    value: "CONTRALORÍA GENERAL DE CUENTAS",
+    label: "CONTRALORÍA GENERAL DE CUENTAS",
+  },
+  {
+    value: "COORDINADORA NACIONAL PARA LA REDUCCIÓN DE DESASTRES",
+    label: "COORDINADORA NACIONAL PARA LA REDUCCIÓN DE DESASTRES",
+  },
+  {
+    value: "CORTE DE CONSTITUCIONALIDAD",
+    label: "CORTE DE CONSTITUCIONALIDAD",
+  },
+  { value: "EMPRESA MUNICIPAL DE AGUA", label: "EMPRESA MUNICIPAL DE AGUA" },
+  {
+    value: "EMPRESA PORTUARIA NACIONAL SANTO TOMÁS DE CASTILLA",
+    label: "EMPRESA PORTUARIA NACIONAL SANTO TOMÁS DE CASTILLA",
+  },
+  {
+    value: "ESCUELA NACIONAL CENTRAL DE AGRICULTURA",
+    label: "ESCUELA NACIONAL CENTRAL DE AGRICULTURA",
+  },
+  {
+    value: "FEDERACIÓN NACIONAL DE AJEDREZ DE GUATEMALA",
+    label: "FEDERACIÓN NACIONAL DE AJEDREZ DE GUATEMALA",
+  },
+  {
+    value: "INSTITUTO DE LA DEFENSA PÚBLICA PENAL",
+    label: "INSTITUTO DE LA DEFENSA PÚBLICA PENAL",
+  },
+  {
+    value: "INSTITUTO GUATEMALTECO DE TURISMO",
+    label: "INSTITUTO GUATEMALTECO DE TURISMO",
+  },
+  {
+    value: "INSTITUTO NACIONAL DE ADMINISTRACIÓN PÚBLICA",
+    label: "INSTITUTO NACIONAL DE ADMINISTRACIÓN PÚBLICA",
+  },
+  {
+    value: "INSTITUTO NACIONAL DE BOSQUES",
+    label: "INSTITUTO NACIONAL DE BOSQUES",
+  },
+  {
+    value: "INSTITUTO TÉCNICO DE CAPACITACIÓN Y PRODUCTIVIDAD",
+    label: "INSTITUTO TÉCNICO DE CAPACITACIÓN Y PRODUCTIVIDAD",
+  },
+  {
+    value: "MANCOMUNIDAD DE MUNICIPIOS DEL CONO SUR JUTIAPA",
+    label: "MANCOMUNIDAD DE MUNICIPIOS DEL CONO SUR JUTIAPA",
+  },
+  {
+    value: "MINISTERIO DE SALUD PÚBLICA Y ASISTENCIA SOCIAL",
+    label: "MINISTERIO DE SALUD PÚBLICA Y ASISTENCIA SOCIAL",
+  },
+  { value: "MINISTERIO DE EDUCACIÓN", label: "MINISTERIO DE EDUCACIÓN" },
+  { value: "MINISTERIO DE GOBERNACIÓN", label: "MINISTERIO DE GOBERNACIÓN" },
+  { value: "MUNICIPALIDAD DE GUATEMALA", label: "MUNICIPALIDAD DE GUATEMALA" },
+  {
+    value: "PROCURADURÍA DE LOS DERECHOS HUMANOS",
+    label: "PROCURADURÍA DE LOS DERECHOS HUMANOS",
+  },
+  {
+    value: "REGISTRO GENERAL DE LA PROPIEDAD",
+    label: "REGISTRO GENERAL DE LA PROPIEDAD",
+  },
+  {
+    value: "REGISTRO NACIONAL DE LAS PERSONAS",
+    label: "REGISTRO NACIONAL DE LAS PERSONAS",
+  },
+  {
+    value: "SUPERINTENDENCIA DE ADMINISTRACIÓN TRIBUTARIA",
+    label: "SUPERINTENDENCIA DE ADMINISTRACIÓN TRIBUTARIA",
+  },
+  { value: "TRIBUNAL SUPREMO ELECTORAL", label: "TRIBUNAL SUPREMO ELECTORAL" },
+  {
+    value: "UNIVERSIDAD DE SAN CARLOS DE GUATEMALA",
+    label: "UNIVERSIDAD DE SAN CARLOS DE GUATEMALA",
+  },
+  {
+    value: "INSTITUTO GUATEMALTECO DE SEGURIDAD SOCIAL",
+    label: "INSTITUTO GUATEMALTECO DE SEGURIDAD SOCIAL",
+  },
 ]
 
 // =======================
-// #region Anexo 6 – Ubicación administrativa (visible solo si INSTITUCIÓN = CGC)
+// #region Anexo 6 – DEPENDENCIA - Ubicación administrativa (visible solo si INSTITUCIÓN = CGC)
 // =======================
-export type UbicacionCGCValue =
-  | "NO_APLICA"
-  | "DESPACHO_GENERAL"
-  | "SUB_POBRIDAD"
-  | "SUB_CALIDAD_GASTO"
-  | "SUB_ADMINISTRATIVA"
-  | "INSPECCION_GENERAL"
-  | "SECRETARIA_GENERAL"
-  | "DAI"
-  | "DAJ"
-  | "DSI"
-  | "DTSA"
-  | "DCOM"
-  | "DPROBIDAD"
-  | "DCVI"
-  | "DDELEGACIONES"
-  | "DA_SALUD"
-  | "DA_EDUCACION"
-  | "DA_DEFENSA"
-  | "DA_AMBIENTE"
-  | "DA_ECONOMIA"
-  | "DA_COMUNICACIONES"
-  | "DA_MUNICIPALIDADES"
-  | "DA_ORGANISMOS_APOYO"
-  | "DA_FIDEICOMISOS"
-  | "DA_OBRA_PUBLICA"
-  | "DA_SISTEMAS_NOMINAS"
-  | "DA_DENUNCIAS"
-  | "DAC_AUDITORIA"
-  | "D_ANALISIS_GESTION"
-  | "D_CONTRA_REVISIONES"
-  | "DA_PUEBLOS_INDIGENAS_VULNERABLES"
-  | "D_ADMINISTRATIVA"
-  | "D_FINANCIERA"
-  | "D_RRHH"
-  | "D_PLANIFICACION"
-  | "D_TIC"
-  | "D_FORMACION_CAPACITACION"
-  | "D_COOPERACION_RRII"
-  | "D_DELEGACIONES_2"
-  | "D_FORT_CONTROL_INTERNO_UDAI"
-  | "DA_DESEMPENO"
+export type DependenciaValue =
+  | "NO APLICA"
+  | "DESPACHO GENERAL"
+  | "SUBCONTRALORÍA DE PROBIDAD"
+  | "SUBCONTRALORÍA DE CALIDAD DE GASTO PÚBLICO"
+  | "SUBCONTRALORÍA ADMINISTRATIVA"
+  | "INSPECCIÓN GENERAL"
+  | "SECRETARÍA GENERAL"
+  | "DIRECCIÓN DE AUDITORÍA INTERNA"
+  | "DIRECCIÓN DE ASUNTOS JURÍDICOS"
+  | "DIRECCIÓN DE SEGURIDAD INTEGRAL"
+  | "DIRECCIÓN TÉCNICA SECTORIAL DE AUDITORÍA"
+  | "DIRECCIÓN DE COMUNICACIÓN"
+  | "DIRECCIÓN DE PROBIDAD"
+  | "DIRECCIÓN DE CONTROL Y VERIFICACIÓN INTERINSTITUCIONAL"
+  | "DIRECCIÓN DE DELEGACIONES DEPARTAMENTALES"
+  | "DIRECCIÓN DE AUDITORÍA AL SECTOR SALUD Y SEGURIDAD SOCIAL"
+  | "DIRECCIÓN DE AUDITORÍA AL SECTOR EDUCACIÓN, CIENCIA, CULTURA Y DEPORTES"
+  | "DIRECCIÓN DE AUDITORÍA AL SECTOR DEFENSA, SEGURIDAD Y JUSTICIA"
+  | "DIRECCIÓN DE AUDITORÍA AL SECTOR MEDIO AMBIENTE Y RECURSOS NATURALES"
+  | "DIRECCIÓN DE AUDITORÍA AL SECTOR ECONOMÍA, FINANZAS, TRABAJO Y PREVISIÓN SOCIAL"
+  | "DIRECCIÓN DE AUDITORÍA AL SECTOR COMUNICACIONES, INFRAESTRUCTURA PÚBLICA Y VIVIENDA"
+  | "DIRECCIÓN DE AUDITORÍA AL SECTOR MUNICIPALIDADES Y CONSEJOS DE DESARROLLO"
+  | "DIRECCIÓN DE AUDITORÍA AL SECTOR ORGANISMOS E INSTITUCIONES DE APOYO"
+  | "DIRECCIÓN DE AUDITORÍA A FIDEICOMISOS"
+  | "DIRECCIÓN DE AUDITORÍA A OBRA PÚBLICA Y GESTIÓN AMBIENTAL"
+  | "DIRECCIÓN DE AUDITORÍA A SISTEMAS INFORMÁTICOS Y NÓMINAS DE GOBIERNO"
+  | "DIRECCIÓN DE AUDITORÍA PARA ATENCIÓN A DENUNCIAS"
+  | "DIRECCIÓN DE ASEGURAMIENTO DE LA CALIDAD DE AUDITORÍA"
+  | "DIRECCIÓN DE ANÁLISIS DE LA GESTIÓN PÚBLICA, MONITOREO Y ALERTA TEMPRANA"
+  | "DIRECCIÓN DE CONTRA REVISIONES"
+  | "DIRECCIÓN DE AUDITORÍA A RECURSOS PÚBLICOS DESTINADOS A PUEBLOS INDÍGENAS Y PUEBLOS VULNERABLES"
+  | "DIRECCIÓN ADMINISTRATIVA"
+  | "DIRECCIÓN FINANCIERA"
+  | "DIRECCIÓN DE RECURSOS HUMANOS"
+  | "DIRECCIÓN DE PLANIFICACIÓN"
+  | "DIRECCIÓN DE TECNOLOGÍAS DE LA INFORMACIÓN Y COMUNICACIÓN"
+  | "DIRECCIÓN DE FORMACIÓN Y CAPACITACIÓN EN FISCALIZACIÓN Y DE CONTROL GUBERNAMENTAL"
+  | "DIRECCIÓN DE COOPERACIÓN Y RELACIONES INTERINSTITUCIONALES"
+  | "DIRECCIÓN DE DELEGACIONES DEPARTAMENTALES (DUPLICADA)"
+  | "DIRECCIÓN DE FORTALECIMIENTO AL CONTROL INTERNO Y DE GESTIÓN DE LAS UNIDADES DE AUDITORÍA INTERNA"
+  | "DIRECCIÓN DE AUDITORÍA DE DESEMPEÑO"
 
-export const UBICACION_CGC_OPTIONS: Option<UbicacionCGCValue>[] = [
-  { value: "NO_APLICA", label: "NO APLICA" },
-  { value: "DESPACHO_GENERAL", label: "Despacho General" },
-  { value: "SUB_POBRIDAD", label: "Subcontraloría de Probidad" },
+export const DEPENDENCIA_OPTIONS: Option<DependenciaValue>[] = [
+  { value: "NO APLICA", label: "NO APLICA" },
+  { value: "DESPACHO GENERAL", label: "DESPACHO GENERAL" },
+  { value: "SUBCONTRALORÍA DE PROBIDAD", label: "SUBCONTRALORÍA DE PROBIDAD" },
   {
-    value: "SUB_CALIDAD_GASTO",
-    label: "Subcontraloría de Calidad de Gasto Público",
-  },
-  { value: "SUB_ADMINISTRATIVA", label: "Subcontraloría Administrativa" },
-  { value: "INSPECCION_GENERAL", label: "Inspección General" },
-  { value: "SECRETARIA_GENERAL", label: "Secretaría General" },
-  { value: "DAI", label: "Dirección de Auditoría Interna" },
-  { value: "DAJ", label: "Dirección de Asuntos Jurídicos" },
-  { value: "DSI", label: "Dirección de Seguridad Integral" },
-  { value: "DTSA", label: "Dirección Técnica Sectorial de Auditoría" },
-  { value: "DCOM", label: "Dirección de Comunicación" },
-  { value: "DPROBIDAD", label: "Dirección de Probidad" },
-  {
-    value: "DCVI",
-    label: "Dirección de Control y Verificación Interinstitucional",
+    value: "SUBCONTRALORÍA DE CALIDAD DE GASTO PÚBLICO",
+    label: "SUBCONTRALORÍA DE CALIDAD DE GASTO PÚBLICO",
   },
   {
-    value: "DDELEGACIONES",
-    label: "Dirección de Delegaciones Departamentales",
+    value: "SUBCONTRALORÍA ADMINISTRATIVA",
+    label: "SUBCONTRALORÍA ADMINISTRATIVA",
+  },
+  { value: "INSPECCIÓN GENERAL", label: "INSPECCIÓN GENERAL" },
+  { value: "SECRETARÍA GENERAL", label: "SECRETARÍA GENERAL" },
+  {
+    value: "DIRECCIÓN DE AUDITORÍA INTERNA",
+    label: "DIRECCIÓN DE AUDITORÍA INTERNA",
   },
   {
-    value: "DA_SALUD",
-    label: "Dirección de Auditoría al Sector Salud y Seguridad Social",
+    value: "DIRECCIÓN DE ASUNTOS JURÍDICOS",
+    label: "DIRECCIÓN DE ASUNTOS JURÍDICOS",
   },
   {
-    value: "DA_EDUCACION",
+    value: "DIRECCIÓN DE SEGURIDAD INTEGRAL",
+    label: "DIRECCIÓN DE SEGURIDAD INTEGRAL",
+  },
+  {
+    value: "DIRECCIÓN TÉCNICA SECTORIAL DE AUDITORÍA",
+    label: "DIRECCIÓN TÉCNICA SECTORIAL DE AUDITORÍA",
+  },
+  { value: "DIRECCIÓN DE COMUNICACIÓN", label: "DIRECCIÓN DE COMUNICACIÓN" },
+  { value: "DIRECCIÓN DE PROBIDAD", label: "DIRECCIÓN DE PROBIDAD" },
+  {
+    value: "DIRECCIÓN DE CONTROL Y VERIFICACIÓN INTERINSTITUCIONAL",
+    label: "DIRECCIÓN DE CONTROL Y VERIFICACIÓN INTERINSTITUCIONAL",
+  },
+  {
+    value: "DIRECCIÓN DE DELEGACIONES DEPARTAMENTALES",
+    label: "DIRECCIÓN DE DELEGACIONES DEPARTAMENTALES",
+  },
+  {
+    value: "DIRECCIÓN DE AUDITORÍA AL SECTOR SALUD Y SEGURIDAD SOCIAL",
+    label: "DIRECCIÓN DE AUDITORÍA AL SECTOR SALUD Y SEGURIDAD SOCIAL",
+  },
+  {
+    value:
+      "DIRECCIÓN DE AUDITORÍA AL SECTOR EDUCACIÓN, CIENCIA, CULTURA Y DEPORTES",
     label:
-      "Dirección de Auditoría al Sector Educación, Ciencia, Cultura y Deportes",
+      "DIRECCIÓN DE AUDITORÍA AL SECTOR EDUCACIÓN, CIENCIA, CULTURA Y DEPORTES",
   },
   {
-    value: "DA_DEFENSA",
-    label: "Dirección de Auditoría al Sector Defensa, Seguridad y Justicia",
+    value: "DIRECCIÓN DE AUDITORÍA AL SECTOR DEFENSA, SEGURIDAD Y JUSTICIA",
+    label: "DIRECCIÓN DE AUDITORÍA AL SECTOR DEFENSA, SEGURIDAD Y JUSTICIA",
   },
   {
-    value: "DA_AMBIENTE",
+    value:
+      "DIRECCIÓN DE AUDITORÍA AL SECTOR MEDIO AMBIENTE Y RECURSOS NATURALES",
     label:
-      "Dirección de Auditoría al Sector Medio Ambiente y Recursos Naturales",
+      "DIRECCIÓN DE AUDITORÍA AL SECTOR MEDIO AMBIENTE Y RECURSOS NATURALES",
   },
   {
-    value: "DA_ECONOMIA",
+    value:
+      "DIRECCIÓN DE AUDITORÍA AL SECTOR ECONOMÍA, FINANZAS, TRABAJO Y PREVISIÓN SOCIAL",
     label:
-      "Dirección de Auditoría al Sector Economía, Finanzas, Trabajo y Previsión Social",
+      "DIRECCIÓN DE AUDITORÍA AL SECTOR ECONOMÍA, FINANZAS, TRABAJO Y PREVISIÓN SOCIAL",
   },
   {
-    value: "DA_COMUNICACIONES",
+    value:
+      "DIRECCIÓN DE AUDITORÍA AL SECTOR COMUNICACIONES, INFRAESTRUCTURA PÚBLICA Y VIVIENDA",
     label:
-      "Dirección de Auditoría al Sector Comunicaciones, Infraestructura Pública y Vivienda",
+      "DIRECCIÓN DE AUDITORÍA AL SECTOR COMUNICACIONES, INFRAESTRUCTURA PÚBLICA Y VIVIENDA",
   },
   {
-    value: "DA_MUNICIPALIDADES",
+    value:
+      "DIRECCIÓN DE AUDITORÍA AL SECTOR MUNICIPALIDADES Y CONSEJOS DE DESARROLLO",
     label:
-      "Dirección de Auditoría al Sector Municipalidades y Consejos de Desarrollo",
+      "DIRECCIÓN DE AUDITORÍA AL SECTOR MUNICIPALIDADES Y CONSEJOS DE DESARROLLO",
   },
   {
-    value: "DA_ORGANISMOS_APOYO",
+    value:
+      "DIRECCIÓN DE AUDITORÍA AL SECTOR ORGANISMOS E INSTITUCIONES DE APOYO",
     label:
-      "Dirección de Auditoría al Sector Organismos e Instituciones de Apoyo",
-  },
-  { value: "DA_FIDEICOMISOS", label: "Dirección de Auditoría a Fideicomisos" },
-  {
-    value: "DA_OBRA_PUBLICA",
-    label: "Dirección de Auditoría a Obra Pública y Gestión Ambiental",
+      "DIRECCIÓN DE AUDITORÍA AL SECTOR ORGANISMOS E INSTITUCIONES DE APOYO",
   },
   {
-    value: "DA_SISTEMAS_NOMINAS",
+    value: "DIRECCIÓN DE AUDITORÍA A FIDEICOMISOS",
+    label: "DIRECCIÓN DE AUDITORÍA A FIDEICOMISOS",
+  },
+  {
+    value: "DIRECCIÓN DE AUDITORÍA A OBRA PÚBLICA Y GESTIÓN AMBIENTAL",
+    label: "DIRECCIÓN DE AUDITORÍA A OBRA PÚBLICA Y GESTIÓN AMBIENTAL",
+  },
+  {
+    value:
+      "DIRECCIÓN DE AUDITORÍA A SISTEMAS INFORMÁTICOS Y NÓMINAS DE GOBIERNO",
     label:
-      "Dirección de Auditoría a Sistemas Informáticos y Nóminas de Gobierno",
+      "DIRECCIÓN DE AUDITORÍA A SISTEMAS INFORMÁTICOS Y NÓMINAS DE GOBIERNO",
   },
   {
-    value: "DA_DENUNCIAS",
-    label: "Dirección de Auditoría para Atención a Denuncias",
+    value: "DIRECCIÓN DE AUDITORÍA PARA ATENCIÓN A DENUNCIAS",
+    label: "DIRECCIÓN DE AUDITORÍA PARA ATENCIÓN A DENUNCIAS",
   },
   {
-    value: "DAC_AUDITORIA",
-    label: "Dirección de Aseguramiento de la Calidad de Auditoría",
+    value: "DIRECCIÓN DE ASEGURAMIENTO DE LA CALIDAD DE AUDITORÍA",
+    label: "DIRECCIÓN DE ASEGURAMIENTO DE LA CALIDAD DE AUDITORÍA",
   },
   {
-    value: "D_ANALISIS_GESTION",
+    value:
+      "DIRECCIÓN DE ANÁLISIS DE LA GESTIÓN PÚBLICA, MONITOREO Y ALERTA TEMPRANA",
     label:
-      "Dirección de Análisis de la Gestión Pública, Monitoreo y Alerta Temprana",
+      "DIRECCIÓN DE ANÁLISIS DE LA GESTIÓN PÚBLICA, MONITOREO Y ALERTA TEMPRANA",
   },
-  { value: "D_CONTRA_REVISIONES", label: "Dirección de Contra Revisiones" },
   {
-    value: "DA_PUEBLOS_INDIGENAS_VULNERABLES",
+    value: "DIRECCIÓN DE CONTRA REVISIONES",
+    label: "DIRECCIÓN DE CONTRA REVISIONES",
+  },
+  {
+    value:
+      "DIRECCIÓN DE AUDITORÍA A RECURSOS PÚBLICOS DESTINADOS A PUEBLOS INDÍGENAS Y PUEBLOS VULNERABLES",
     label:
-      "Dirección de Auditoría a Recursos Públicos destinados a Pueblos Indígenas y Pueblos Vulnerables",
+      "DIRECCIÓN DE AUDITORÍA A RECURSOS PÚBLICOS DESTINADOS A PUEBLOS INDÍGENAS Y PUEBLOS VULNERABLES",
   },
-  { value: "D_ADMINISTRATIVA", label: "Dirección Administrativa" },
-  { value: "D_FINANCIERA", label: "Dirección Financiera" },
-  { value: "D_RRHH", label: "Dirección de Recursos Humanos" },
-  { value: "D_PLANIFICACION", label: "Dirección de Planificación" },
+  { value: "DIRECCIÓN ADMINISTRATIVA", label: "DIRECCIÓN ADMINISTRATIVA" },
+  { value: "DIRECCIÓN FINANCIERA", label: "DIRECCIÓN FINANCIERA" },
   {
-    value: "D_TIC",
-    label: "Dirección de Tecnologías de la Información y Comunicación",
+    value: "DIRECCIÓN DE RECURSOS HUMANOS",
+    label: "DIRECCIÓN DE RECURSOS HUMANOS",
+  },
+  { value: "DIRECCIÓN DE PLANIFICACIÓN", label: "DIRECCIÓN DE PLANIFICACIÓN" },
+  {
+    value: "DIRECCIÓN DE TECNOLOGÍAS DE LA INFORMACIÓN Y COMUNICACIÓN",
+    label: "DIRECCIÓN DE TECNOLOGÍAS DE LA INFORMACIÓN Y COMUNICACIÓN",
   },
   {
-    value: "D_FORMACION_CAPACITACION",
+    value:
+      "DIRECCIÓN DE FORMACIÓN Y CAPACITACIÓN EN FISCALIZACIÓN Y DE CONTROL GUBERNAMENTAL",
     label:
-      "Dirección de Formación y Capacitación en Fiscalización y de Control Gubernamental",
+      "DIRECCIÓN DE FORMACIÓN Y CAPACITACIÓN EN FISCALIZACIÓN Y DE CONTROL GUBERNAMENTAL",
   },
   {
-    value: "D_COOPERACION_RRII",
-    label: "Dirección de Cooperación y Relaciones Interinstitucionales",
+    value: "DIRECCIÓN DE COOPERACIÓN Y RELACIONES INTERINSTITUCIONALES",
+    label: "DIRECCIÓN DE COOPERACIÓN Y RELACIONES INTERINSTITUCIONALES",
   },
   {
-    value: "D_DELEGACIONES_2",
-    label: "Dirección de Delegaciones Departamentales (duplicada de la 14)",
+    value: "DIRECCIÓN DE DELEGACIONES DEPARTAMENTALES (DUPLICADA)",
+    label: "DIRECCIÓN DE DELEGACIONES DEPARTAMENTALES (DUPLICADA)",
   },
   {
-    value: "D_FORT_CONTROL_INTERNO_UDAI",
+    value:
+      "DIRECCIÓN DE FORTALECIMIENTO AL CONTROL INTERNO Y DE GESTIÓN DE LAS UNIDADES DE AUDITORÍA INTERNA",
     label:
-      "Dirección de Fortalecimiento al Control Interno y de Gestión de las Unidades de Auditoría Interna – UDAI",
+      "DIRECCIÓN DE FORTALECIMIENTO AL CONTROL INTERNO Y DE GESTIÓN DE LAS UNIDADES DE AUDITORÍA INTERNA",
   },
-  { value: "DA_DESEMPENO", label: "Dirección de Auditoría de Desempeño" },
+  {
+    value: "DIRECCIÓN DE AUDITORÍA DE DESEMPEÑO",
+    label: "DIRECCIÓN DE AUDITORÍA DE DESEMPEÑO",
+  },
 ]
 
 // =======================
 // #region Anexo 7 – Renglón presupuestario
 // =======================
 export type RenglonValue =
-  | "011_PERSONAL_PERMANENTE"
-  | "029_GRUPO"
-  | "SUBGRUPO_18_022"
-  | "NO_APLICA"
-  | "021_RENGLON"
+  | "PERSONAL PERMANENTE 011"
+  | "GRUPO 029"
+  | "SUBGRUPO 18 Y 022"
+  | "NO APLICA"
+  | "RENGLÓN 021"
 
 export const RENGLON_OPTIONS: Option<RenglonValue>[] = [
-  { value: "011_PERSONAL_PERMANENTE", label: "Personal Permanente (011)" },
-  { value: "029_GRUPO", label: "Grupo (029)" },
-  { value: "SUBGRUPO_18_022", label: "Subgrupo 18 y 022" },
-  { value: "NO_APLICA", label: "NO APLICA" },
-  { value: "021_RENGLON", label: "Renglón 021" },
+  { value: "PERSONAL PERMANENTE 011", label: "PERSONAL PERMANENTE 011" },
+  { value: "GRUPO 029", label: "GRUPO 029" },
+  { value: "SUBGRUPO 18 Y 022", label: "SUBGRUPO 18 Y 022" },
+  { value: "NO APLICA", label: "NO APLICA" },
+  { value: "RENGLÓN 021", label: "RENGLÓN 021" },
 ]
 
 // =======================
 // #region Anexo 8 – Colegios profesionales
 // =======================
 export type ColegioValue =
-  | "NO_APLICA"
-  | "HUMANIDADES"
-  | "ARQUITECTOS"
-  | "CPA"
-  | "CCEE"
-  | "COFAQUI"
-  | "CIAG"
-  | "CIG"
-  | "CIQ"
-  | "CMVZ"
-  | "COLMED"
-  | "PSICOLOGOS"
-  | "ESTOMATOLOGICO"
-  | "CANG"
-  | "ENFERMERIA"
+  | "NO APLICA"
+  | "COLEGIO PROFESIONAL DE HUMANIDADES DE GUATEMALA"
+  | "COLEGIO DE ARQUITECTOS DE GUATEMALA"
+  | "COLEGIO DE CONTADORES PUBLICOS Y AUDITORES DE GUATEMALA"
+  | "COLEGIO DE ECONOMISTAS, CONTADORES PUBLICOS Y AUDITORES Y ADMINISTRADORES DE EMPRESAS"
+  | "COLEGIO DE FARMACEUTICOS Y QUIMICOS DE GUATEMALA"
+  | "COLEGIO DE INGENIEROS AGRONOMOS DE GUATEMALA"
+  | "COLEGIO DE INGENIEROS DE GUATEMALA"
+  | "COLEGIO DE INGENIEROS QUIMICOS DE GUATEMALA"
+  | "COLEGIO DE MEDICOS VETERINARIOS Y ZOOTECNISTAS DE GUATEMALA"
+  | "COLEGIO DE MEDICOS Y CIRUJANOS DE GUATEMALA"
+  | "COLEGIO DE PSICOLOGOS DE GUATEMALA"
+  | "COLEGIO ESTOMATOLOGICO DE GUATEMALA"
+  | "COLEGIO DE ABOGADOS Y NOTARIOS DE GUATEMALA"
+  | "COLEGIO PROFESIONAL DE ENFERMERIA DE GUATEMALA"
 
 export const COLEGIO_OPTIONS: Option<ColegioValue>[] = [
-  { value: "NO_APLICA", label: "NO APLICA" },
+  { value: "NO APLICA", label: "NO APLICA" },
   {
-    value: "HUMANIDADES",
-    label: "Colegio Profesional de Humanidades de Guatemala",
-  },
-  { value: "ARQUITECTOS", label: "Colegio de Arquitectos de Guatemala" },
-  {
-    value: "CPA",
-    label: "Colegio de Contadores Públicos y Auditores de Guatemala (CPA)",
+    value: "COLEGIO PROFESIONAL DE HUMANIDADES DE GUATEMALA",
+    label: "COLEGIO PROFESIONAL DE HUMANIDADES DE GUATEMALA",
   },
   {
-    value: "CCEE",
+    value: "COLEGIO DE ARQUITECTOS DE GUATEMALA",
+    label: "COLEGIO DE ARQUITECTOS DE GUATEMALA",
+  },
+  {
+    value: "COLEGIO DE CONTADORES PUBLICOS Y AUDITORES DE GUATEMALA",
+    label: "COLEGIO DE CONTADORES PUBLICOS Y AUDITORES DE GUATEMALA",
+  },
+  {
+    value:
+      "COLEGIO DE ECONOMISTAS, CONTADORES PUBLICOS Y AUDITORES Y ADMINISTRADORES DE EMPRESAS",
     label:
-      "Colegio de Economistas, Contadores Públicos y Auditores y Administradores de Empresas (CCEE)",
+      "COLEGIO DE ECONOMISTAS, CONTADORES PUBLICOS Y AUDITORES Y ADMINISTRADORES DE EMPRESAS",
   },
   {
-    value: "COFAQUI",
-    label: "Colegio de Farmacéuticos y Químicos de Guatemala (COFAQUI)",
+    value: "COLEGIO DE FARMACEUTICOS Y QUIMICOS DE GUATEMALA",
+    label: "COLEGIO DE FARMACEUTICOS Y QUIMICOS DE GUATEMALA",
   },
   {
-    value: "CIAG",
-    label: "Colegio de Ingenieros Agrónomos de Guatemala (CIAG)",
-  },
-  { value: "CIG", label: "Colegio de Ingenieros de Guatemala (CIG)" },
-  { value: "CIQ", label: "Colegio de Ingenieros Químicos de Guatemala (CIQ)" },
-  {
-    value: "CMVZ",
-    label: "Colegio de Médicos Veterinarios y Zootecnistas de Guatemala (CMVZ)",
+    value: "COLEGIO DE INGENIEROS AGRONOMOS DE GUATEMALA",
+    label: "COLEGIO DE INGENIEROS AGRONOMOS DE GUATEMALA",
   },
   {
-    value: "COLMED",
-    label: "Colegio de Médicos y Cirujanos de Guatemala (COLMED)",
-  },
-  { value: "PSICOLOGOS", label: "Colegio de Psicólogos de Guatemala" },
-  {
-    value: "ESTOMATOLOGICO",
-    label: "Colegio Estomatológico de Guatemala (CEG)",
+    value: "COLEGIO DE INGENIEROS DE GUATEMALA",
+    label: "COLEGIO DE INGENIEROS DE GUATEMALA",
   },
   {
-    value: "CANG",
-    label: "Colegio de Abogados y Notarios de Guatemala (CANG)",
+    value: "COLEGIO DE INGENIEROS QUIMICOS DE GUATEMALA",
+    label: "COLEGIO DE INGENIEROS QUIMICOS DE GUATEMALA",
   },
   {
-    value: "ENFERMERIA",
-    label: "Colegio Profesional de Enfermería de Guatemala",
+    value: "COLEGIO DE MEDICOS VETERINARIOS Y ZOOTECNISTAS DE GUATEMALA",
+    label: "COLEGIO DE MEDICOS VETERINARIOS Y ZOOTECNISTAS DE GUATEMALA",
+  },
+  {
+    value: "COLEGIO DE MEDICOS Y CIRUJANOS DE GUATEMALA",
+    label: "COLEGIO DE MEDICOS Y CIRUJANOS DE GUATEMALA",
+  },
+  {
+    value: "COLEGIO DE PSICOLOGOS DE GUATEMALA",
+    label: "COLEGIO DE PSICOLOGOS DE GUATEMALA",
+  },
+  {
+    value: "COLEGIO ESTOMATOLOGICO DE GUATEMALA",
+    label: "COLEGIO ESTOMATOLOGICO DE GUATEMALA",
+  },
+  {
+    value: "COLEGIO DE ABOGADOS Y NOTARIOS DE GUATEMALA",
+    label: "COLEGIO DE ABOGADOS Y NOTARIOS DE GUATEMALA",
+  },
+  {
+    value: "COLEGIO PROFESIONAL DE ENFERMERIA DE GUATEMALA",
+    label: "COLEGIO PROFESIONAL DE ENFERMERIA DE GUATEMALA",
   },
 ]
 

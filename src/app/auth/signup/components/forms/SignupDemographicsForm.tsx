@@ -30,11 +30,14 @@ type Props = {
     departamento_residencia?: boolean
     municipio_residencia?: boolean
     nit?: boolean
-    celular?: boolean
+    telefono?: boolean
   }
 }
 
-const SignupDemographicsForm = ({ onValidityChange, prefilledFields = {} }: Props) => {
+const SignupDemographicsForm = ({
+  onValidityChange,
+  prefilledFields = {},
+}: Props) => {
   countries.registerLocale(EsLocale as any)
 
   const form = useFormContext()
@@ -145,7 +148,7 @@ const SignupDemographicsForm = ({ onValidityChange, prefilledFields = {} }: Prop
 
   // #endregion
 
-  // #region Celular
+  // #region telefono
   const fmtGT = (s: string) => {
     const raw = (s ?? "").replace(/\D/g, "").slice(0, 8)
     return raw.length > 4 ? `${raw.slice(0, 4)}-${raw.slice(4)}` : raw
@@ -153,11 +156,11 @@ const SignupDemographicsForm = ({ onValidityChange, prefilledFields = {} }: Prop
 
   useEffect(() => {
     const sub = form.watch((values, info) => {
-      if (info.name === "celular") {
-        const current = values.celular ?? ""
+      if (info.name === "telefono") {
+        const current = values.telefono ?? ""
         const formatted = fmtGT(current)
         if (current !== formatted) {
-          form.setValue("celular", formatted, {
+          form.setValue("telefono", formatted, {
             shouldValidate: true,
             shouldDirty: true,
           })
@@ -204,7 +207,11 @@ const SignupDemographicsForm = ({ onValidityChange, prefilledFields = {} }: Prop
           label="CUI"
           placeholder="Ingrese su CUI"
           readonly={prefilledFields.cui || false}
-          description={prefilledFields.cui ? "Este campo se llenó automáticamente con el DPI consultado" : undefined}
+          description={
+            prefilledFields.cui
+              ? "Este campo se llenó automáticamente con el DPI consultado"
+              : undefined
+          }
         />
         <CustomFormField
           control={form.control}
@@ -231,7 +238,11 @@ const SignupDemographicsForm = ({ onValidityChange, prefilledFields = {} }: Prop
           label="Edad"
           placeholder="Ingrese su edad"
           readonly={prefilledFields.edad || false}
-          description={prefilledFields.edad ? "Calculada automáticamente desde la fecha de nacimiento" : undefined}
+          description={
+            prefilledFields.edad
+              ? "Calculada automáticamente desde la fecha de nacimiento"
+              : undefined
+          }
         />
         <CustomFormField
           control={form.control}
@@ -271,11 +282,11 @@ const SignupDemographicsForm = ({ onValidityChange, prefilledFields = {} }: Prop
         />
         <CustomFormField
           control={form.control}
-          name="celular"
+          name="telefono"
           fieldType={FormFieldType.INPUT}
-          label="Número de Celular"
-          placeholder="Ingrese su número de celular"
-          readonly={prefilledFields.celular || false}
+          label="Número de Teléfono"
+          placeholder="Ingrese su número de teléfono"
+          readonly={prefilledFields.telefono || false}
         />
       </div>
     </Form>
