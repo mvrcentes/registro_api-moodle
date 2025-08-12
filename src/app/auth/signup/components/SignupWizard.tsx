@@ -184,8 +184,25 @@ export default function SignupWizard() {
         if (edad !== undefined) {
           methods.setValue("edad", edad)
         }
-        methods.setValue("departamento_residencia", result.data.departamento || "")
-        methods.setValue("municipio_residencia", result.data.municipio || "")
+        
+        // Para departamento y municipio, usar mapeo secuencial
+        console.log("Departamento del API:", result.data.departamento)
+        console.log("Municipio del API:", result.data.municipio)
+        
+        // Primero establecer el departamento
+        if (result.data.departamento) {
+          methods.setValue("departamento_residencia", result.data.departamento)
+          
+          // Esperar un tick para que el formulario procese el departamento
+          // y luego establecer el municipio
+          setTimeout(() => {
+            if (result.data.municipio) {
+              console.log("Estableciendo municipio después del departamento:", result.data.municipio)
+              methods.setValue("municipio_residencia", result.data.municipio)
+            }
+          }, 100)
+        }
+        
         methods.setValue("nit", result.data.nit || "")
         methods.setValue("celular", result.data.telefono || "")
         
@@ -212,8 +229,8 @@ export default function SignupWizard() {
           cui: true, // CUI siempre se prellena con el DPI
           edad: edad !== undefined,
           sexo: !!(result.data.sexo),
-          departamento_residencia: !!(result.data.departamento),
-          municipio_residencia: !!(result.data.municipio),
+          departamento_residencia: false, // Siempre editable
+          municipio_residencia: false, // Siempre editable
           nit: !!(result.data.nit),
           celular: false // Celular siempre editable
         }
