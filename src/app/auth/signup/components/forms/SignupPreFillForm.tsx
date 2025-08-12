@@ -14,9 +14,9 @@ const SignupPreFillForm = () => {
 
   useEffect(() => {
     const computeValid = () => {
-      const cui = (form.getValues("cui") as string) || ""
+      const dpi = (form.getValues("dpi") as string) || ""
       // usa tu schema; exige 13 chars
-      return SignupPreFillSchema.safeParse({ cui }).success
+      return SignupPreFillSchema.safeParse({ dpi }).success
     }
   }, [form])
 
@@ -26,9 +26,9 @@ const SignupPreFillForm = () => {
         <CustomFormField
           control={form.control}
           fieldType={FormFieldType.INPUT}
-          name="cui"
-          label="CUI"
-          placeholder="Ingrese su CUI"
+          name="dpi"
+          label="DPI"
+          placeholder="Ingrese su DPI"
         />
       </div>
     </Form>

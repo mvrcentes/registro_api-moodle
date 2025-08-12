@@ -45,9 +45,9 @@ const SigninForm = () => {
         <CustomFormField
           control={form.control}
           fieldType={FormFieldType.INPUT}
-          name="email"
-          label="Correo electrónico"
-          placeholder="Ingrese su correo electrónico"
+          name="dpi"
+          label="DPI"
+          placeholder="Ingrese su DPI (13 dígitos)"
         />
 
         <CustomFormField

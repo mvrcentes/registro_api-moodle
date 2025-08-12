@@ -17,10 +17,12 @@ import {
 import { FormProvider, useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import SignupProfessionalInfoform from "./forms/SignupProfessionalInfoform"
+import { prefill, signup } from "@/features/auth/api/auth.client"
+import { toast } from "sonner"
 
 // remove
 const steps = [
-  { label: "CUI" },
+  { label: "DPI" },
   { label: "Información de la cuenta" },
   { label: "Demografía" },
   { label: "Institución" },
@@ -32,6 +34,8 @@ export default function SignupWizard() {
   const [step2Valid, setStep2Valid] = useState(false)
   const [step3Valid, setStep3Valid] = useState(false)
   const [step4Valid, setStep4Valid] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isPrefilling, setIsPrefilling] = useState(false)
 
   const {
     nextStep,
@@ -47,53 +51,106 @@ export default function SignupWizard() {
     resolver: zodResolver(SignupAllSchema),
     mode: "onChange",
     defaultValues: {
-      // Paso 0 (CUI)
-      cui: "",
+      // Paso 0 (DPI)
+      dpi: "",
       // Paso 1 (cuenta)
-      usuario: "",
       email: "",
       confirm_email: "",
-      nombre: "",
-      apellido: "",
+      primerNombre: "",
+      segundoNombre: "",
+      primerApellido: "",
+      segundoApellido: "",
       password: "",
       confirm_password: "",
       pais: "",
-      ciudad: "",
+      fechaNacimiento: "",
       // Paso 2 (demografía)
       nit: "",
       sexo: "",
-      edad: "" as any,
-      departamento_residencia: "",
-      municipio_residencia: "",
-      etnia: "",
-      celular: "",
+      departamento: "",
+      municipio: "",
+      telefono: "",
       // Paso 3 (institución)
-      sector: "",
-      institucion: "",
-      ubicacionAdministrativa: "",
-      renglon_presupuestario: "",
+      entidad: "",
+      dependencia: "",
+      renglon: "",
       // Paso 4 (colegiado)
-      nombre_colegio_profesional: "",
-      numero_colegiado: "",
+      colegio: "",
+      numeroColegiado: "",
     },
   })
 
-  // Validación del paso 0 (CUI)
-  const watchedCui = methods.watch("cui")
+  // Validación del paso 0 (DPI)
+  const watchedDpi = methods.watch("dpi")
   const step0Valid = SignupPreFillSchema.safeParse({
-    cui: watchedCui ?? "",
+    dpi: watchedDpi ?? "",
   }).success
+
+  const handlePrefill = async () => {
+    const dpi = methods.getValues("dpi")
+    if (!dpi) return
+
+    setIsPrefilling(true)
+    try {
+      const result = await prefill({ dpi })
+      
+      if (result.success && result.data) {
+        // Prellenar los datos del formulario
+        methods.setValue("primerNombre", result.data.primerNombre || "")
+        methods.setValue("segundoNombre", result.data.segundoNombre || "")
+        methods.setValue("primerApellido", result.data.primerApellido || "")
+        methods.setValue("segundoApellido", result.data.segundoApellido || "")
+        methods.setValue("email", result.data.email || "")
+        methods.setValue("fechaNacimiento", result.data.fechaNacimiento || "")
+        methods.setValue("sexo", result.data.sexo || "")
+        methods.setValue("pais", result.data.pais || "")
+        methods.setValue("departamento", result.data.departamento || "")
+        methods.setValue("municipio", result.data.municipio || "")
+        methods.setValue("nit", result.data.nit || "")
+        methods.setValue("telefono", result.data.telefono || "")
+        methods.setValue("entidad", result.data.entidad || "")
+        methods.setValue("dependencia", result.data.dependencia || "")
+        methods.setValue("renglon", result.data.renglon || "")
+        methods.setValue("colegio", result.data.colegio || "")
+        methods.setValue("numeroColegiado", result.data.numeroColegiado || "")
+
+        toast.success("Información prellenada exitosamente")
+        nextStep()
+      } else {
+        toast.error(result.error?.message || "Error al prellenar información")
+      }
+    } catch (error) {
+      toast.error("Error al consultar DPI")
+    } finally {
+      setIsPrefilling(false)
+    }
+  }
+
+  const handleSubmit = async (values: z.infer<typeof SignupAllSchema>) => {
+    setIsSubmitting(true)
+    try {
+      const result = await signup(values)
+      
+      if (result.success) {
+        toast.success("Usuario registrado exitosamente")
+        resetSteps()
+        methods.reset()
+      } else {
+        toast.error(result.error?.message || "Error al registrar usuario")
+      }
+    } catch (error) {
+      toast.error("Error al registrar usuario")
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
 
   return (
     <>
       <FormProvider {...methods}>
-        <form
-          onSubmit={methods.handleSubmit((values) => {
-            console.log("Payload final:", values)
-            // TODO: submit real
-          })}>
+        <form onSubmit={methods.handleSubmit(handleSubmit)}>
           <Steps activeStep={activeStep}>
-            <Step index={0} label="CUI">
+            <Step index={0} label="DPI">
               <SignupPreFillForm />
             </Step>
 
@@ -110,21 +167,21 @@ export default function SignupWizard() {
             </Step>
 
             <Step index={4} label="Información profesional">
-              <SignupProfessionalInfoform onValidityChange={setStep3Valid} />
+              <SignupProfessionalInfoform onValidityChange={setStep4Valid} />
             </Step>
           </Steps>
         </form>
       </FormProvider>
 
       <div className="mt-4 flex items-center justify-end gap-2">
-        {/* Estado de \"completado\" que muestra tu stepper cuando ya se avanzó más allá del último */}
+        {/* Estado de "completado" que muestra tu stepper cuando ya se avanzó más allá del último */}
         {activeStep === steps.length ? (
           <>
             <h2 className="mr-auto text-sm font-medium">
-              All steps completed!
+              ¡Todos los pasos completados!
             </h2>
             <Button onClick={resetSteps} variant="outline">
-              Reset
+              Reiniciar
             </Button>
           </>
         ) : (
@@ -140,14 +197,9 @@ export default function SignupWizard() {
             {/* Avanzar / Terminar por paso */}
             {activeStep === 0 && (
               <Button
-                onClick={() => {
-                  if (!step0Valid) return
-                  const cui = methods.getValues("cui") ?? ""
-                  methods.setValue("usuario", cui, { shouldValidate: true })
-                  nextStep()
-                }}
-                disabled={!step0Valid}>
-                Siguiente
+                onClick={handlePrefill}
+                disabled={!step0Valid || isPrefilling}>
+                {isPrefilling ? "Consultando..." : "Consultar DPI"}
               </Button>
             )}
 
@@ -181,6 +233,14 @@ export default function SignupWizard() {
                 }}
                 disabled={!step3Valid}>
                 Siguiente
+              </Button>
+            )}
+
+            {activeStep === 4 && (
+              <Button
+                type="submit"
+                disabled={!step4Valid || isSubmitting}>
+                {isSubmitting ? "Registrando..." : "Registrar Usuario"}
               </Button>
             )}
           </>
