@@ -162,85 +162,86 @@ export default function SignupWizard() {
 
       if (result.success && result.data) {
         // Verificar si hay datos reales
-        const hasData = Object.values(result.data).some(
+        const userData = result.data
+        const hasData = Object.values(userData).some(
           (value) =>
             value &&
             value !== "" &&
-            value !== result.data.dpi &&
+            value !== userData.dpi &&
             value !== "Guatemala"
         )
 
         // Calcular edad si hay fecha de nacimiento
-        const edad = calculateAge(result.data.fechaNacimiento || "")
+        const edad = calculateAge(userData.fechaNacimiento || "")
 
         // Prellenar los datos del formulario
-        methods.setValue("primerNombre", result.data.primerNombre || "")
-        methods.setValue("segundoNombre", result.data.segundoNombre || "")
-        methods.setValue("primerApellido", result.data.primerApellido || "")
-        methods.setValue("segundoApellido", result.data.segundoApellido || "")
-        methods.setValue("email", result.data.email || "")
-        methods.setValue("confirm_email", result.data.email || "") // Confirmar email igual al email
-        methods.setValue("pais", result.data.pais || "")
+        methods.setValue("primerNombre", userData.primerNombre || "")
+        methods.setValue("segundoNombre", userData.segundoNombre || "")
+        methods.setValue("primerApellido", userData.primerApellido || "")
+        methods.setValue("segundoApellido", userData.segundoApellido || "")
+        methods.setValue("email", userData.email || "")
+        methods.setValue("confirm_email", userData.email || "") // Confirmar email igual al email
+        methods.setValue("pais", userData.pais || "")
         methods.setValue(
           "ciudad",
-          result.data.municipio || result.data.ciudad || ""
+          userData.municipio || ""
         )
 
         // Demografía
-        methods.setValue("cui", result.data.dpi) // CUI es el mismo DPI
-        methods.setValue("sexo", result.data.sexo || "")
+        methods.setValue("cui", userData.dpi) // CUI es el mismo DPI
+        methods.setValue("sexo", userData.sexo || "")
         if (edad !== undefined) {
           methods.setValue("edad", edad)
         }
 
         // Primero establecer el departamento
-        if (result.data.departamento) {
-          methods.setValue("departamento_residencia", result.data.departamento)
+        if (userData.departamento) {
+          methods.setValue("departamento_residencia", userData.departamento)
 
           // Esperar un tick para que el formulario procese el departamento
           // y luego establecer el municipio
           setTimeout(() => {
-            if (result.data.municipio) {
-              methods.setValue("municipio_residencia", result.data.municipio)
+            if (userData.municipio) {
+              methods.setValue("municipio_residencia", userData.municipio)
             }
           }, 100)
         }
 
-        methods.setValue("nit", result.data.nit || "")
-        methods.setValue("telefono", result.data.telefono || "")
+        methods.setValue("nit", userData.nit || "")
+        methods.setValue("telefono", userData.telefono || "")
 
         // Paso 4 - Información Institucional
-        methods.setValue("entidad", result.data.entidad || "")
-        methods.setValue("dependencia", result.data.dependencia || "")
-        methods.setValue("renglon", result.data.renglon || "")
+        methods.setValue("entidad", userData.entidad || "")
+        methods.setValue("dependencia", userData.dependencia || "")
+        methods.setValue("renglon", userData.renglon || "")
 
         // Paso 5 - Información Profesional
-        const mappedColegio = mapColegioApiToValue(result.data.colegio)
+        const mappedColegio = mapColegioApiToValue(userData.colegio)
         methods.setValue("colegio", mappedColegio ?? "NO APLICA")
-        methods.setValue("numeroColegiado", result.data.numeroColegiado || "")
+        methods.setValue("numeroColegiado", userData.numeroColegiado || "")
 
         // Crear objeto con información de qué campos fueron prellenados
         // Solo marcar como readonly los campos que realmente tienen datos
         const fieldsInfo = {
-          primerNombre: !!result.data.primerNombre,
-          segundoNombre: !!result.data.segundoNombre,
-          primerApellido: !!result.data.primerApellido,
-          segundoApellido: !!result.data.segundoApellido,
-          email: !!result.data.email,
-          confirm_email: !!result.data.email, // Confirmación de email también readonly si hay email
-          pais: !!result.data.pais,
-          ciudad: !!(result.data.municipio || result.data.ciudad),
+          primerNombre: !!userData.primerNombre,
+          segundoNombre: !!userData.segundoNombre,
+          primerApellido: !!userData.primerApellido,
+          segundoApellido: !!userData.segundoApellido,
+          email: !!userData.email,
+          confirm_email: !!userData.email, // Confirmación de email también readonly si hay email
+          pais: !!userData.pais,
+          ciudad: !!userData.municipio,
           cui: true, // CUI siempre se prellena con el DPI
           edad: edad !== undefined,
-          sexo: !!result.data.sexo,
+          sexo: !!userData.sexo,
           departamento_residencia: false, // Siempre editable
           municipio_residencia: false, // Siempre editable
-          nit: !!result.data.nit,
+          nit: !!userData.nit,
           telefono: false, // Teléfono siempre editable
 
           // paso 5 - Información Institucional
-          colegio: !!result.data.colegio,
-          numeroColegiado: !!result.data.numeroColegiado,
+          colegio: !!userData.colegio,
+          numeroColegiado: !!userData.numeroColegiado,
         }
 
         setPrefilledFields(fieldsInfo)

@@ -7,7 +7,7 @@ import {
   ISignupCompleteResponseDTO,
   IUserListResponseDTO,
   IUserDetailResponseDTO,
-} from "./auth.dto"
+} from "../../api/types"
 import {
   SigninSchema,
   SignupPreFillSchema,

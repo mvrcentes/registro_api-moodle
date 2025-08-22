@@ -4,7 +4,10 @@ const StrongPassword =
   /^(?=.*\p{Ll})(?=.*\p{Lu})(?=.*\d)(?=.*[^\p{L}\p{N}]).{8,}$/u
 
 export const SigninSchema = z.object({
-  email: z.email("Dirección de correo electrónico no válida"),
+  dpi: z
+    .string()
+    .trim()
+    .regex(/^\d{13}$/, "El DPI debe tener exactamente 13 dígitos"),
   password: z.string().min(6, "La contraseña debe ser llenada"),
 })
 
@@ -64,6 +67,7 @@ export const SignupDemographicSchema = z.object({
     .min(8, "El NIT debe tener mínimo 8 dígitos")
     .max(9, "El NIT debe tener máximo 9 dígitos"),
   sexo: z.string().min(2, "El género es obligatorio"),
+  fechaNacimiento: z.string().optional(),
   edad: z
     .number()
     .min(18, "La edad mínima es 18 años")
