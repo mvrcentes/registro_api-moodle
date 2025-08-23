@@ -3,6 +3,7 @@ export enum FormFieldType {
   TEXT = "text",
   PASSWORD = "password",
   NUMBER = "number",
+  NUMERIC_ONLY = "numericOnly",
   FILE = "file",
   CHECKBOX = "checkbox",
   TEXTAREA = "textarea",

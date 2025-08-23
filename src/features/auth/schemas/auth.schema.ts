@@ -69,9 +69,15 @@ export const SignupDemographicSchema = z.object({
   sexo: z.string().min(2, "El género es obligatorio"),
   fechaNacimiento: z.string().optional(),
   edad: z
-    .number()
-    .min(18, "La edad mínima es 18 años")
-    .max(100, "La edad máxima es 100 años")
+    .string()
+    .regex(/^[0-9]*$/, "La edad solo debe contener números")
+    .refine((val: string) => {
+      if (!val) return true; // Opcional, puede estar vacío
+      const num = parseInt(val, 10);
+      return num >= 18 && num <= 100;
+    }, {
+      message: "La edad debe estar entre 18 y 100 años"
+    })
     .optional(),
   departamento_residencia: z.string().min(2, "El departamento es obligatorio"),
   municipio_residencia: z.string().min(2, "El municipio es obligatorio"),

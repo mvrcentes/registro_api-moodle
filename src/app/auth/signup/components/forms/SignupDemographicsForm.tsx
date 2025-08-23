@@ -234,7 +234,7 @@ const SignupDemographicsForm = ({
         <CustomFormField
           control={form.control}
           name="edad"
-          fieldType={FormFieldType.NUMBER}
+          fieldType={FormFieldType.NUMERIC_ONLY}
           label="Edad"
           placeholder="Ingrese su edad"
           readonly={prefilledFields.edad || false}

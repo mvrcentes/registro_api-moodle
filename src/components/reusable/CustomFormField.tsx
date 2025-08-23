@@ -99,6 +99,27 @@ const RenderField = ({
           />
         </FormControl>
       )
+    case FormFieldType.NUMERIC_ONLY:
+      return (
+        <FormControl>
+          <Input
+            {...field}
+            placeholder={placeholder}
+            type="text"
+            className={classNames("shad-input", className)}
+            readOnly={readonly}
+            onChange={(e) => {
+              const value = e.target.value.replace(/[^0-9]/g, '');
+              field.onChange(value);
+            }}
+            onKeyPress={(e) => {
+              if (!/[0-9]/.test(e.key) && e.key !== 'Backspace' && e.key !== 'Delete' && e.key !== 'Tab' && e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') {
+                e.preventDefault();
+              }
+            }}
+          />
+        </FormControl>
+      )
     case FormFieldType.PASSWORD:
       return (
         <FormControl>
