@@ -106,11 +106,14 @@ const RenderField = ({
             {...field}
             placeholder={placeholder}
             type="text"
+            value={field.value || ''}
             className={classNames("shad-input", className)}
             readOnly={readonly}
             onChange={(e) => {
               const value = e.target.value.replace(/[^0-9]/g, '');
-              field.onChange(value);
+              // Convertir a número si hay valor, o undefined si está vacío
+              const numericValue = value === '' ? undefined : parseInt(value, 10);
+              field.onChange(numericValue);
             }}
             onKeyPress={(e) => {
               if (!/[0-9]/.test(e.key) && e.key !== 'Backspace' && e.key !== 'Delete' && e.key !== 'Tab' && e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') {
