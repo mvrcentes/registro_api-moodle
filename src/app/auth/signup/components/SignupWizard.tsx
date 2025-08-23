@@ -25,10 +25,10 @@ import { mapColegioApiToValue } from "@/lib/utils"
 // remove
 const steps = [
   { label: "DPI" },
-  { label: "Información de la cuenta" },
-  { label: "Demografía" },
+  { label: "Cuenta" },
+  { label: "Perfil" },
   { label: "Institución" },
-  { label: "Información profesional" },
+  { label: "Profesional" },
 ] satisfies StepConfig[]
 
 export default function SignupWizard() {
