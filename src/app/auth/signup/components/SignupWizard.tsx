@@ -299,7 +299,7 @@ export default function SignupWizard() {
               <SignupPreFillForm isPrefilled={isPrefilled} />
             </Step>
 
-            <Step index={1} label="Datos de cuenta">
+            <Step index={1} label="Cuenta">
               <SignupCompleteForm
                 onValidityChange={setStep1Valid}
                 isPrefilled={isPrefilled}
@@ -307,7 +307,7 @@ export default function SignupWizard() {
               />
             </Step>
 
-            <Step index={2} label="Demografía">
+            <Step index={2} label="Perfil">
               <SignupDemographicsForm
                 onValidityChange={setStep2Valid}
                 prefilledFields={prefilledFields}
@@ -318,7 +318,7 @@ export default function SignupWizard() {
               <SignupInstitutionForm onValidityChange={setStep3Valid} />
             </Step>
 
-            <Step index={4} label="Información profesional">
+            <Step index={4} label="Profesional">
               <SignupProfessionalInfoform
                 onValidityChange={setStep4Valid}
                 prefilledFields={prefilledFields}
