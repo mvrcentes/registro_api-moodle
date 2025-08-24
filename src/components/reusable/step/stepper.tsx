@@ -57,10 +57,10 @@ export function Steps({ activeStep, children, className }: StepsProps) {
                   <div
                     aria-hidden
                     className={cn(
-                      "mx-2 hidden h-0.5 flex-1 md:block",
+                      "mx-2 hidden h-0.5 flex-1 md:block rounded-full",
                       status === "complete"
-                        ? "bg-emerald-600"
-                        : "bg-muted-foreground/20"
+                        ? "bg-[#3296cf]"
+                        : "bg-gray-200"
                     )}
                   />
                 )}
@@ -102,11 +102,11 @@ function StepBadge({
   status: "complete" | "current" | "upcoming"
 }) {
   const base =
-    "inline-flex h-8 w-8 items-center justify-center rounded-full border text-sm"
+    "inline-flex h-8 w-8 items-center justify-center rounded-full border text-sm font-medium"
   if (status === "complete") {
     return (
       <span
-        className={cn(base, "border-emerald-600 bg-emerald-600 text-white")}>
+        className={cn(base, "border-[#3296cf] bg-[#3296cf] text-white shadow-md")}>
         <Check className="h-4 w-4" />
       </span>
     )
@@ -114,7 +114,7 @@ function StepBadge({
   if (status === "current") {
     return (
       <span
-        className={cn(base, "border-foreground bg-foreground text-background")}>
+        className={cn(base, "border-[#3296cf] bg-[#3296cf] text-white shadow-md")}>
         {index + 1}
       </span>
     )
@@ -122,7 +122,7 @@ function StepBadge({
   // upcoming
   return (
     <span
-      className={cn(base, "border-muted-foreground/30 text-muted-foreground")}>
+      className={cn(base, "border-gray-300 bg-white text-gray-500")}>
       {index + 1}
     </span>
   )
