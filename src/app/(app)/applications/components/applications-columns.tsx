@@ -54,6 +54,7 @@ export const columns: ColumnDef<ApplicationRow>[] = [
   {
     accessorKey: "entidad",
     header: "Entidad",
+    filterFn: "equalsString",
     cell: ({ row }) => (
       <div className="truncate max-w-[260px]">{row.original.entidad}</div>
     ),
@@ -61,6 +62,7 @@ export const columns: ColumnDef<ApplicationRow>[] = [
   {
     accessorKey: "institucion",
     header: "Institución",
+    filterFn: "equalsString",
     cell: ({ row }) => (
       <div className="truncate max-w-[260px]">{row.original.institucion}</div>
     ),
@@ -68,10 +70,12 @@ export const columns: ColumnDef<ApplicationRow>[] = [
   {
     accessorKey: "renglon",
     header: "Renglón",
+    filterFn: "equalsString",
   },
   {
     accessorKey: "status",
     header: "Estado",
+    filterFn: "equalsString",
     cell: ({ row }) => <StatusBadge status={row.original.status} />,
   },
   {

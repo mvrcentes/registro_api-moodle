@@ -13,6 +13,8 @@ import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import { Separator } from "@/components/ui/separator"
 import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { StatusModal } from "./StatusModal"
 
 import { ApplicationRow } from "../types"
 import {
@@ -162,6 +164,44 @@ export function InformationSheet({
             </div>
             <Field label="Dirección" value={data.direccion} />
           </section>
+        </div>
+
+        <div className="mt-6 flex flex-wrap items-center justify-end gap-2">
+          <StatusModal
+            mode="in_review"
+            applicationId={data.id}
+            applicantName={fullName(data)}
+            onSubmit={async ({ id }) => {
+              // tu llamada real:
+              await fetch(`/api/applications/${id}/review`, { method: "POST" })
+              // refresca datos si usas server actions o router.refresh()
+            }}
+            trigger={<Button variant="secondary">En revisión</Button>}
+          />
+
+          <StatusModal
+            mode="reject"
+            applicationId={data.id}
+            applicantName={fullName(data)}
+            onSubmit={async ({ id, note }) => {
+              await fetch(`/api/applications/${id}/reject`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ reason: note }),
+              })
+            }}
+            trigger={<Button variant="destructive">Rechazar</Button>}
+          />
+
+          <StatusModal
+            mode="approve"
+            applicationId={data.id}
+            applicantName={fullName(data)}
+            onSubmit={async ({ id }) => {
+              await fetch(`/api/applications/${id}/approve`, { method: "POST" })
+            }}
+            trigger={<Button>Aprobar</Button>}
+          />
         </div>
       </SheetContent>
     </Sheet>

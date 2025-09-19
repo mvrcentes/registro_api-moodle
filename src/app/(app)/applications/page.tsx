@@ -37,7 +37,7 @@ async function getApplications(): Promise<ApplicationRow[]> {
 export default async function ApplicationsPage() {
   const data = await getApplications()
   return (
-    <div className="w-full p-4">
+    <div className="w-full">
       <h1 className="mb-6 text-2xl font-semibold">Solicitudes</h1>
       <DataTable columns={columns} data={data} />
     </div>
