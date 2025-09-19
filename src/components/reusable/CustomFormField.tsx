@@ -73,6 +73,7 @@ const RenderField = ({
             placeholder={placeholder}
             className={classNames("shad-input", className)}
             readOnly={readonly}
+            disabled={readonly}
           />
         </FormControl>
       )
@@ -96,6 +97,7 @@ const RenderField = ({
             type="number"
             className={classNames("shad-input", className)}
             readOnly={readonly}
+            disabled={readonly}
           />
         </FormControl>
       )

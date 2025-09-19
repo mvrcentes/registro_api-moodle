@@ -5,6 +5,7 @@ import Logo from "@/components/ui/logo"
 
 const page = () => {
   return (
+<<<<<<< Updated upstream
     <PurpleGradientBackground>
       <div className="flex min-h-screen items-center justify-center p-6">
         <div className="w-full max-w-4xl">
@@ -26,6 +27,22 @@ const page = () => {
             <SignupWizard />
           </div>
         </div>
+=======
+    <div className="flex flex-col h-screen p-4">
+      <div className="flex flex-1 items-center justify-center">
+        <div className="w-4xl p-6">
+          <SignupWizard />
+        </div>
+      </div>
+
+      <div className="text-center mb-4">
+        <p className="text-sm text-gray-600">
+          ¿Ya tienes una cuenta?{" "}
+          <a href="/auth/signin" className="text-blue-500 hover:underline">
+            Inicia sesión
+          </a>
+        </p>
+>>>>>>> Stashed changes
       </div>
     </PurpleGradientBackground>
   )

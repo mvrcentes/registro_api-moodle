@@ -1,6 +1,7 @@
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
 import { ColegioValue } from "@/app/auth/signup/components/forms/types"
+import { ApplicationRow } from "@/app/(app)/applications/components/types"
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -130,4 +131,28 @@ export function mapColegioApiToValue(input?: string): ColegioValue | undefined {
 
   // Si no matchea nada claro, no seteamos (o podrías devolver "NO APLICA")
   return undefined
+}
+
+// Helpers UI
+export function fullName(r: ApplicationRow) {
+  return [r.primerNombre, r.segundoNombre, r.primerApellido, r.segundoApellido]
+    .filter(Boolean)
+    .join(" ")
+}
+
+export function maskDPI(dpi: string) {
+  // 13 dígitos: ****-****-***-X (ajusta a tu formato real)
+  return dpi.replace(/\d(?=\d{4})/g, "•")
+}
+
+export function formatDateShort(iso: string) {
+  try {
+    return new Intl.DateTimeFormat("es-GT", {
+      year: "numeric",
+      month: "short",
+      day: "2-digit",
+    }).format(new Date(iso))
+  } catch {
+    return iso
+  }
 }

@@ -2,7 +2,7 @@
 type Option<T extends string> = { value: T; label: string }
 
 // #regionAnexo 3
-type EtniaValue =
+export type EtniaValue =
   | "MAYA"
   | "XINCA"
   | "GARIFUNA"
