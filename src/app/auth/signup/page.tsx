@@ -1,5 +1,5 @@
 import React from "react"
-import SigninForm from "./components/forms/SigninForm"
+import SignupWizard from "./components/SignupWizard"
 import PurpleGradientBackground from "@/components/ui/purple-gradient-background"
 import Logo from "@/components/ui/logo"
 
@@ -7,23 +7,23 @@ const page = () => {
   return (
     <PurpleGradientBackground>
       <div className="flex min-h-screen items-center justify-center p-6">
-        <div className="w-full max-w-md">
+        <div className="w-full max-w-4xl">
           {/* Header con logo */}
           <div className="text-center mb-8">
             <div className="flex justify-center mb-4">
-              <Logo width={200} height={60} />
+              <Logo width={240} height={80} />
             </div>
-            <h1 className="text-2xl font-bold text-white mb-2">
+            <h1 className="text-3xl font-bold text-white mb-2">
               Capacitación y formación virtual
             </h1>
-            <p className="text-white/80">
-              Iniciar sesión
+            <p className="text-white/80 text-lg">
+              Registro de usuario
             </p>
           </div>
-          
-          {/* Formulario en un container con fondo blanco */}
+
+          {/* Wizard en un container con fondo blanco */}
           <div className="bg-white rounded-xl shadow-2xl p-8">
-            <SigninForm />
+            <SignupWizard />
           </div>
         </div>
       </div>
