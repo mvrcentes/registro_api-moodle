@@ -101,7 +101,7 @@ export function InformationSheet({
     <Sheet>
       <SheetTrigger asChild>{trigger}</SheetTrigger>
 
-      <SheetContent className="w-[92vw] max-w-[1600px] overflow-y-auto p-6">
+      <SheetContent className="w-[900px] max-w-[1600px] overflow-y-auto p-6">
         <SheetHeader className="p-0">
           <SheetTitle className="flex items-center gap-2">
             {title}
