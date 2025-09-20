@@ -92,12 +92,19 @@ export const SignupProfessionalInfoSchema = z.object({
   numeroColegiado: z.string().min(1, "El número de colegiado es obligatorio"),
 })
 
+export const SignupFilesFormSchema = z.object({
+  pdf_dpi: z.instanceof(File),
+  pdf_contrato: z.instanceof(File),
+  pdf_certificado_profesional: z.instanceof(File),
+})
+
 export const SignupAllSchema = z.object({
   ...SignupPreFillSchema.shape,
   ...SignupCompleteSchema.shape,
   ...SignupDemographicSchema.shape,
   ...SignupInstitutionSchema.shape,
   ...SignupProfessionalInfoSchema.shape,
+  ...SignupFilesFormSchema.shape,
 })
 
 export type SignupAllValues = z.infer<typeof SignupAllSchema>

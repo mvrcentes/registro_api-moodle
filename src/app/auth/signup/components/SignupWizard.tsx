@@ -9,6 +9,7 @@ import SignupPreFillForm from "./forms/SignupPreFillForm"
 import SignupCompleteForm from "./forms/SignupCompleteForm"
 import SignupDemographicsForm from "./forms/SignupDemographicsForm"
 import SignupInstitutionForm from "./forms/SignupInstitutionForm"
+import SignupFilesForm from "./forms/6_SignupFilesForm"
 import { z } from "zod"
 import {
   SignupPreFillSchema,
@@ -19,7 +20,6 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import SignupProfessionalInfoform from "./forms/SignupProfessionalInfoform"
 import { prefill, signup } from "@/features/auth/api/auth.client"
 import { toast } from "sonner"
-import { en } from "zod/v4/locales"
 import { mapColegioApiToValue } from "@/lib/utils"
 
 // remove
@@ -29,6 +29,7 @@ const steps = [
   { label: "Perfil" },
   { label: "Institución" },
   { label: "Profesional" },
+  { label: "Archivos" },
 ] satisfies StepConfig[]
 
 export default function SignupWizard() {
@@ -36,6 +37,7 @@ export default function SignupWizard() {
   const [step2Valid, setStep2Valid] = useState(false)
   const [step3Valid, setStep3Valid] = useState(false)
   const [step4Valid, setStep4Valid] = useState(false)
+  const [step5Valid, setStep5Valid] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isPrefilling, setIsPrefilling] = useState(false)
   const [isPrefilled, setIsPrefilled] = useState(false)
@@ -60,6 +62,10 @@ export default function SignupWizard() {
     // paso 4 - Información Profesional
     colegio?: boolean
     numeroColegiado?: boolean
+    // paso 5 - Archivos
+    pdf_dpi?: File
+    pdf_contrato?: File
+    pdf_certificado_profesional?: File
   }>({})
 
   const {
@@ -70,7 +76,7 @@ export default function SignupWizard() {
     isDisabledStep,
     isLastStep,
     isOptionalStep,
-  } = useStepper({ initialStep: 0, steps })
+  } = useStepper({ initialStep: 5, steps })
 
   const methods = useForm<z.input<typeof SignupAllSchema>>({
     resolver: zodResolver(SignupAllSchema),
@@ -105,6 +111,10 @@ export default function SignupWizard() {
       // Paso 4 (colegiado)
       colegio: "",
       numeroColegiado: "",
+      // Paso 5 (archivos)
+      pdf_dpi: undefined,
+      pdf_contrato: undefined,
+      pdf_certificado_profesional: undefined,
     },
   })
 
@@ -152,117 +162,126 @@ export default function SignupWizard() {
     return age >= 0 ? age : undefined
   }
 
-  const handlePrefill = async () => {
-    const dpi = methods.getValues("dpi")
-    if (!dpi) return
+  // const handlePrefill = async () => {
+  //   const dpi = methods.getValues("dpi")
+  //   if (!dpi) return
 
+  //   setIsPrefilling(true)
+  //   try {
+  //     const result = await prefill({ dpi })
+
+  //     if (result.success && result.data) {
+  //       // Verificar si hay datos reales
+  //       const userData = result.data
+  //       const hasData = Object.values(userData).some(
+  //         (value) =>
+  //           value &&
+  //           value !== "" &&
+  //           value !== userData.dpi &&
+  //           value !== "Guatemala"
+  //       )
+
+  //       // Calcular edad si hay fecha de nacimiento
+  //       const edad = calculateAge(userData.fechaNacimiento || "")
+
+  //       // Prellenar los datos del formulario
+  //       methods.setValue("primerNombre", userData.primerNombre || "")
+  //       methods.setValue("segundoNombre", userData.segundoNombre || "")
+  //       methods.setValue("primerApellido", userData.primerApellido || "")
+  //       methods.setValue("segundoApellido", userData.segundoApellido || "")
+  //       methods.setValue("email", userData.email || "")
+  //       methods.setValue("confirm_email", userData.email || "") // Confirmar email igual al email
+  //       methods.setValue("pais", userData.pais || "")
+  //       methods.setValue("ciudad", userData.municipio || "")
+
+  //       // Demografía
+  //       methods.setValue("cui", userData.dpi) // CUI es el mismo DPI
+  //       methods.setValue("sexo", userData.sexo || "")
+  //       if (edad !== undefined) {
+  //         methods.setValue("edad", edad)
+  //       }
+
+  //       // Primero establecer el departamento
+  //       if (userData.departamento) {
+  //         methods.setValue("departamento_residencia", userData.departamento)
+
+  //         // Esperar un tick para que el formulario procese el departamento
+  //         // y luego establecer el municipio
+  //         setTimeout(() => {
+  //           if (userData.municipio) {
+  //             methods.setValue("municipio_residencia", userData.municipio)
+  //           }
+  //         }, 100)
+  //       }
+
+  //       methods.setValue("nit", userData.nit || "")
+  //       methods.setValue("telefono", userData.telefono || "")
+
+  //       // Paso 4 - Información Institucional
+  //       methods.setValue("entidad", userData.entidad || "")
+  //       methods.setValue("dependencia", userData.dependencia || "")
+  //       methods.setValue("renglon", userData.renglon || "")
+
+  //       // Paso 5 - Información Profesional
+  //       const mappedColegio = mapColegioApiToValue(userData.colegio)
+  //       methods.setValue("colegio", mappedColegio ?? "NO APLICA")
+  //       methods.setValue("numeroColegiado", userData.numeroColegiado || "")
+
+  //       // Crear objeto con información de qué campos fueron prellenados
+  //       // Solo marcar como readonly los campos que realmente tienen datos
+  //       const fieldsInfo = {
+  //         primerNombre: !!userData.primerNombre,
+  //         segundoNombre: !!userData.segundoNombre,
+  //         primerApellido: !!userData.primerApellido,
+  //         segundoApellido: !!userData.segundoApellido,
+  //         email: !!userData.email,
+  //         confirm_email: !!userData.email, // Confirmación de email también readonly si hay email
+  //         pais: !!userData.pais,
+  //         ciudad: !!userData.municipio,
+  //         cui: true, // CUI siempre se prellena con el DPI
+  //         edad: edad !== undefined,
+  //         sexo: !!userData.sexo,
+  //         departamento_residencia: false, // Siempre editable
+  //         municipio_residencia: false, // Siempre editable
+  //         nit: !!userData.nit,
+  //         telefono: false, // Teléfono siempre editable
+
+  //         // paso 5 - Información Institucional
+  //         colegio: !!userData.colegio,
+  //         numeroColegiado: !!userData.numeroColegiado,
+  //       }
+
+  //       setPrefilledFields(fieldsInfo)
+  //       setIsPrefilled(hasData) // Solo marcar como prellenado si hay datos reales
+
+  //       if (hasData) {
+  //         toast.success("Información prellenada exitosamente")
+  //       } else {
+  //         toast.info("DPI consultado - complete todos los campos manualmente")
+  //       }
+  //       nextStep()
+  //     } else {
+  //       console.error("Error en la respuesta:", result.error)
+  //       toast.error(result.error?.message || "Error al prellenar información")
+  //       // Avanzar al siguiente paso incluso si hay error en la consulta
+  //       nextStep()
+  //     }
+  //   } catch (error) {
+  //     console.error("Error en handlePrefill:", error)
+  //     toast.error("Error al consultar DPI")
+  //     // Avanzar al siguiente paso incluso si hay error
+  //     nextStep()
+  //   } finally {
+  //     setIsPrefilling(false)
+  //   }
+  // }
+
+  const handlePrefill = async () => {
     setIsPrefilling(true)
     try {
-      const result = await prefill({ dpi })
-
-      if (result.success && result.data) {
-        // Verificar si hay datos reales
-        const userData = result.data
-        const hasData = Object.values(userData).some(
-          (value) =>
-            value &&
-            value !== "" &&
-            value !== userData.dpi &&
-            value !== "Guatemala"
-        )
-
-        // Calcular edad si hay fecha de nacimiento
-        const edad = calculateAge(userData.fechaNacimiento || "")
-
-        // Prellenar los datos del formulario
-        methods.setValue("primerNombre", userData.primerNombre || "")
-        methods.setValue("segundoNombre", userData.segundoNombre || "")
-        methods.setValue("primerApellido", userData.primerApellido || "")
-        methods.setValue("segundoApellido", userData.segundoApellido || "")
-        methods.setValue("email", userData.email || "")
-        methods.setValue("confirm_email", userData.email || "") // Confirmar email igual al email
-        methods.setValue("pais", userData.pais || "")
-        methods.setValue(
-          "ciudad",
-          userData.municipio || ""
-        )
-
-        // Demografía
-        methods.setValue("cui", userData.dpi) // CUI es el mismo DPI
-        methods.setValue("sexo", userData.sexo || "")
-        if (edad !== undefined) {
-          methods.setValue("edad", edad)
-        }
-
-        // Primero establecer el departamento
-        if (userData.departamento) {
-          methods.setValue("departamento_residencia", userData.departamento)
-
-          // Esperar un tick para que el formulario procese el departamento
-          // y luego establecer el municipio
-          setTimeout(() => {
-            if (userData.municipio) {
-              methods.setValue("municipio_residencia", userData.municipio)
-            }
-          }, 100)
-        }
-
-        methods.setValue("nit", userData.nit || "")
-        methods.setValue("telefono", userData.telefono || "")
-
-        // Paso 4 - Información Institucional
-        methods.setValue("entidad", userData.entidad || "")
-        methods.setValue("dependencia", userData.dependencia || "")
-        methods.setValue("renglon", userData.renglon || "")
-
-        // Paso 5 - Información Profesional
-        const mappedColegio = mapColegioApiToValue(userData.colegio)
-        methods.setValue("colegio", mappedColegio ?? "NO APLICA")
-        methods.setValue("numeroColegiado", userData.numeroColegiado || "")
-
-        // Crear objeto con información de qué campos fueron prellenados
-        // Solo marcar como readonly los campos que realmente tienen datos
-        const fieldsInfo = {
-          primerNombre: !!userData.primerNombre,
-          segundoNombre: !!userData.segundoNombre,
-          primerApellido: !!userData.primerApellido,
-          segundoApellido: !!userData.segundoApellido,
-          email: !!userData.email,
-          confirm_email: !!userData.email, // Confirmación de email también readonly si hay email
-          pais: !!userData.pais,
-          ciudad: !!userData.municipio,
-          cui: true, // CUI siempre se prellena con el DPI
-          edad: edad !== undefined,
-          sexo: !!userData.sexo,
-          departamento_residencia: false, // Siempre editable
-          municipio_residencia: false, // Siempre editable
-          nit: !!userData.nit,
-          telefono: false, // Teléfono siempre editable
-
-          // paso 5 - Información Institucional
-          colegio: !!userData.colegio,
-          numeroColegiado: !!userData.numeroColegiado,
-        }
-
-        setPrefilledFields(fieldsInfo)
-        setIsPrefilled(hasData) // Solo marcar como prellenado si hay datos reales
-
-        if (hasData) {
-          toast.success("Información prellenada exitosamente")
-        } else {
-          toast.info("DPI consultado - complete todos los campos manualmente")
-        }
-        nextStep()
-      } else {
-        console.error("Error en la respuesta:", result.error)
-        toast.error(result.error?.message || "Error al prellenar información")
-        // Avanzar al siguiente paso incluso si hay error en la consulta
-        nextStep()
-      }
-    } catch (error) {
-      console.error("Error en handlePrefill:", error)
-      toast.error("Error al consultar DPI")
-      // Avanzar al siguiente paso incluso si hay error
+      // MOCK: sin llamada a API, avanzamos al siguiente paso
+      const dpi = methods.getValues("dpi")
+      console.log("[MOCK] Prefill con DPI:", dpi)
       nextStep()
     } finally {
       setIsPrefilling(false)
@@ -272,28 +291,64 @@ export default function SignupWizard() {
   const handleSubmit = async (values: z.infer<typeof SignupAllSchema>) => {
     setIsSubmitting(true)
     try {
-      const result = await signup(values)
-
-      if (result.success) {
-        toast.success("Usuario registrado exitosamente")
-        resetSteps()
-        setIsPrefilled(false)
-        setPrefilledFields({})
-        methods.reset()
-      } else {
-        toast.error(result.error?.message || "Error al registrar usuario")
-      }
+      // MOCK: sin llamada a API. Imprimimos valores para verificar archivos.
+      const vals = values
+      console.log("[MOCK] SUBMIT values:", vals)
+      console.log("[MOCK] Archivos:", {
+        pdf_dpi: vals.pdf_dpi ? (vals.pdf_dpi as File).name : null,
+        pdf_contrato: vals.pdf_contrato
+          ? (vals.pdf_contrato as File).name
+          : null,
+        pdf_certificado_profesional: vals.pdf_certificado_profesional
+          ? (vals.pdf_certificado_profesional as File).name
+          : null,
+      })
+      toast.success("Formulario listo (mock). Revisa la consola.")
+      resetSteps()
+      setIsPrefilled(false)
+      setPrefilledFields({})
+      methods.reset()
     } catch (error) {
-      toast.error("Error al registrar usuario")
+      console.error(error)
+      toast.error("Error inesperado (mock)")
     } finally {
       setIsSubmitting(false)
     }
+    // setIsSubmitting(true)
+    // try {
+    //   const result = await signup(values)
+
+    //   if (result.success) {
+    //     toast.success("Usuario registrado exitosamente")
+    //     resetSteps()
+    //     setIsPrefilled(false)
+    //     setPrefilledFields({})
+    //     methods.reset()
+    //   } else {
+    //     toast.error(result.error?.message || "Error al registrar usuario")
+    //   }
+    // } catch (error) {
+    //   toast.error("Error al registrar usuario")
+    // } finally {
+    //   setIsSubmitting(false)
+    // }
   }
 
   return (
     <>
       <FormProvider {...methods}>
-        <form onSubmit={methods.handleSubmit(handleSubmit)}>
+        {/* <form onSubmit={methods.handleSubmit(handleSubmit)}> */}
+        <form
+          id="signup-form"
+          onSubmit={methods.handleSubmit(handleSubmit, (errors) => {
+            // Se ejecuta SI la validación (SignupAllSchema) falla
+            const vals = methods.getValues()
+            console.log(
+              "[MOCK] INVALID submit — printing current values anyway:",
+              vals
+            )
+            console.log("[MOCK] Zod errors:", errors)
+          })}>
           <Steps activeStep={activeStep}>
             <Step index={0} label="DPI">
               <SignupPreFillForm isPrefilled={isPrefilled} />
@@ -323,6 +378,9 @@ export default function SignupWizard() {
                 onValidityChange={setStep4Valid}
                 prefilledFields={prefilledFields}
               />
+            </Step>
+            <Step index={5} label="Archivos">
+              <SignupFilesForm onValidityChange={setStep5Valid} />
             </Step>
           </Steps>
         </form>
@@ -397,8 +455,12 @@ export default function SignupWizard() {
               </Button>
             )}
 
-            {activeStep === 4 && (
-              <Button type="submit" disabled={!step4Valid || isSubmitting}>
+            {activeStep === 5 && (
+              // <Button type="submit" disabled={!step5Valid || isSubmitting}>
+              <Button
+                type="submit"
+                form="signup-form"
+                disabled={!step5Valid || isSubmitting}>
                 {isSubmitting ? "Registrando..." : "Registrar Usuario"}
               </Button>
             )}

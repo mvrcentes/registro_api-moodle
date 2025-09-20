@@ -1,4 +1,4 @@
-import React from "react"
+import React, { Dispatch, SetStateAction } from "react"
 import {
   FormControl,
   FormDescription,
@@ -15,6 +15,8 @@ import { SelectItemField } from "./SelectItemField"
 import { Select } from "@radix-ui/react-select"
 import { cn } from "@/lib/utils"
 import { SelectContent, SelectTrigger, SelectValue } from "../ui/select"
+import { FileState, MultiFileDropzone } from "./dropzone/FileDropZone"
+import { DropzoneOptions } from "react-dropzone"
 
 interface CustomFormFieldProps {
   className?: string
@@ -22,7 +24,6 @@ interface CustomFormFieldProps {
   control?: Control<any>
   fieldType: FormFieldType
   fieldTypeType?: string
-  maxFiles?: number
   acceptedFiles?: Object
   name: string
   label?: string
@@ -34,6 +35,11 @@ interface CustomFormFieldProps {
   fieldValues?: ComboXSelect[]
   onScrollBottom?: () => void
   onSearchChange?: (value: string) => void
+
+  // DropZone Fields
+  maxFiles?: number
+  setFileStates?: Dispatch<SetStateAction<FileState[]>>
+  fileStates?: FileState[]
 
   readonly?: boolean
 }
@@ -56,6 +62,12 @@ const RenderField = ({
     readonly,
     onScrollBottom,
     onSearchChange,
+
+    // DropZone Props
+    maxFiles,
+    setFileStates,
+    fileStates,
+    acceptedFiles,
 
     children,
   } = props
@@ -108,18 +120,26 @@ const RenderField = ({
             {...field}
             placeholder={placeholder}
             type="text"
-            value={field.value || ''}
+            value={field.value || ""}
             className={classNames("shad-input", className)}
             readOnly={readonly}
             onChange={(e) => {
-              const value = e.target.value.replace(/[^0-9]/g, '');
+              const value = e.target.value.replace(/[^0-9]/g, "")
               // Convertir a número si hay valor, o undefined si está vacío
-              const numericValue = value === '' ? undefined : parseInt(value, 10);
-              field.onChange(numericValue);
+              const numericValue =
+                value === "" ? undefined : parseInt(value, 10)
+              field.onChange(numericValue)
             }}
             onKeyPress={(e) => {
-              if (!/[0-9]/.test(e.key) && e.key !== 'Backspace' && e.key !== 'Delete' && e.key !== 'Tab' && e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') {
-                e.preventDefault();
+              if (
+                !/[0-9]/.test(e.key) &&
+                e.key !== "Backspace" &&
+                e.key !== "Delete" &&
+                e.key !== "Tab" &&
+                e.key !== "ArrowLeft" &&
+                e.key !== "ArrowRight"
+              ) {
+                e.preventDefault()
               }
             }}
           />
@@ -161,6 +181,38 @@ const RenderField = ({
           onScrollBottom={props.onScrollBottom}
           readonly={readonly}
         />
+      )
+    case FormFieldType.FILE:
+      return (
+        <div className="flex flex-col max-w-full items-stretch">
+          <MultiFileDropzone
+            value={fileStates}
+            dropzoneOptions={
+              {
+                maxFiles: maxFiles,
+                maxSize: 1024 * 1024 * 1, // 1 MB
+              } as DropzoneOptions
+            }
+            onChange={(fs) => {
+              setFileStates?.(fs)
+            }}
+            onFilesAdded={async (addedFiles) => {
+              setFileStates?.([...(fileStates ?? []), ...addedFiles])
+
+              // <<<< GUARDA EL ARCHIVO EN EL CAMPO CORRECTO >>>>
+              const first = addedFiles[0]?.file
+              if (first) {
+                form.setValue(field.name, first, {
+                  shouldDirty: true,
+                  shouldTouch: true,
+                  shouldValidate: true,
+                })
+                console.log("Field", field.name, "got file:", first.name)
+              }
+            }}
+            accept={acceptedFiles}
+          />
+        </div>
       )
     default:
       break
