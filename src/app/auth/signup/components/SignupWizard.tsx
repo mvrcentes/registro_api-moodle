@@ -537,7 +537,7 @@ export default function SignupWizard() {
 
   return (
     <>
-      <div className="flex h-full w-full max-h-[calc(100vh-8rem)] flex-col">
+      <div className="flex h-full w-full max-h-[calc(100vh-16rem)] flex-col">
         <FormProvider {...methods}>
           <form
             id="signup-form"
@@ -549,7 +549,7 @@ export default function SignupWizard() {
             })}>
             <Steps
               activeStep={activeStep}
-              className="flex h-full max-h-[calc(100vh-18rem)] min-h-[520px]"
+              className="flex h-full max-h-[calc(100vh-26rem)] min-h-[360px]"
               contentClassName="pr-2 overflow-y-auto"
             >
               <Step index={0} label="DPI">
