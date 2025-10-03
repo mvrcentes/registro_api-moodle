@@ -9,6 +9,7 @@ type StepsProps = {
   activeStep: number
   children: React.ReactNode
   className?: string
+  contentClassName?: string
 }
 
 type StepProps = StepConfig & {
@@ -18,18 +19,19 @@ type StepProps = StepConfig & {
 
 const StepperContext = React.createContext<{ activeStep: number } | null>(null)
 
-export function Steps({ activeStep, children, className }: StepsProps) {
-  // Normalizar hijos
-  const items = React.Children.toArray(
-    children
-  ) as React.ReactElement<StepProps>[]
+export function Steps({ activeStep, children, className, contentClassName }: StepsProps) {
+  const items = React.Children.toArray(children) as React.ReactElement<StepProps>[]
   const total = items.length
 
   return (
     <StepperContext.Provider value={{ activeStep }}>
-      <div className={cn("rounded-lg border p-4 md:p-6", className)}>
-        {/* Header */}
-        <ol className="mb-4 flex items-center gap-2">
+      <div
+        className={cn(
+          "rounded-lg border p-4 md:p-6 flex w-full flex-col gap-4",
+          className
+        )}
+      >
+        <ol className="flex items-center gap-2 shrink-0">
           {items.map((child, i) => {
             const { label, optional } = child.props
             const status =
@@ -52,12 +54,11 @@ export function Steps({ activeStep, children, className }: StepsProps) {
                     )}
                   </div>
                 </li>
-                {/* connector */}
                 {i < total - 1 && (
                   <div
                     aria-hidden
                     className={cn(
-                      "mx-2 hidden h-0.5 flex-1 md:block rounded-full",
+                      "mx-2 hidden h-0.5 flex-1 rounded-full md:block",
                       status === "complete"
                         ? "bg-[#3296cf]"
                         : "bg-gray-200"
@@ -69,8 +70,7 @@ export function Steps({ activeStep, children, className }: StepsProps) {
           })}
         </ol>
 
-        {/* Content: solo el activo o “completado” */}
-        <div>
+        <div className={cn("flex-1 overflow-y-auto", contentClassName)}>
           {activeStep < total ? (
             items.map((child, i) =>
               i === activeStep ? (
@@ -119,7 +119,6 @@ function StepBadge({
       </span>
     )
   }
-  // upcoming
   return (
     <span
       className={cn(base, "border-gray-300 bg-white text-gray-500")}>
@@ -128,13 +127,8 @@ function StepBadge({
   )
 }
 
-/**
- * Componente marcador. No dibuja header;
- * solo sirve para pasar props y renderizar su contenido cuando está activo.
- */
 export function Step(_props: StepProps) {
   const ctx = React.useContext(StepperContext)
   if (!ctx) return null
-  // El contenido activo lo renderiza <Steps/>, este componente es un “carrier”.
   return <>{_props.children}</>
 }

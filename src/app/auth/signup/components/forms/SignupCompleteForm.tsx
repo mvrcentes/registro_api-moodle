@@ -15,6 +15,9 @@ type Props = {
     primerApellido?: boolean
     segundoApellido?: boolean
     email?: boolean
+    confirm_email?: boolean
+    correoInstitucional?: boolean
+    correoPersonal?: boolean
     pais?: boolean
     ciudad?: boolean
   }
@@ -61,6 +64,7 @@ export default function SignupCompleteForm({
             placeholder="Ingrese su correo"
             name="email"
             label="Email"
+            readonly={prefilledFields.email || false}
           />
 
           <CustomFormField
@@ -69,6 +73,25 @@ export default function SignupCompleteForm({
             placeholder="Confirme su correo"
             name="confirm_email"
             label="Confirmación de correo"
+            readonly={prefilledFields.confirm_email || false}
+          />
+
+          <CustomFormField
+            control={form.control}
+            fieldType={FormFieldType.INPUT}
+            placeholder="Correo institucional"
+            name="correoInstitucional"
+            label="Correo institucional"
+            readonly={prefilledFields.correoInstitucional || false}
+          />
+
+          <CustomFormField
+            control={form.control}
+            fieldType={FormFieldType.INPUT}
+            placeholder="Correo personal"
+            name="correoPersonal"
+            label="Correo personal"
+            readonly={prefilledFields.correoPersonal || false}
           />
 
           <CustomFormField

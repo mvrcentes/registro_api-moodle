@@ -17,8 +17,12 @@ type Props = {
   onValidityChange?: (valid: boolean) => void
   prefilledFields?: {
     entidad?: boolean
+    institucion?: boolean
     dependencia?: boolean
     renglon?: boolean
+    profesion?: boolean
+    puesto?: boolean
+    sector?: boolean
   }
 }
 
@@ -48,7 +52,7 @@ const SignupInstitutionForm = ({
 
   return (
     <Form {...form}>
-      <div className="grid grid-cols-2 gap-4 space-y-4">
+      <div className="grid grid-cols-2 gap-4">
         <CustomFormField
           name="entidad"
           fieldType={FormFieldType.SELECT_ITEM}
@@ -66,6 +70,7 @@ const SignupInstitutionForm = ({
           label="Institución"
           placeholder="Seleccione la institución a la que pertenece"
           fieldValues={INSTITUCION_OPTIONS}
+          readonly={prefilledFields?.institucion || false}
         />
 
         {selectedSector === "CONTRALORÍA GENERAL DE CUENTAS" && (
@@ -87,6 +92,33 @@ const SignupInstitutionForm = ({
           placeholder="Seleccione el renglón presupuestario"
           fieldValues={RENGLON_OPTIONS}
           readonly={prefilledFields?.renglon || false}
+        />
+
+        <CustomFormField
+          name="profesion"
+          fieldType={FormFieldType.INPUT}
+          form={form}
+          label="Profesión"
+          placeholder="Profesión del usuario"
+          readonly={prefilledFields?.profesion || false}
+        />
+
+        <CustomFormField
+          name="puesto"
+          fieldType={FormFieldType.INPUT}
+          form={form}
+          label="Puesto"
+          placeholder="Puesto laboral"
+          readonly={prefilledFields?.puesto || false}
+        />
+
+        <CustomFormField
+          name="sector"
+          fieldType={FormFieldType.INPUT}
+          form={form}
+          label="Sector"
+          placeholder="Sector (Público/Privado)"
+          readonly={prefilledFields?.sector || false}
         />
       </div>
     </Form>

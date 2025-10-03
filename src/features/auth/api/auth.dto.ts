@@ -16,6 +16,8 @@ export interface UserData {
   primerApellido: string
   segundoApellido?: string
   email: string
+  correoInstitucional?: string
+  correoPersonal?: string
   fechaNacimiento?: string
   sexo?: string
   pais?: string
@@ -26,6 +28,9 @@ export interface UserData {
   entidad?: string
   dependencia?: string
   renglon?: string
+  profesion?: string
+  puesto?: string
+  sector?: string
   colegio?: string
   numeroColegiado?: string
   message?: string

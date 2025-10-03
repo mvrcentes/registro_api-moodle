@@ -45,6 +45,16 @@ export const SignupCompleteSchema = z
 
     pais: z.string().min(2, "El país es obligatorio"),
     ciudad: z.string().min(2, "La ciudad es obligatoria"),
+    correoInstitucional: z
+      .union([
+        z.literal(""),
+        z.string().email("Correo institucional no válido"),
+      ]),
+    correoPersonal: z
+      .union([
+        z.literal(""),
+        z.string().email("Correo personal no válido"),
+      ]),
   })
   // Igualdad de emails
   .refine((data) => data.email === data.confirm_email, {
@@ -83,6 +93,11 @@ export const SignupInstitutionSchema = z.object({
   institucion: z.string().min(2, "La institución es obligatoria"),
   dependencia: z.string().optional(),
   renglon: z.string().min(2, "El renglón presupuestario es obligatorio"),
+  profesion: z
+    .union([z.literal(""), z.string().min(2, "Debe contener al menos 2 caracteres")]),
+  puesto: z
+    .union([z.literal(""), z.string().min(2, "Debe contener al menos 2 caracteres")]),
+  sector: z.union([z.literal(""), z.string().min(2, "Debe contener al menos 2 caracteres")]),
 })
 
 export const SignupProfessionalInfoSchema = z.object({

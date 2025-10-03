@@ -21,6 +21,11 @@ import SignupProfessionalInfoform from "./forms/SignupProfessionalInfoform"
 import { prefill, signup } from "@/features/auth/api/auth.client"
 import { toast } from "sonner"
 import { mapColegioApiToValue } from "@/lib/utils"
+import {
+  ENTIDAD_OPTIONS,
+  INSTITUCION_OPTIONS,
+  RENGLON_OPTIONS,
+} from "./forms/types"
 
 // remove
 const steps = [
@@ -32,6 +37,55 @@ const steps = [
   { label: "Archivos" },
 ] satisfies StepConfig[]
 
+const normalizeText = (input?: string) =>
+  (input ?? "")
+    .normalize("NFD")
+    .replace(/\p{Diacritic}+/gu, "")
+    .replace(/[^a-zA-Z0-9 ]+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim()
+    .toUpperCase()
+
+const findOptionValue = <T extends { value: string; label: string }>(
+  raw: string | undefined,
+  options: T[]
+): T["value"] | undefined => {
+  const normalized = normalizeText(raw)
+  if (!normalized) return undefined
+
+  const normalizedOptions = options.map((option) => ({
+    value: option.value,
+    normalizedValue: normalizeText(option.value),
+    normalizedLabel: normalizeText(option.label),
+  }))
+
+  const exact = normalizedOptions.find(
+    (option) =>
+      option.normalizedValue === normalized ||
+      option.normalizedLabel === normalized
+  )
+  if (exact) return exact.value
+
+  const contains = normalizedOptions.find((option) => {
+    return (
+      option.normalizedValue.includes(normalized) ||
+      option.normalizedLabel.includes(normalized) ||
+      normalized.includes(option.normalizedValue) ||
+      normalized.includes(option.normalizedLabel)
+    )
+  })
+  if (contains) return contains.value
+
+  const endsWith = normalizedOptions.find((option) => {
+    return (
+      option.normalizedValue.endsWith(` ${normalized}`) ||
+      option.normalizedLabel.endsWith(` ${normalized}`)
+    )
+  })
+
+  return endsWith?.value
+}
+
 export default function SignupWizard() {
   const [step1Valid, setStep1Valid] = useState(false)
   const [step2Valid, setStep2Valid] = useState(false)
@@ -42,9 +96,14 @@ export default function SignupWizard() {
   const [isPrefilling, setIsPrefilling] = useState(false)
   const [isPrefilled, setIsPrefilled] = useState(false)
   const [prefilledFields, setPrefilledFields] = useState<{
-    nombres?: boolean
-    apellidos?: boolean
+    primerNombre?: boolean
+    segundoNombre?: boolean
+    primerApellido?: boolean
+    segundoApellido?: boolean
     email?: boolean
+    confirm_email?: boolean
+    correoInstitucional?: boolean
+    correoPersonal?: boolean
     pais?: boolean
     ciudad?: boolean
     cui?: boolean
@@ -53,19 +112,16 @@ export default function SignupWizard() {
     departamento_residencia?: boolean
     municipio_residencia?: boolean
     nit?: boolean
-    telfono?: boolean
-    // paso 3 - Información Institucional
+    telefono?: boolean
     entidad?: boolean
     institucion?: boolean
     dependencia?: boolean
     renglon?: boolean
-    // paso 4 - Información Profesional
+    profesion?: boolean
+    puesto?: boolean
+    sector?: boolean
     colegio?: boolean
     numeroColegiado?: boolean
-    // paso 5 - Archivos
-    pdf_dpi?: File
-    pdf_contrato?: File
-    pdf_certificado_profesional?: File
   }>({})
 
   const {
@@ -76,7 +132,7 @@ export default function SignupWizard() {
     isDisabledStep,
     isLastStep,
     isOptionalStep,
-  } = useStepper({ initialStep: 5, steps })
+  } = useStepper({ initialStep: 0, steps })
 
   const methods = useForm<z.input<typeof SignupAllSchema>>({
     resolver: zodResolver(SignupAllSchema),
@@ -95,6 +151,8 @@ export default function SignupWizard() {
       confirm_password: "",
       pais: "",
       ciudad: "",
+      correoInstitucional: "",
+      correoPersonal: "",
       // Paso 2 (demografía)
       cui: "",
       nit: "",
@@ -108,6 +166,9 @@ export default function SignupWizard() {
       institucion: "",
       dependencia: "",
       renglon: "",
+      profesion: "",
+      puesto: "",
+      sector: "",
       // Paso 4 (colegiado)
       colegio: "",
       numeroColegiado: "",
@@ -277,11 +338,151 @@ export default function SignupWizard() {
   // }
 
   const handlePrefill = async () => {
+    const dpi = methods.getValues("dpi")
+    if (!dpi) return
+
     setIsPrefilling(true)
     try {
-      // MOCK: sin llamada a API, avanzamos al siguiente paso
-      const dpi = methods.getValues("dpi")
-      console.log("[MOCK] Prefill con DPI:", dpi)
+      const result = await prefill({ dpi })
+
+      if (result.success && result.data) {
+        const userData = result.data
+        const hasData = Object.entries(userData).some(([key, value]) => {
+          if (key === "dpi" || key === "message") return false
+          if (value === null || value === undefined) return false
+          return String(value).trim() !== ""
+        })
+
+        const edad = calculateAge(userData.fechaNacimiento || "")
+
+        methods.setValue("primerNombre", userData.primerNombre || "")
+        methods.setValue("segundoNombre", userData.segundoNombre || "")
+        methods.setValue("primerApellido", userData.primerApellido || "")
+        methods.setValue("segundoApellido", userData.segundoApellido || "")
+        methods.setValue(
+          "email",
+          userData.correoPersonal ||
+            userData.email ||
+            userData.correo ||
+            ""
+        )
+        methods.setValue(
+          "confirm_email",
+          userData.correoPersonal ||
+            userData.email ||
+            userData.correo ||
+            ""
+        )
+        methods.setValue("pais", userData.pais || "")
+        methods.setValue("ciudad", userData.municipio || "")
+        methods.setValue("correoInstitucional", userData.correoInstitucional || userData.correo_institucional || "")
+        methods.setValue("correoPersonal", userData.correoPersonal || userData.correo_personal || userData.correo || userData.email || "")
+
+        methods.setValue("cui", userData.dpi || dpi)
+        methods.setValue("sexo", userData.sexo || "")
+        if (edad !== undefined) {
+          methods.setValue("edad", edad)
+        } else {
+          methods.setValue("edad", undefined)
+        }
+
+        methods.setValue("departamento_residencia", userData.departamento || "")
+        if (userData.municipio) {
+          setTimeout(() => {
+            methods.setValue("municipio_residencia", userData.municipio || "")
+          }, 100)
+        } else {
+          methods.setValue("municipio_residencia", "")
+        }
+
+        methods.setValue("nit", userData.nit || "")
+        methods.setValue("telefono", userData.telefono || "")
+
+        const entidadValue = findOptionValue(
+          userData.entidad || userData.entity,
+          ENTIDAD_OPTIONS
+        )
+        const institucionValue = findOptionValue(
+          userData.institucion || userData.entidad || userData.entity,
+          INSTITUCION_OPTIONS
+        )
+        const renglonValue = findOptionValue(
+          userData.renglon,
+          RENGLON_OPTIONS
+        )
+
+        methods.setValue(
+          "entidad",
+          entidadValue ?? (userData.entidad || userData.entity || "")
+        )
+        methods.setValue(
+          "institucion",
+          institucionValue ??
+            (userData.institucion || userData.entidad || userData.entity || "")
+        )
+        methods.setValue("dependencia", userData.dependencia || "")
+        methods.setValue(
+          "renglon",
+          renglonValue ?? (userData.renglon || "")
+        )
+        methods.setValue("profesion", userData.profesion || userData.profession || "")
+        methods.setValue("puesto", userData.puesto || userData.position || "")
+        methods.setValue("sector", userData.sector || userData.sector_laboral || "")
+
+        const mappedColegio = mapColegioApiToValue(userData.colegio)
+        methods.setValue("colegio", mappedColegio ?? userData.colegio ?? "NO APLICA")
+        methods.setValue("numeroColegiado", userData.numeroColegiado || "")
+
+        setPrefilledFields({
+          primerNombre: !!userData.primerNombre,
+          segundoNombre: !!userData.segundoNombre,
+          primerApellido: !!userData.primerApellido,
+          segundoApellido: !!userData.segundoApellido,
+          email: !!(userData.correoPersonal || userData.email || userData.correo),
+          confirm_email: !!(userData.correoPersonal || userData.email || userData.correo),
+          correoInstitucional: !!(userData.correoInstitucional || userData.correo_institucional),
+          correoPersonal: !!(userData.correoPersonal || userData.correo_personal || userData.email || userData.correo),
+          pais: !!userData.pais,
+          ciudad: !!userData.municipio,
+          cui: true,
+          edad: edad !== undefined,
+          sexo: !!userData.sexo,
+          departamento_residencia: false,
+          municipio_residencia: false,
+          nit: !!userData.nit,
+          telefono: false,
+          entidad: !!entidadValue,
+          institucion: !!institucionValue,
+          dependencia: !!userData.dependencia,
+          renglon: !!renglonValue,
+          profesion: !!(userData.profesion || userData.profession),
+          puesto: !!(userData.puesto || userData.position),
+          sector: !!(userData.sector || userData.sector_laboral),
+          colegio: !!userData.colegio,
+          numeroColegiado: !!userData.numeroColegiado,
+        })
+
+        setIsPrefilled(hasData)
+
+        if (hasData) {
+          toast.success("Información prellenada exitosamente")
+        } else {
+          toast.info("DPI consultado - complete todos los campos manualmente")
+        }
+        nextStep()
+        return
+      }
+
+      console.error("Error en la respuesta:", result.error)
+      setIsPrefilled(false)
+      setPrefilledFields({})
+      toast.error(result.error?.message || "Error al prellenar información")
+      nextStep()
+    } catch (error) {
+      console.error("Error en handlePrefill:", error)
+      setIsPrefilled(false)
+      setPrefilledFields({})
+      toast.error("Error al consultar DPI")
       nextStep()
     } finally {
       setIsPrefilling(false)
@@ -349,7 +550,11 @@ export default function SignupWizard() {
             )
             console.log("[MOCK] Zod errors:", errors)
           })}>
-          <Steps activeStep={activeStep}>
+          <Steps
+            activeStep={activeStep}
+            className="max-h-[calc(100vh-12rem)]"
+            contentClassName="pr-2"
+          >
             <Step index={0} label="DPI">
               <SignupPreFillForm isPrefilled={isPrefilled} />
             </Step>
@@ -370,7 +575,10 @@ export default function SignupWizard() {
             </Step>
 
             <Step index={3} label="Institución">
-              <SignupInstitutionForm onValidityChange={setStep3Valid} />
+              <SignupInstitutionForm
+                onValidityChange={setStep3Valid}
+                prefilledFields={prefilledFields}
+              />
             </Step>
 
             <Step index={4} label="Profesional">
@@ -455,8 +663,18 @@ export default function SignupWizard() {
               </Button>
             )}
 
+            {activeStep === 4 && (
+              <Button
+                onClick={() => {
+                  if (!step4Valid) return
+                  nextStep()
+                }}
+                disabled={!step4Valid}>
+                Siguiente
+              </Button>
+            )}
+
             {activeStep === 5 && (
-              // <Button type="submit" disabled={!step5Valid || isSubmitting}>
               <Button
                 type="submit"
                 form="signup-form"

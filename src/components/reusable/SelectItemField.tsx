@@ -57,7 +57,7 @@ export const SelectItemField = ({
             onClick={() => !readonly && setOpen(true)}>
             <span className="truncate">
               {field.value
-                ? fieldValues.find((item) => item.value === field.value)?.label
+                ? fieldValues.find((item) => item.value === field.value)?.label ?? field.value
                 : placeholder}
             </span>
             {!readonly && <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />}

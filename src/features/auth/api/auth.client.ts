@@ -229,7 +229,21 @@ export const prefill = async (
             userData.segundo_apellido ||
             userData.secondLastName ||
             "",
-          email: userData.email || userData.correo || "",
+          email:
+            userData.correoPersonal ||
+            userData.email ||
+            userData.correo ||
+            "",
+          correoInstitucional:
+            userData.correoInstitucional ||
+            userData.correo_institucional ||
+            "",
+          correoPersonal:
+            userData.correoPersonal ||
+            userData.correo_personal ||
+            userData.email ||
+            userData.correo ||
+            "",
           fechaNacimiento:
             userData.fechaNacimiento ||
             userData.fecha_nacimiento ||
@@ -242,8 +256,12 @@ export const prefill = async (
           nit: userData.nit || "",
           telefono: userData.telefono || userData.phone || "",
           entidad: userData.entidad || userData.entity || "",
+          institucion: userData.institucion || userData.entidad || userData.entity || "",
           dependencia: userData.dependencia || userData.dependency || "",
           renglon: userData.renglon || userData.budget_line || "",
+          profesion: userData.profesion || userData.profession || "",
+          puesto: userData.puesto || userData.position || "",
+          sector: userData.sector || userData.sector_laboral || "",
           colegio: userData.colegio || userData.college || "",
           numeroColegiado:
             userData.numeroColegiado ||
@@ -272,6 +290,8 @@ export const prefill = async (
           primerApellido: "",
           segundoApellido: "",
           email: "",
+          correoInstitucional: "",
+          correoPersonal: "",
           fechaNacimiento: "",
           sexo: "",
           pais: "Guatemala",
@@ -280,8 +300,12 @@ export const prefill = async (
           nit: "",
           telefono: "",
           entidad: "",
+          institucion: "",
           dependencia: "",
           renglon: "",
+          profesion: "",
+          puesto: "",
+          sector: "",
           colegio: "",
           numeroColegiado: "",
           message: "DPI no encontrado - complete los campos manualmente",
@@ -312,6 +336,8 @@ export const prefill = async (
           primerApellido: "",
           segundoApellido: "",
           email: "",
+          correoInstitucional: "",
+          correoPersonal: "",
           fechaNacimiento: "",
           sexo: "",
           pais: "Guatemala",
@@ -320,8 +346,12 @@ export const prefill = async (
           nit: "",
           telefono: "",
           entidad: "",
+          institucion: "",
           dependencia: "",
           renglon: "",
+          profesion: "",
+          puesto: "",
+          sector: "",
           colegio: "",
           numeroColegiado: "",
           message: "DPI no encontrado - complete los campos manualmente",
@@ -361,6 +391,8 @@ export const signup = async (
         segundoNombre: data.segundoNombre,
         primerApellido: data.primerApellido,
         segundoApellido: data.segundoApellido,
+        correoInstitucional: data.correoInstitucional,
+        correoPersonal: data.correoPersonal,
         nit: data.nit,
         sexo: data.sexo,
         fechaNacimiento: data.fechaNacimiento,
@@ -368,8 +400,12 @@ export const signup = async (
         municipio: data.municipio_residencia,
         telefono: data.telefono,
         entidad: data.entidad,
+        institucion: data.institucion || data.entidad,
         dependencia: data.dependencia,
         renglon: data.renglon,
+        profesion: data.profesion,
+        puesto: data.puesto,
+        sector: data.sector,
         colegio: data.colegio,
         numeroColegiado: data.numeroColegiado,
         pais: data.pais,
