@@ -15,9 +15,16 @@ export interface UserData {
   segundoNombre?: string
   primerApellido: string
   segundoApellido?: string
+  primer_nombre?: string
+  segundo_nombre?: string
+  primer_apellido?: string
+  segundo_apellido?: string
   email: string
+  correo?: string
   correoInstitucional?: string
   correoPersonal?: string
+  correo_institucional?: string
+  correo_personal?: string
   fechaNacimiento?: string
   sexo?: string
   pais?: string
@@ -26,12 +33,19 @@ export interface UserData {
   nit?: string
   telefono?: string
   entidad?: string
+  entity?: string
+  institucion?: string
   dependencia?: string
   renglon?: string
+  budget_line?: string
   profesion?: string
+  profession?: string
   puesto?: string
+  position?: string
   sector?: string
+  sector_laboral?: string
   colegio?: string
   numeroColegiado?: string
+  numero_colegiado?: string
   message?: string
 }
