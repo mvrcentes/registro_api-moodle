@@ -537,64 +537,63 @@ export default function SignupWizard() {
 
   return (
     <>
-      <FormProvider {...methods}>
-        {/* <form onSubmit={methods.handleSubmit(handleSubmit)}> */}
-        <form
-          id="signup-form"
-          onSubmit={methods.handleSubmit(handleSubmit, (errors) => {
-            // Se ejecuta SI la validación (SignupAllSchema) falla
-            const vals = methods.getValues()
-            console.log(
-              "[MOCK] INVALID submit — printing current values anyway:",
-              vals
-            )
-            console.log("[MOCK] Zod errors:", errors)
-          })}>
-          <Steps
-            activeStep={activeStep}
-            className="max-h-[calc(100vh-12rem)]"
-            contentClassName="pr-2"
-          >
-            <Step index={0} label="DPI">
-              <SignupPreFillForm isPrefilled={isPrefilled} />
-            </Step>
+      <div className="flex h-full w-full max-h-[calc(100vh-8rem)] flex-col">
+        <FormProvider {...methods}>
+          <form
+            id="signup-form"
+            className="flex-1"
+            onSubmit={methods.handleSubmit(handleSubmit, (errors) => {
+              const vals = methods.getValues()
+              console.log("[MOCK] INVALID submit — printing current values anyway:", vals)
+              console.log("[MOCK] Zod errors:", errors)
+            })}>
+            <Steps
+              activeStep={activeStep}
+              className="flex h-full max-h-[calc(100vh-18rem)] min-h-[520px]"
+              contentClassName="pr-2 overflow-y-auto"
+            >
+              <Step index={0} label="DPI">
+                <SignupPreFillForm isPrefilled={isPrefilled} />
+              </Step>
 
-            <Step index={1} label="Cuenta">
-              <SignupCompleteForm
-                onValidityChange={setStep1Valid}
-                isPrefilled={isPrefilled}
-                prefilledFields={prefilledFields}
-              />
-            </Step>
+              <Step index={1} label="Cuenta">
+                <SignupCompleteForm
+                  onValidityChange={setStep1Valid}
+                  isPrefilled={isPrefilled}
+                  prefilledFields={prefilledFields}
+                />
+              </Step>
 
-            <Step index={2} label="Perfil">
-              <SignupDemographicsForm
-                onValidityChange={setStep2Valid}
-                prefilledFields={prefilledFields}
-              />
-            </Step>
+              <Step index={2} label="Perfil">
+                <SignupDemographicsForm
+                  onValidityChange={setStep2Valid}
+                  prefilledFields={prefilledFields}
+                />
+              </Step>
 
-            <Step index={3} label="Institución">
-              <SignupInstitutionForm
-                onValidityChange={setStep3Valid}
-                prefilledFields={prefilledFields}
-              />
-            </Step>
+              <Step index={3} label="Institución">
+                <SignupInstitutionForm
+                  onValidityChange={setStep3Valid}
+                  prefilledFields={prefilledFields}
+                />
+              </Step>
 
-            <Step index={4} label="Profesional">
-              <SignupProfessionalInfoform
-                onValidityChange={setStep4Valid}
-                prefilledFields={prefilledFields}
-              />
-            </Step>
-            <Step index={5} label="Archivos">
-              <SignupFilesForm onValidityChange={setStep5Valid} />
-            </Step>
-          </Steps>
-        </form>
-      </FormProvider>
+              <Step index={4} label="Profesional">
+                <SignupProfessionalInfoform
+                  onValidityChange={setStep4Valid}
+                  prefilledFields={prefilledFields}
+                />
+              </Step>
 
-      <div className="mt-4 flex items-center justify-end gap-2">
+              <Step index={5} label="Archivos">
+                <SignupFilesForm onValidityChange={setStep5Valid} />
+              </Step>
+            </Steps>
+          </form>
+        </FormProvider>
+      </div>
+
+      <div className="mt-4 flex flex-shrink-0 items-center justify-end gap-2">
         {/* Estado de "completado" que muestra tu stepper cuando ya se avanzó más allá del último */}
         {activeStep === steps.length ? (
           <>
