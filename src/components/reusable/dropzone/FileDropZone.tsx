@@ -28,7 +28,7 @@ export type FileState = {
 };
 
 type InputProps = {
-  accept?: Object 
+  accept?: import('react-dropzone').Accept
   className?: string;
   value?: FileState[];
   onChange?: (files: FileState[]) => void | Promise<void>;
@@ -124,13 +124,14 @@ const MultiFileDropzone = React.forwardRef<HTMLInputElement, InputProps>(
         const { errors } = fileRejections[0];
         if (errors[0]?.code === 'file-too-large') {
           return ERROR_MESSAGES.fileTooLarge(dropzoneOptions?.maxSize ?? 0);
-        } else if (errors[0]?.code === 'file-invalid-type') {
-          return ERROR_MESSAGES.fileInvalidType();
-        } else if (errors[0]?.code === 'too-many-files') {
-          return ERROR_MESSAGES.tooManyFiles(dropzoneOptions?.maxFiles ?? 0);
-        } else {
-          return ERROR_MESSAGES.fileNotSupported();
         }
+        if (errors[0]?.code === 'file-invalid-type') {
+          return ERROR_MESSAGES.fileInvalidType();
+        }
+        if (errors[0]?.code === 'too-many-files') {
+          return ERROR_MESSAGES.tooManyFiles(dropzoneOptions?.maxFiles ?? 0);
+        }
+        return ERROR_MESSAGES.fileNotSupported();
       }
       return undefined;
     }, [fileRejections, dropzoneOptions]);
@@ -161,9 +162,9 @@ const MultiFileDropzone = React.forwardRef<HTMLInputElement, InputProps>(
           </div>
 
           {/* Selected Files */}
-          {value?.map(({ file, progress }, i) => (
+          {value?.map(({ file, progress, key }, i) => (
             <div
-              key={i}
+              key={key}
               className="flex h-16 w-full max-w-[100vw] flex-col justify-center rounded border border-gray-300 px-4 py-2"
             >
               <div className="flex items-center gap-2 text-gray-500 dark:text-white">
@@ -180,6 +181,7 @@ const MultiFileDropzone = React.forwardRef<HTMLInputElement, InputProps>(
                 <div className="flex w-12 justify-end text-xs">
                   {progress === 'PENDING' ? (
                     <button
+                      type="button"
                       className="rounded-md p-1 transition-colors duration-200 hover:bg-gray-100 dark:hover:bg-gray-700"
                       onClick={() => {
                         void onChange?.(

@@ -1,14 +1,15 @@
 // Api Error and Response Types
-import { User, UserData } from '@/features/auth/api/auth.dto'
+import type { User, UserData } from "@/features/auth/api/auth.dto"
 
 export interface ApiError {
   status: number
   message: string
   error?: string
+  details?: unknown
 }
 
 export interface ApiResponse {
-  success: boolean    
+  success: boolean
   error?: ApiError
 }
 
@@ -43,6 +44,5 @@ export interface IUserListResponseDTO extends ApiResponse {
 }
 
 export interface IUserDetailResponseDTO extends ApiResponse {
-  data?: any
+  data?: Record<string, unknown>
 }
-

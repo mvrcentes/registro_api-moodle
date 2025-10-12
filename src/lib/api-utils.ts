@@ -1,163 +1,35 @@
-import { NextResponse } from "next/server"
-import { ZodError } from "zod"
+import type { ApiError } from "@/features/api/types"
+import axios, { type AxiosError } from "axios"
 
-export interface ApiError {
-  status: number
-  message: string
-  error?: string
-  details?: any
-}
+export const isAxiosError = (e: unknown): e is AxiosError => axios.isAxiosError(e)
 
-export interface ApiResponse<T = any> {
-  success: boolean
-  data?: T
-  error?: ApiError
-}
+const isRecord = (v: unknown): v is Record<string, unknown> =>
+  typeof v === "object" && v !== null && !Array.isArray(v)
 
-export class ApiErrorHandler {
-  static handleError(error: unknown): NextResponse<ApiResponse> {
-    console.error("API Error:", error)
+// Convierte cualquier error desconocido a ApiError tipado
+export function parseAxiosError(e: unknown): ApiError {
+  if (isAxiosError(e)) {
+    const status = e.response?.status ?? 500
+    const data = e.response?.data as unknown
 
-    // Error de validación de Zod
-    if (error instanceof ZodError) {
-      const response: ApiResponse = {
-        success: false,
-        error: {
-          status: 400,
-          message: "Datos de entrada inválidos",
-          error: "Validation Error",
-          details: error.issues,
-        },
+    let message = e.message ?? "Error desconocido"
+    let error: string | undefined
+
+    if (isRecord(data)) {
+      if (typeof data.message === "string") message = data.message
+      if (typeof data.error === "string") error = data.error
+      if (!error && typeof (data as Record<string, unknown>).name === "string") {
+        error = String((data as Record<string, unknown>).name)
       }
-      return NextResponse.json(response, { status: 400 })
+    } else if (typeof data === "string" && data.trim()) {
+      message = data
     }
 
-    // Error de Axios (API externa)
-    if (this.isAxiosError(error)) {
-      const response: ApiResponse = {
-        success: false,
-        error: {
-          status: error.response?.status || 500,
-          message:
-            error.response?.data?.message ||
-            error.message ||
-            "Error en API externa",
-          error: "External API Error",
-          details: error.response?.data,
-        },
-      }
-      return NextResponse.json(response, {
-        status: error.response?.status || 500,
-      })
-    }
-
-    // Error genérico
-    const response: ApiResponse = {
-      success: false,
-      error: {
-        status: 500,
-        message: "Error interno del servidor",
-        error: "Internal Server Error",
-      },
-    }
-    return NextResponse.json(response, { status: 500 })
+    const details = isRecord(data) || Array.isArray(data) || typeof data === "string" ? data : e.toJSON?.() ?? null
+    return { status, message, error, details }
   }
-
-  static createSuccessResponse<T>(
-    data: T,
-    status: number = 200
-  ): NextResponse<ApiResponse<T>> {
-    const response: ApiResponse<T> = {
-      success: true,
-      data,
-    }
-    return NextResponse.json(response, { status })
+  if (e instanceof Error) {
+    return { status: 500, message: e.message, details: e }
   }
-
-  static createErrorResponse(
-    message: string,
-    status: number = 400,
-    error: string = "Bad Request",
-    details?: any
-  ): NextResponse<ApiResponse> {
-    const response: ApiResponse = {
-      success: false,
-      error: {
-        status,
-        message,
-        error,
-        details,
-      },
-    }
-    return NextResponse.json(response, { status })
-  }
-
-  private static isAxiosError(error: any): error is any {
-    return error.isAxiosError === true
-  }
-}
-
-// Wrapper para manejar errores de manera consistente
-export function withErrorHandler<T extends any[]>(
-  handler: (...args: T) => Promise<NextResponse>
-) {
-  return async (...args: T): Promise<NextResponse> => {
-    try {
-      return await handler(...args)
-    } catch (error) {
-      return ApiErrorHandler.handleError(error)
-    }
-  }
-}
-
-// Utilidades para validación
-export class ValidationUtils {
-  static validateRequiredFields(
-    data: Record<string, any>,
-    requiredFields: string[]
-  ): { isValid: boolean; missingFields: string[] } {
-    const missingFields = requiredFields.filter((field) => !data[field])
-    return {
-      isValid: missingFields.length === 0,
-      missingFields,
-    }
-  }
-
-  static validateEmail(email: string): boolean {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    return emailRegex.test(email)
-  }
-
-  static validateCUI(cui: string): boolean {
-    return /^\d{13}$/.test(cui)
-  }
-
-  static validateNIT(nit: string): boolean {
-    return /^\d{8,9}$/.test(nit)
-  }
-
-  static validatePhoneNumber(phone: string): boolean {
-    return /^\d{4}-\d{4}$/.test(phone)
-  }
-}
-
-// Utilidades para logging
-export class LoggingUtils {
-  static logApiCall(method: string, endpoint: string, data?: any) {
-    if (process.env.NODE_ENV === "development") {
-    }
-  }
-
-  static logError(context: string, error: any, additionalInfo?: any) {
-    console.error(`[ERROR ${context}]`, {
-      error: error.message || error,
-      stack: error.stack,
-      ...additionalInfo,
-    })
-  }
-
-  static logSuccess(context: string, message: string, data?: any) {
-    if (process.env.NODE_ENV === "development") {
-    }
-  }
+  return { status: 500, message: "Error desconocido", details: e }
 }

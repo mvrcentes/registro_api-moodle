@@ -1,23 +1,44 @@
 "use client"
 
 import axios from "axios"
-import {
+import { isAxiosError, parseAxiosError } from "@/lib/api-utils"
+// #region Local API
+import { apiLocal } from "@/services/axiosLocal"
+import type { LoginDTO, LoginResponse, MeResponse } from "./auth.dto"
+// #endregion
+
+import type {
   ISigninResponseDTO,
   ISignupPreFillResponseDTO,
   ISignupCompleteResponseDTO,
   IUserListResponseDTO,
   IUserDetailResponseDTO,
 } from "../../api/types"
-import {
+import type {
   SigninSchema,
   SignupPreFillSchema,
   SignupAllSchema,
 } from "@/features/auth/schemas/auth.schema"
-import { z } from "zod"
+import type { z } from "zod"
+
+// #region Local API
+// Cliente para autenticación LOCAL (tu backend)
+export const LocalAuthApi = {
+  login: (data: LoginDTO) =>
+    apiLocal.post<LoginResponse>("/admin/login", data).then((r) => r.data),
+
+  me: () => apiLocal.get<MeResponse>("/admin/me").then((r) => r.data),
+
+  logout: () =>
+    apiLocal.post<{ ok: boolean }>("/admin/logout").then((r) => r.data),
+
+  // common endpoints
+  meAny: () => apiLocal.get<MeResponse>("/me").then((r) => r.data),
+}
 
 // Configuración de la API externa
 const API_CONFIG = {
-  baseURL: process.env.NEXT_PUBLIC_BASE_API_URL,
+  baseURL: process.env.NEXT_PUBLIC_PREFILL_API_URL,
   credentials: {
     username: process.env.NEXT_PUBLIC_BASE_API_USER || "APIMOODLE",
     password: process.env.NEXT_PUBLIC_BASE_API_PASSWORD || "usr$API#MOODL3",
@@ -33,6 +54,9 @@ const externalApi = axios.create({
   },
   timeout: 15000,
 })
+
+const isRecord = (v: unknown): v is Record<string, unknown> =>
+  typeof v === "object" && v !== null && !Array.isArray(v)
 
 // Variable para almacenar el token y su tiempo de expiración
 let authToken: string | null = null
@@ -67,28 +91,24 @@ const getAuthToken = async (): Promise<string> => {
     let extractedToken = null
 
     // Intentar extraer el token de varios campos posibles
-    if (response.data && response.data.token) {
+    if (response.data?.token) {
       extractedToken = response.data.token
 
       // Si el token es un objeto con un campo 'value', extraer ese valor
       if (typeof extractedToken === "object" && extractedToken.value) {
         extractedToken = extractedToken.value
       }
-    } else if (
-      response.data &&
-      response.data.data &&
-      response.data.data.token
-    ) {
+    } else if (response.data?.data?.token) {
       extractedToken = response.data.data.token
 
       if (typeof extractedToken === "object" && extractedToken.value) {
         extractedToken = extractedToken.value
       }
-    } else if (response.data && response.data.accessToken) {
+    } else if (response.data?.accessToken) {
       extractedToken = response.data.accessToken
-    } else if (response.data && response.data.access_token) {
+    } else if (response.data?.access_token) {
       extractedToken = response.data.access_token
-    } else if (response.data && typeof response.data === "string") {
+    } else if (typeof response.data === "string") {
       extractedToken = response.data
     }
 
@@ -102,22 +122,26 @@ const getAuthToken = async (): Promise<string> => {
     }
 
     throw new Error("No token received from login")
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Error getting auth token:", error)
-
-    // Limpiar token en caso de error
     clearStoredToken()
 
-    // Para error 409, podría ser que ya hay una sesión activa
-    if (error.response?.status === 409) {
-      // Si el error incluye un token, lo usamos
-      if (error.response?.data?.token) {
-        authToken = String(error.response.data.token)
-        tokenExpiry = Date.now() + 60 * 60 * 1000
-        return authToken
+    if (isAxiosError(error) && error.response?.status === 409) {
+      const respData = error.response.data as unknown
+      if (isRecord(respData)) {
+        const maybeToken = (respData as Record<string, unknown>).token
+        if (typeof maybeToken === "string") {
+          authToken = maybeToken
+          tokenExpiry = Date.now() + 60 * 60 * 1000
+          return authToken
+        }
+        if (isRecord(maybeToken) && typeof maybeToken.value === "string") {
+          authToken = maybeToken.value
+          tokenExpiry = Date.now() + 60 * 60 * 1000
+          return authToken
+        }
       }
     }
-
     throw error
   }
 }
@@ -164,18 +188,15 @@ export const signin = async (
         error: "User Not Found",
       },
     }
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Signin error:", error)
-
+    const { status, message, error: errStr } = parseAxiosError(error)
     return {
       success: false,
       error: {
-        status: error.response?.status || 500,
-        message:
-          error.response?.data?.message ||
-          error.message ||
-          "Error al iniciar sesión",
-        error: "API Error",
+        status: status || 500,
+        message: message || "Error al iniciar sesión",
+        error: errStr || "API Error",
       },
     }
   }
@@ -195,7 +216,7 @@ export const prefill = async (
       },
     })
 
-    if (response.data && response.data.list && response.data.list.length > 0) {
+    if (response.data?.list && response.data.list.length > 0) {
       // Los datos están en response.data.list[0]
       const userData = response.data.list[0]
 
@@ -230,14 +251,9 @@ export const prefill = async (
             userData.secondLastName ||
             "",
           email:
-            userData.correoPersonal ||
-            userData.email ||
-            userData.correo ||
-            "",
+            userData.correoPersonal || userData.email || userData.correo || "",
           correoInstitucional:
-            userData.correoInstitucional ||
-            userData.correo_institucional ||
-            "",
+            userData.correoInstitucional || userData.correo_institucional || "",
           correoPersonal:
             userData.correoPersonal ||
             userData.correo_personal ||
@@ -256,7 +272,8 @@ export const prefill = async (
           nit: userData.nit || "",
           telefono: userData.telefono || userData.phone || "",
           entidad: userData.entidad || userData.entity || "",
-          institucion: userData.institucion || userData.entidad || userData.entity || "",
+          institucion:
+            userData.institucion || userData.entidad || userData.entity || "",
           dependencia: userData.dependencia || userData.dependency || "",
           renglon: userData.renglon || userData.budget_line || "",
           profesion: userData.profesion || userData.profession || "",
@@ -276,11 +293,7 @@ export const prefill = async (
     }
 
     // Si no hay datos en la lista o la lista está vacía
-    if (
-      response.data &&
-      response.data.list &&
-      response.data.list.length === 0
-    ) {
+    if (response.data?.list && response.data.list.length === 0) {
       return {
         success: true,
         data: {
@@ -321,11 +334,9 @@ export const prefill = async (
         error: "No Data",
       },
     }
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Prefill error:", error)
-    console.error("Error response:", error.response?.data)
-
-    if (error.response?.status === 404) {
+    if (isAxiosError(error) && error.response?.status === 404) {
       // DPI no encontrado, devolver formulario vacío para que el usuario llene manualmente
       return {
         success: true,
@@ -358,16 +369,13 @@ export const prefill = async (
         },
       }
     }
-
+    const { status, message, error: errStr } = parseAxiosError(error)
     return {
       success: false,
       error: {
-        status: error.response?.status || 500,
-        message:
-          error.response?.data?.message ||
-          error.message ||
-          "Error al consultar DPI",
-        error: "API Error",
+        status: status || 500,
+        message: message || "Error al consultar DPI",
+        error: errStr || "API Error",
       },
     }
   }
@@ -435,10 +443,12 @@ export const signup = async (
         error: "No Response",
       },
     }
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Signup error:", error)
-
-    if (error.response?.status === 409 || error.response?.status === 400) {
+    if (
+      isAxiosError(error) &&
+      (error.response?.status === 409 || error.response?.status === 400)
+    ) {
       return {
         success: false,
         error: {
@@ -448,25 +458,31 @@ export const signup = async (
         },
       }
     }
-
+    const { status, message, error: errStr } = parseAxiosError(error)
     return {
       success: false,
       error: {
-        status: error.response?.status || 500,
-        message:
-          error.response?.data?.message ||
-          error.message ||
-          "Error al crear usuario",
-        error: "API Error",
+        status: status || 500,
+        message: message || "Error al crear usuario",
+        error: errStr || "API Error",
       },
     }
   }
 }
 
+interface ExternalUser {
+  id?: string
+  email?: string
+  primerNombre?: string
+  primerApellido?: string
+  dpi?: string
+  created_at?: string
+}
+
 // Funciones adicionales que podrían usar la API externa
 export const getUsers = async (
-  page: number = 1,
-  limit: number = 10,
+  page = 1,
+  limit = 10,
   search?: string
 ): Promise<IUserListResponseDTO> => {
   try {
@@ -491,13 +507,15 @@ export const getUsers = async (
       return {
         success: true,
         data: {
-          users: (response.data.users || []).map((user: any) => ({
-            id: user.id,
-            email: user.email,
-            primerNombre: user.primerNombre,
-            primerApellido: user.primerApellido,
-            dpi: user.dpi,
-            created_at: user.created_at || new Date().toISOString(),
+          users: (
+            (response.data.users as ExternalUser[] | undefined) ?? []
+          ).map((user) => ({
+            id: user.id ?? "",
+            email: user.email ?? "",
+            primerNombre: user.primerNombre ?? "",
+            primerApellido: user.primerApellido ?? "",
+            dpi: user.dpi ?? "",
+            created_at: user.created_at ?? new Date().toISOString(),
           })),
           total: response.data.total || 0,
           page,
@@ -514,13 +532,14 @@ export const getUsers = async (
         error: "Fetch Failed",
       },
     }
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const { status, message, error: errStr } = parseAxiosError(error)
     return {
       success: false,
       error: {
-        status: error.response?.status || 500,
-        message: error.response?.data?.message || "Error al obtener usuarios",
-        error: error.response?.data?.error || "Internal Server Error",
+        status: status || 500,
+        message: message || "Error al obtener usuarios",
+        error: errStr || "Internal Server Error",
       },
     }
   }
@@ -553,13 +572,14 @@ export const getUserById = async (
         error: "Fetch Failed",
       },
     }
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const { status, message, error: errStr } = parseAxiosError(error)
     return {
       success: false,
       error: {
-        status: error.response?.status || 500,
-        message: error.response?.data?.message || "Error al obtener usuario",
-        error: error.response?.data?.error || "Internal Server Error",
+        status: status || 500,
+        message: message || "Error al obtener usuario",
+        error: errStr || "Internal Server Error",
       },
     }
   }
@@ -593,13 +613,14 @@ export const updateUser = async (
         error: "Update Failed",
       },
     }
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const { status, message, error: errStr } = parseAxiosError(error)
     return {
       success: false,
       error: {
-        status: error.response?.status || 500,
-        message: error.response?.data?.message || "Error al actualizar usuario",
-        error: error.response?.data?.error || "Internal Server Error",
+        status: status || 500,
+        message: message || "Error al actualizar usuario",
+        error: errStr || "Internal Server Error",
       },
     }
   }
@@ -632,13 +653,14 @@ export const deleteUser = async (
         error: "Delete Failed",
       },
     }
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const { status, message, error: errStr } = parseAxiosError(error)
     return {
       success: false,
       error: {
-        status: error.response?.status || 500,
-        message: error.response?.data?.message || "Error al eliminar usuario",
-        error: error.response?.data?.error || "Internal Server Error",
+        status: status || 500,
+        message: message || "Error al eliminar usuario",
+        error: errStr || "Internal Server Error",
       },
     }
   }

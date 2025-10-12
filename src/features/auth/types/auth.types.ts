@@ -1,5 +1,5 @@
-import { z } from "zod"
-import { SignupAllSchema, SigninSchema } from "@/features/auth/schemas/auth.schema"
+import type { z } from "zod"
+import type { SignupAllSchema, SigninSchema } from "@/features/auth/schemas/auth.schema"
 
 // Tipos para los valores de los formularios
 export type SigninFormValues = z.infer<typeof SigninSchema>

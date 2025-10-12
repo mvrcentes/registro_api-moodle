@@ -8,7 +8,7 @@ import { useForm, useFormContext } from "react-hook-form"
 import { z } from "zod"
 import { FormFieldType } from "@/lib/types"
 import CustomFormField from "@/components/reusable/CustomFormField"
-import { FileState } from "@/components/reusable/dropzone/FileDropZone"
+import type { FileState } from "@/components/reusable/dropzone/FileDropZone"
 import { SignupFilesFormSchema } from "@/features/auth/schemas/auth.schema"
 
 interface SignupFilesFormProps {

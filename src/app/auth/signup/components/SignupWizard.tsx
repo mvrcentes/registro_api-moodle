@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { StepConfig } from "@/components/reusable/step/stepper-types"
+import type { StepConfig } from "@/components/reusable/step/stepper-types"
 import { useStepper } from "@/components/reusable/step/hooks/use-stepper"
 import { Step, Steps } from "@/components/reusable/step/stepper"
 import { Button } from "@/components/ui/button"
@@ -10,7 +10,7 @@ import SignupCompleteForm from "./forms/SignupCompleteForm"
 import SignupDemographicsForm from "./forms/SignupDemographicsForm"
 import SignupInstitutionForm from "./forms/SignupInstitutionForm"
 import SignupFilesForm from "./forms/6_SignupFilesForm"
-import { z } from "zod"
+import type { z } from "zod"
 import {
   SignupPreFillSchema,
   SignupAllSchema,
@@ -195,19 +195,27 @@ export default function SignupWizard() {
     // Formato DD-MM-YYYY
     if (birthDate.includes("-") && birthDate.length === 10) {
       const [day, month, year] = birthDate.split("-")
-      date = new Date(parseInt(year), parseInt(month) - 1, parseInt(day))
+      date = new Date(
+        Number.parseInt(year),
+        Number.parseInt(month) - 1,
+        Number.parseInt(day)
+      )
     }
     // Formato DD/MM/YYYY
     else if (birthDate.includes("/") && birthDate.length === 10) {
       const [day, month, year] = birthDate.split("/")
-      date = new Date(parseInt(year), parseInt(month) - 1, parseInt(day))
+      date = new Date(
+        Number.parseInt(year),
+        Number.parseInt(month) - 1,
+        Number.parseInt(day)
+      )
     }
     // Formato YYYY-MM-DD
     else if (birthDate.includes("-") && birthDate.indexOf("-") === 4) {
       date = new Date(birthDate)
     }
 
-    if (!date || isNaN(date.getTime())) return undefined
+    if (!date || Number.isNaN(date.getTime())) return undefined
 
     const today = new Date()
     let age = today.getFullYear() - date.getFullYear()
@@ -361,22 +369,26 @@ export default function SignupWizard() {
         methods.setValue("segundoApellido", userData.segundoApellido || "")
         methods.setValue(
           "email",
-          userData.correoPersonal ||
-            userData.email ||
-            userData.correo ||
-            ""
+          userData.correoPersonal || userData.email || userData.correo || ""
         )
         methods.setValue(
           "confirm_email",
-          userData.correoPersonal ||
-            userData.email ||
-            userData.correo ||
-            ""
+          userData.correoPersonal || userData.email || userData.correo || ""
         )
         methods.setValue("pais", userData.pais || "")
         methods.setValue("ciudad", userData.municipio || "")
-        methods.setValue("correoInstitucional", userData.correoInstitucional || userData.correo_institucional || "")
-        methods.setValue("correoPersonal", userData.correoPersonal || userData.correo_personal || userData.correo || userData.email || "")
+        methods.setValue(
+          "correoInstitucional",
+          userData.correoInstitucional || userData.correo_institucional || ""
+        )
+        methods.setValue(
+          "correoPersonal",
+          userData.correoPersonal ||
+            userData.correo_personal ||
+            userData.correo ||
+            userData.email ||
+            ""
+        )
 
         methods.setValue("cui", userData.dpi || dpi)
         methods.setValue("sexo", userData.sexo || "")
@@ -406,10 +418,7 @@ export default function SignupWizard() {
           userData.institucion || userData.entidad || userData.entity,
           INSTITUCION_OPTIONS
         )
-        const renglonValue = findOptionValue(
-          userData.renglon,
-          RENGLON_OPTIONS
-        )
+        const renglonValue = findOptionValue(userData.renglon, RENGLON_OPTIONS)
 
         methods.setValue(
           "entidad",
@@ -421,16 +430,22 @@ export default function SignupWizard() {
             (userData.institucion || userData.entidad || userData.entity || "")
         )
         methods.setValue("dependencia", userData.dependencia || "")
+        methods.setValue("renglon", renglonValue ?? (userData.renglon || ""))
         methods.setValue(
-          "renglon",
-          renglonValue ?? (userData.renglon || "")
+          "profesion",
+          userData.profesion || userData.profession || ""
         )
-        methods.setValue("profesion", userData.profesion || userData.profession || "")
         methods.setValue("puesto", userData.puesto || userData.position || "")
-        methods.setValue("sector", userData.sector || userData.sector_laboral || "")
+        methods.setValue(
+          "sector",
+          userData.sector || userData.sector_laboral || ""
+        )
 
         const mappedColegio = mapColegioApiToValue(userData.colegio)
-        methods.setValue("colegio", mappedColegio ?? userData.colegio ?? "NO APLICA")
+        methods.setValue(
+          "colegio",
+          mappedColegio ?? userData.colegio ?? "NO APLICA"
+        )
         methods.setValue("numeroColegiado", userData.numeroColegiado || "")
 
         setPrefilledFields({
@@ -438,10 +453,25 @@ export default function SignupWizard() {
           segundoNombre: !!userData.segundoNombre,
           primerApellido: !!userData.primerApellido,
           segundoApellido: !!userData.segundoApellido,
-          email: !!(userData.correoPersonal || userData.email || userData.correo),
-          confirm_email: !!(userData.correoPersonal || userData.email || userData.correo),
-          correoInstitucional: !!(userData.correoInstitucional || userData.correo_institucional),
-          correoPersonal: !!(userData.correoPersonal || userData.correo_personal || userData.email || userData.correo),
+          email: !!(
+            userData.correoPersonal ||
+            userData.email ||
+            userData.correo
+          ),
+          confirm_email: !!(
+            userData.correoPersonal ||
+            userData.email ||
+            userData.correo
+          ),
+          correoInstitucional: !!(
+            userData.correoInstitucional || userData.correo_institucional
+          ),
+          correoPersonal: !!(
+            userData.correoPersonal ||
+            userData.correo_personal ||
+            userData.email ||
+            userData.correo
+          ),
           pais: !!userData.pais,
           ciudad: !!userData.municipio,
           cui: true,
@@ -544,14 +574,16 @@ export default function SignupWizard() {
             className="flex-1"
             onSubmit={methods.handleSubmit(handleSubmit, (errors) => {
               const vals = methods.getValues()
-              console.log("[MOCK] INVALID submit — printing current values anyway:", vals)
+              console.log(
+                "[MOCK] INVALID submit — printing current values anyway:",
+                vals
+              )
               console.log("[MOCK] Zod errors:", errors)
             })}>
             <Steps
               activeStep={activeStep}
               className="flex h-full max-h-[calc(100vh-26rem)] min-h-[360px]"
-              contentClassName="pr-2 overflow-y-auto"
-            >
+              contentClassName="pr-2 overflow-y-auto">
               <Step index={0} label="DPI">
                 <SignupPreFillForm isPrefilled={isPrefilled} />
               </Step>

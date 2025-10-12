@@ -9,16 +9,16 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-// import { useAuth } from "@/hooks/useAuth"
+import { useLogout } from "@/features/auth/api/use-logout"
+import { useCurrentUser } from "@/features/auth/api/use-current-user"
 
 const UserDropDown = () => {
-  //   const { user } = useAuth()
-  const user = { name: "Usuario Ejemplo", email: "correo@ejemplo.com" }
-  const initial = user?.name?.charAt(0).toUpperCase() || "U"
+  const { user } = useCurrentUser()
+  const initial = (user?.name ?? user?.email ?? "U").charAt(0).toUpperCase()
 
+  const logout = useLogout()
   const handleLogout = () => {
-    // Aquí va la lógica de logout (limpiar tokens, redireccionar, etc.)
-    console.log("Cerrar sesión")
+    void logout()
   }
 
   return (
@@ -31,7 +31,7 @@ const UserDropDown = () => {
       <DropdownMenuContent className="w-56" align="end">
         <DropdownMenuLabel>{user?.name ?? "Usuario"}</DropdownMenuLabel>
         <DropdownMenuLabel className="text-xs text-muted-foreground">
-          {user?.email ?? "correo@ejemplo.com"}
+          {user?.email ?? "—"}
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={handleLogout}>

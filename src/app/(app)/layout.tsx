@@ -1,3 +1,10 @@
+"use client"
+
+import { useEffect } from "react"
+import { useRouter, usePathname } from "next/navigation"
+
+import { useAuthGuard } from "@/features/auth/api/use-auth-guard"
+
 import {
   SidebarInset,
   SidebarProvider,
@@ -11,35 +18,26 @@ export default function DashboardLayout({
 }: {
   children: React.ReactNode
 }) {
-  //   const cookieStore = cookies()
-  //   const token = cookieStore.get("accessToken")?.value
+  const router = useRouter()
+  const pathname = usePathname()
+  const { loading, role } = useAuthGuard()
 
-  //   if (token) {
-  //     try {
-  //       const decoded = jwt.verify(
-  //         token,
-  //         process.env.NEXT_PUBLIC_JWT_SECRET!
-  //       ) as {
-  //         id: number
-  //         email: string
-  //         access: {
-  //           condominium_id: number
-  //           condominium_name: string
-  //           roles: string[]
-  //           properties: {
-  //             property_id: number
-  //             identifier: string | null
-  //           }[]
-  //           selectedProperty?: {
-  //             property_id: number
-  //             identifier: string | null
-  //           }
-  //         }[]
-  //       }
-  //     } catch (e) {
-  //       console.warn("Token inválido o expirado")
-  //     }
-  //   }
+  useEffect(() => {
+    if (loading) return
+
+    const needsAdmin = pathname?.startsWith("/applications")
+    if (needsAdmin && role !== "ADMIN") {
+      router.replace("/auth/signin")
+    }
+  }, [loading, role, pathname, router])
+
+  if (loading) {
+    return (
+      <div className="p-6 text-sm text-muted-foreground">
+        Verificando sesión…
+      </div>
+    )
+  }
 
   return (
     // <SessionProvider>

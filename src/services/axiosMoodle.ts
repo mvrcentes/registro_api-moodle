@@ -2,7 +2,7 @@ import axios from "axios"
 
 // Cliente para el API externo de Moodle
 const api = axios.create({
-    baseURL: process.env.NEXT_PUBLIC_BASE_API_URL,
+    baseURL: process.env.NEXT_PUBLIC_PREFILL_API_URL,
 })
 
 // Request interceptor para headers por defecto

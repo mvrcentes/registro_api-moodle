@@ -1,4 +1,5 @@
-import React, { Dispatch, SetStateAction } from "react"
+import type React from "react"
+import type { Dispatch, SetStateAction } from "react"
 import {
   FormControl,
   FormDescription,
@@ -7,24 +8,24 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form"
-import { ComboXSelect, FormFieldType } from "@/lib/types"
-import { Control, useFormContext } from "react-hook-form"
+import { type ComboXSelect, FormFieldType } from "@/lib/types"
+import { type Control, useFormContext } from "react-hook-form"
 import classNames from "classnames"
 import { Input } from "../ui/input"
 import { SelectItemField } from "./SelectItemField"
 import { Select } from "@radix-ui/react-select"
 import { cn } from "@/lib/utils"
 import { SelectContent, SelectTrigger, SelectValue } from "../ui/select"
-import { FileState, MultiFileDropzone } from "./dropzone/FileDropZone"
-import { DropzoneOptions } from "react-dropzone"
+import { type FileState, MultiFileDropzone } from "./dropzone/FileDropZone"
+import type { DropzoneOptions } from "react-dropzone"
 
 interface CustomFormFieldProps {
   className?: string
-  form?: any
+  form?: import("react-hook-form").UseFormReturn<any>
   control?: Control<any>
   fieldType: FormFieldType
   fieldTypeType?: string
-  acceptedFiles?: Object
+  acceptedFiles?: DropzoneOptions["accept"]
   name: string
   label?: string
   description?: string
@@ -127,7 +128,7 @@ const RenderField = ({
               const value = e.target.value.replace(/[^0-9]/g, "")
               // Convertir a número si hay valor, o undefined si está vacío
               const numericValue =
-                value === "" ? undefined : parseInt(value, 10)
+                value === "" ? undefined : Number.parseInt(value, 10)
               field.onChange(numericValue)
             }}
             onKeyPress={(e) => {
@@ -176,7 +177,7 @@ const RenderField = ({
           field={field}
           form={form}
           placeholder={placeholder}
-          fieldValues={fieldValues!}
+          fieldValues={fieldValues ?? []}
           onSearchChange={props.onSearchChange}
           onScrollBottom={props.onScrollBottom}
           readonly={readonly}

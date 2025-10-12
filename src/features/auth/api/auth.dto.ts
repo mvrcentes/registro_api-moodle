@@ -9,6 +9,13 @@ export interface User {
   created_at?: string
 }
 
+export type CurrentUser = {
+  id: string
+  role: "ADMIN" | "APPLICANT"
+  email?: string
+  name?: string
+}
+
 export interface UserData {
   dpi: string
   primerNombre: string
@@ -48,4 +55,12 @@ export interface UserData {
   numeroColegiado?: string
   numero_colegiado?: string
   message?: string
+}
+
+export type LoginDTO = { email: string; password: string }
+
+export type LoginResponse = { ok: boolean; mustResetPassword?: boolean }
+export type MeResponse = {
+  ok: true
+  user: { id: string; role: "ADMIN" | "APPLICANT" }
 }
