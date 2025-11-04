@@ -93,11 +93,6 @@ export default function SignupWizard() {
   const [step2Valid, setStep2Valid] = useState(false)
   const [step3Valid, setStep3Valid] = useState(false)
   const [step4Valid, setStep4Valid] = useState(false)
-
-  // Debug: Log step4Valid changes
-  useEffect(() => {
-    console.log("[SignupWizard] step4Valid changed:", step4Valid)
-  }, [step4Valid])
   const [step5Valid, setStep5Valid] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isPrefilling, setIsPrefilling] = useState(false)
@@ -509,9 +504,15 @@ export default function SignupWizard() {
       }
 
       console.error("Error en la respuesta:", result.error)
+      console.error("Full result:", result)
       setIsPrefilled(false)
       setPrefilledFields({})
-      toast.error(result.error?.message || "Error al prellenar información")
+      // Si el error está vacío, es porque no hay datos, continuar sin prellenar
+      if (!result.error || Object.keys(result.error).length === 0) {
+        toast.info("DPI consultado - complete todos los campos manualmente")
+      } else {
+        toast.error(result.error?.message || "Error al prellenar información")
+      }
       nextStep()
     } catch (error) {
       console.error("Error en handlePrefill:", error)
@@ -686,22 +687,16 @@ export default function SignupWizard() {
             {activeStep === 4 && (
               <Button
                 onClick={() => {
-                  console.log("[Step4 Button] Click:", { step4Valid, isPrefilled, isSubmitting })
-                  if (!step4Valid) {
-                    console.log("[Step4 Button] Blocked: step4Valid is false")
-                    return
-                  }
+                  if (!step4Valid) return
                   // Si está pre-llenado, no necesita archivos, ir directo a submit
                   if (isPrefilled) {
-                    console.log("[Step4 Button] Submitting (prefilled)")
                     methods.handleSubmit(handleSubmit)()
                   } else {
-                    console.log("[Step4 Button] Going to next step")
                     nextStep()
                   }
                 }}
                 disabled={!step4Valid || (isPrefilled && isSubmitting)}
-                type={isPrefilled ? "button" : "button"}>
+                type="button">
                 {isPrefilled
                   ? (isSubmitting ? "Registrando..." : "Registrar Usuario")
                   : "Siguiente"

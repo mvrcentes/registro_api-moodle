@@ -38,11 +38,6 @@ const SignupProfessionalInfoform = ({
           numeroColegiado: allValues.numeroColegiado,
         }
         const result = SignupProfessionalInfoSchema.safeParse(step4Values)
-        console.log("[SignupProfessionalInfo] Validation:", {
-          step4Values,
-          success: result.success,
-          errors: result.success ? null : result.error.flatten()
-        })
         return result.success
       }
 

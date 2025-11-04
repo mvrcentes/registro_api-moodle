@@ -90,7 +90,7 @@ export const SignupDemographicSchema = z.object({
   departamento_residencia: z.string().min(2, "El departamento es obligatorio"),
   municipio_residencia: z.string().min(2, "El municipio es obligatorio"),
   etnia: z.enum(["MAYA", "XINCA", "GARIFUNA", "LADINOS", "EXTRANJERO", "OTRA"], {
-    errorMap: () => ({ message: "Debe seleccionar una etnia válida" }),
+    message: "Debe seleccionar una etnia válida",
   }),
   telefono: z.string().min(8, "El teléfono es obligatorio"),
 })
@@ -103,28 +103,19 @@ export const SignupInstitutionSchema = z.object({
 })
 
 export const SignupProfessionalInfoSchema = z.object({
-  profesion: z.union([
-    z.literal(""),
-    z.string().min(2, "Debe contener al menos 2 caracteres"),
-  ]),
-  puesto: z.union([
-    z.literal(""),
-    z.string().min(2, "Debe contener al menos 2 caracteres"),
-  ]),
-  sector: z.union([
-    z.literal(""),
-    z.string().min(2, "Debe contener al menos 2 caracteres"),
-  ]),
+  profesion: z.string().optional().or(z.literal("")),
+  puesto: z.string().optional().or(z.literal("")),
+  sector: z.string().optional().or(z.literal("")),
   colegio: z
     .string()
-    .min(2, "El nombre del colegio profesional es obligatorio"),
+    .min(1, "El nombre del colegio profesional es obligatorio"),
   numeroColegiado: z.string().min(1, "El número de colegiado es obligatorio"),
 })
 
 export const SignupFilesFormSchema = z.object({
-  pdf_dpi: z.instanceof(File),
-  pdf_contrato: z.instanceof(File),
-  pdf_certificado_profesional: z.instanceof(File),
+  pdf_dpi: z.instanceof(File).optional(),
+  pdf_contrato: z.instanceof(File).optional(),
+  pdf_certificado_profesional: z.instanceof(File).optional(),
 })
 
 export const SignupAllSchema = z.object({
