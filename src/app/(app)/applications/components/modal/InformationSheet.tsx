@@ -244,10 +244,18 @@ export function InformationSheet({
             mode="in_review"
             applicationId={data.id}
             applicantName={fullName(data)}
-            onSubmit={async ({ id }) => {
-              // tu llamada real:
-              await fetch(`/api/applications/${id}/review`, { method: "POST" })
-              // refresca datos si usas server actions o router.refresh()
+            onSubmit={async ({ id, mode, note }) => {
+              const response = await fetch(`/api/applications/${id}/status`, {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ status: mode, note }),
+              })
+              if (!response.ok) {
+                const error = await response.json()
+                throw new Error(error.error || "Error al actualizar estado")
+              }
+              // Recargar la página para mostrar los cambios
+              window.location.reload()
             }}
             trigger={<Button variant="secondary">En revisión</Button>}
           />
@@ -256,12 +264,18 @@ export function InformationSheet({
             mode="reject"
             applicationId={data.id}
             applicantName={fullName(data)}
-            onSubmit={async ({ id, note }) => {
-              await fetch(`/api/applications/${id}/reject`, {
-                method: "POST",
+            onSubmit={async ({ id, mode, note }) => {
+              const response = await fetch(`/api/applications/${id}/status`, {
+                method: "PATCH",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ reason: note }),
+                body: JSON.stringify({ status: mode, note }),
               })
+              if (!response.ok) {
+                const error = await response.json()
+                throw new Error(error.error || "Error al rechazar solicitud")
+              }
+              // Recargar la página para mostrar los cambios
+              window.location.reload()
             }}
             trigger={<Button variant="destructive">Rechazar</Button>}
           />
@@ -270,8 +284,18 @@ export function InformationSheet({
             mode="approve"
             applicationId={data.id}
             applicantName={fullName(data)}
-            onSubmit={async ({ id }) => {
-              await fetch(`/api/applications/${id}/approve`, { method: "POST" })
+            onSubmit={async ({ id, mode, note }) => {
+              const response = await fetch(`/api/applications/${id}/status`, {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ status: mode, note }),
+              })
+              if (!response.ok) {
+                const error = await response.json()
+                throw new Error(error.error || "Error al aprobar solicitud")
+              }
+              // Recargar la página para mostrar los cambios
+              window.location.reload()
             }}
             trigger={<Button>Aprobar</Button>}
           />

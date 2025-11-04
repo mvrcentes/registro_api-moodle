@@ -139,10 +139,10 @@ export function StatusModal({
   return (
     <Dialog open={open} onOpenChange={handleClose}>
       <DialogTrigger asChild>{trigger}</DialogTrigger>
-      <DialogContent >
-        <DialogHeader>
-          <DialogTitle>{cfg.title}</DialogTitle>
-          <DialogDescription>
+      <DialogContent className="sm:max-w-[500px] p-6">
+        <DialogHeader className="pb-4">
+          <DialogTitle className="text-xl">{cfg.title}</DialogTitle>
+          <DialogDescription className="pt-2">
             {description ??
               `Solicitud ${applicationId}${
                 applicantName ? ` — ${applicantName}` : ""
@@ -151,27 +151,27 @@ export function StatusModal({
         </DialogHeader>
 
         {step === 1 ? (
-          <div className="space-y-4">
-            <p className="text-sm text-muted-foreground">{cfg.step1}</p>
+          <div className="space-y-6">
+            <p className="text-sm text-muted-foreground leading-relaxed">{cfg.step1}</p>
 
             {cfg.needsNote && (
-              <div className="space-y-2">
-                <label className="text-xs font-medium">
+              <div className="space-y-3">
+                <label className="text-sm font-medium">
                   Motivo del rechazo
                 </label>
                 <Textarea
                   placeholder="Escribe el motivo…"
                   value={note}
                   onChange={(e) => setNote(e.target.value)}
-                  className="min-h-[120px]"
+                  className="min-h-[120px] resize-none"
                 />
-                <p className="text-[11px] text-muted-foreground">
-                  Recomendación: sé concreto y profesional. Mín. 5 caracteres.
+                <p className="text-xs text-muted-foreground">
+                  Recomendación: sé concreto y profesional. Mínimo 5 caracteres.
                 </p>
               </div>
             )}
 
-            <div className="flex justify-end gap-2 pt-2">
+            <div className="flex justify-end gap-3 pt-4">
               <Button variant="outline" onClick={() => handleClose(false)}>
                 Cancelar
               </Button>
@@ -181,27 +181,29 @@ export function StatusModal({
             </div>
           </div>
         ) : (
-          <div className="space-y-4">
-            <p className="text-sm text-muted-foreground">{cfg.step2.ask}</p>
+          <div className="space-y-6">
+            <p className="text-sm text-muted-foreground leading-relaxed">{cfg.step2.ask}</p>
             <Input
               autoFocus
               placeholder={cfg.step2.token}
               value={token}
               onChange={(e) => setToken(e.target.value)}
+              className="font-mono"
             />
             {cfg.needsNote && (
-              <div className="space-y-1">
-                <label className="text-xs font-medium">
+              <div className="space-y-3">
+                <label className="text-sm font-medium">
                   Motivo del rechazo
                 </label>
                 <Textarea
                   value={note}
                   onChange={(e) => setNote(e.target.value)}
-                  className="min-h-[100px]"
+                  className="min-h-[100px] resize-none"
+                  readOnly
                 />
               </div>
             )}
-            <div className="flex justify-between gap-2 pt-2">
+            <div className="flex justify-between gap-3 pt-4">
               <Button variant="ghost" onClick={() => setStep(1)}>
                 Volver
               </Button>
