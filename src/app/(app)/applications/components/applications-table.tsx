@@ -20,12 +20,12 @@ import {
   TableRow,
 } from "@/components/ui/table"
 
-import { ApplicationRow } from "./types"
+import { ApplicationDetail } from "./types"
 import TableFilters from "./filter/TableFilters"
 
 interface DataTableProps {
-  columns: ColumnDef<ApplicationRow>[]
-  data: ApplicationRow[]
+  columns: ColumnDef<ApplicationDetail>[]
+  data: ApplicationDetail[]
 }
 
 export function DataTable({ columns, data }: DataTableProps) {

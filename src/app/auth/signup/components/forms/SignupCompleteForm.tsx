@@ -14,10 +14,10 @@ type Props = {
     segundoNombre?: boolean
     primerApellido?: boolean
     segundoApellido?: boolean
-    email?: boolean
-    confirm_email?: boolean
-    correoInstitucional?: boolean
     correoPersonal?: boolean
+    confirm_correoPersonal?: boolean
+    correoInstitucional?: boolean
+    confirm_correoInstitucional?: boolean
     pais?: boolean
     ciudad?: boolean
   }
@@ -61,25 +61,25 @@ export default function SignupCompleteForm({
           <CustomFormField
             control={form.control}
             fieldType={FormFieldType.INPUT}
-            placeholder="Ingrese su correo"
-            name="email"
-            label="Email"
-            readonly={prefilledFields.email || false}
+            placeholder="Ingrese su correo personal"
+            name="correoPersonal"
+            label="Correo personal"
+            readonly={prefilledFields.correoPersonal || false}
           />
 
           <CustomFormField
             control={form.control}
             fieldType={FormFieldType.INPUT}
-            placeholder="Confirme su correo"
-            name="confirm_email"
-            label="Confirmación de correo"
-            readonly={prefilledFields.confirm_email || false}
+            placeholder="Confirme su correo personal"
+            name="confirm_correoPersonal"
+            label="Confirmación de correo personal"
+            readonly={prefilledFields.confirm_correoPersonal || false}
           />
 
           <CustomFormField
             control={form.control}
             fieldType={FormFieldType.INPUT}
-            placeholder="Correo institucional"
+            placeholder="Ingrese su correo institucional"
             name="correoInstitucional"
             label="Correo institucional"
             readonly={prefilledFields.correoInstitucional || false}
@@ -88,10 +88,10 @@ export default function SignupCompleteForm({
           <CustomFormField
             control={form.control}
             fieldType={FormFieldType.INPUT}
-            placeholder="Correo personal"
-            name="correoPersonal"
-            label="Correo personal"
-            readonly={prefilledFields.correoPersonal || false}
+            placeholder="Confirme su correo institucional"
+            name="confirm_correoInstitucional"
+            label="Confirmación de correo institucional"
+            readonly={prefilledFields.confirm_correoInstitucional || false}
           />
 
           <CustomFormField

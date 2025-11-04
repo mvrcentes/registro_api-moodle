@@ -100,10 +100,10 @@ export default function SignupWizard() {
     segundoNombre?: boolean
     primerApellido?: boolean
     segundoApellido?: boolean
-    email?: boolean
-    confirm_email?: boolean
-    correoInstitucional?: boolean
     correoPersonal?: boolean
+    confirm_correoPersonal?: boolean
+    correoInstitucional?: boolean
+    confirm_correoInstitucional?: boolean
     pais?: boolean
     ciudad?: boolean
     cui?: boolean
@@ -141,8 +141,10 @@ export default function SignupWizard() {
       // Paso 0 (DPI)
       dpi: "",
       // Paso 1 (cuenta)
-      email: "",
-      confirm_email: "",
+      correoPersonal: "",
+      confirm_correoPersonal: "",
+      correoInstitucional: "",
+      confirm_correoInstitucional: "",
       primerNombre: "",
       segundoNombre: "",
       primerApellido: "",
@@ -151,8 +153,6 @@ export default function SignupWizard() {
       confirm_password: "",
       pais: "",
       ciudad: "",
-      correoInstitucional: "",
-      correoPersonal: "",
       // Paso 2 (demografía)
       cui: "",
       nit: "",
@@ -367,28 +367,23 @@ export default function SignupWizard() {
         methods.setValue("segundoNombre", userData.segundoNombre || "")
         methods.setValue("primerApellido", userData.primerApellido || "")
         methods.setValue("segundoApellido", userData.segundoApellido || "")
-        methods.setValue(
-          "email",
-          userData.correoPersonal || userData.email || userData.correo || ""
-        )
-        methods.setValue(
-          "confirm_email",
-          userData.correoPersonal || userData.email || userData.correo || ""
-        )
+
+        // Correo personal y su confirmación
+        const correoPersonalValue = userData.correoPersonal ||
+          userData.correo_personal ||
+          userData.correo ||
+          userData.email ||
+          ""
+        methods.setValue("correoPersonal", correoPersonalValue)
+        methods.setValue("confirm_correoPersonal", correoPersonalValue) // Auto-llenar confirmación
+
+        // Correo institucional y su confirmación
+        const correoInstitucionalValue = userData.correoInstitucional || userData.correo_institucional || ""
+        methods.setValue("correoInstitucional", correoInstitucionalValue)
+        methods.setValue("confirm_correoInstitucional", correoInstitucionalValue) // Auto-llenar confirmación
+
         methods.setValue("pais", userData.pais || "")
         methods.setValue("ciudad", userData.municipio || "")
-        methods.setValue(
-          "correoInstitucional",
-          userData.correoInstitucional || userData.correo_institucional || ""
-        )
-        methods.setValue(
-          "correoPersonal",
-          userData.correoPersonal ||
-            userData.correo_personal ||
-            userData.correo ||
-            userData.email ||
-            ""
-        )
 
         methods.setValue("cui", userData.dpi || dpi)
         methods.setValue("sexo", userData.sexo || "")
@@ -453,24 +448,23 @@ export default function SignupWizard() {
           segundoNombre: !!userData.segundoNombre,
           primerApellido: !!userData.primerApellido,
           segundoApellido: !!userData.segundoApellido,
-          email: !!(
+          correoPersonal: !!(
             userData.correoPersonal ||
+            userData.correo_personal ||
             userData.email ||
             userData.correo
           ),
-          confirm_email: !!(
+          confirm_correoPersonal: !!(
             userData.correoPersonal ||
+            userData.correo_personal ||
             userData.email ||
             userData.correo
           ),
           correoInstitucional: !!(
             userData.correoInstitucional || userData.correo_institucional
           ),
-          correoPersonal: !!(
-            userData.correoPersonal ||
-            userData.correo_personal ||
-            userData.email ||
-            userData.correo
+          confirm_correoInstitucional: !!(
+            userData.correoInstitucional || userData.correo_institucional
           ),
           pais: !!userData.pais,
           ciudad: !!userData.municipio,
@@ -522,47 +516,28 @@ export default function SignupWizard() {
   const handleSubmit = async (values: z.infer<typeof SignupAllSchema>) => {
     setIsSubmitting(true)
     try {
-      // MOCK: sin llamada a API. Imprimimos valores para verificar archivos.
-      const vals = values
-      console.log("[MOCK] SUBMIT values:", vals)
-      console.log("[MOCK] Archivos:", {
-        pdf_dpi: vals.pdf_dpi ? (vals.pdf_dpi as File).name : null,
-        pdf_contrato: vals.pdf_contrato
-          ? (vals.pdf_contrato as File).name
-          : null,
-        pdf_certificado_profesional: vals.pdf_certificado_profesional
-          ? (vals.pdf_certificado_profesional as File).name
-          : null,
-      })
-      toast.success("Formulario listo (mock). Revisa la consola.")
-      resetSteps()
-      setIsPrefilled(false)
-      setPrefilledFields({})
-      methods.reset()
+      const result = await signup(values)
+
+      if (result.success) {
+        const status = result.data?.status || "PENDIENTE"
+        const statusMsg = status === "APROBADA"
+          ? "¡Felicitaciones! Tu solicitud ha sido aprobada automáticamente."
+          : "Tu solicitud ha sido enviada y está pendiente de revisión."
+
+        toast.success(statusMsg)
+        resetSteps()
+        setIsPrefilled(false)
+        setPrefilledFields({})
+        methods.reset()
+      } else {
+        toast.error(result.error?.message || "Error al registrar usuario")
+      }
     } catch (error) {
       console.error(error)
-      toast.error("Error inesperado (mock)")
+      toast.error("Error al registrar usuario")
     } finally {
       setIsSubmitting(false)
     }
-    // setIsSubmitting(true)
-    // try {
-    //   const result = await signup(values)
-
-    //   if (result.success) {
-    //     toast.success("Usuario registrado exitosamente")
-    //     resetSteps()
-    //     setIsPrefilled(false)
-    //     setPrefilledFields({})
-    //     methods.reset()
-    //   } else {
-    //     toast.error(result.error?.message || "Error al registrar usuario")
-    //   }
-    // } catch (error) {
-    //   toast.error("Error al registrar usuario")
-    // } finally {
-    //   setIsSubmitting(false)
-    // }
   }
 
   return (

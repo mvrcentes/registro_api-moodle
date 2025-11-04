@@ -11,6 +11,9 @@ import { SignupProfessionalInfoSchema } from "@/features/auth/schemas/auth.schem
 type Props = {
   onValidityChange?: (valid: boolean) => void
   prefilledFields?: {
+    profesion?: boolean
+    puesto?: boolean
+    sector?: boolean
     colegio?: boolean
     numeroColegiado?: boolean
   }
@@ -38,7 +41,34 @@ const SignupProfessionalInfoform = ({
 
   return (
     <Form {...form}>
-      <div className="flex flex-col space-y-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <CustomFormField
+          name="profesion"
+          fieldType={FormFieldType.INPUT}
+          form={form}
+          label="Profesión"
+          placeholder="Ingrese su profesión"
+          readonly={prefilledFields?.profesion || false}
+        />
+
+        <CustomFormField
+          name="puesto"
+          fieldType={FormFieldType.INPUT}
+          form={form}
+          label="Puesto"
+          placeholder="Ingrese su puesto laboral"
+          readonly={prefilledFields?.puesto || false}
+        />
+
+        <CustomFormField
+          name="sector"
+          fieldType={FormFieldType.INPUT}
+          form={form}
+          label="Sector"
+          placeholder="Sector (Público/Privado)"
+          readonly={prefilledFields?.sector || false}
+        />
+
         <CustomFormField
           name="colegio"
           fieldType={FormFieldType.SELECT_ITEM}

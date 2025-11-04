@@ -1,5 +1,8 @@
 import {
+  ColegioValue,
+  DependenciaValue,
   EntidadValue,
+  EtniaValue,
   InstitucionValue,
   RenglonValue,
 } from "@/app/auth/signup/components/forms/types"
@@ -9,6 +12,14 @@ export type ApplicationStatus =
   | "in_review"
   | "approved"
   | "rejected"
+
+// Información de archivos
+export interface FileInfo {
+  id: string
+  path: string
+  mimeType: string
+  sizeBytes: number
+}
 
 // Fila que mostrará la tabla (decisión)
 export interface ApplicationRow {
@@ -30,3 +41,11 @@ export interface ApplicationRow {
   // colegio?: string
 }
 
+export interface ApplicationDetail extends ApplicationRow {
+  etnia?: EtniaValue
+  dependencia?: DependenciaValue
+  colegio?: ColegioValue
+  telefono?: string
+  direccion?: string
+  files?: FileInfo[]
+}

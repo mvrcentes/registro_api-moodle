@@ -14,11 +14,11 @@ import {
 } from "@/components/ui/dropdown-menu"
 
 import { InformationSheet } from "./modal/InformationSheet"
-import { ApplicationRow } from "./types"
+import { ApplicationDetail } from "./types"
 import { fullName, maskDPI, formatDateShort } from "@/lib/utils"
 
-function StatusBadge({ status }: { status: ApplicationRow["status"] }) {
-  const map: Record<ApplicationRow["status"], { label: string }> = {
+function StatusBadge({ status }: { status: ApplicationDetail["status"] }) {
+  const map: Record<ApplicationDetail["status"], { label: string }> = {
     pending: { label: "Pendiente" },
     in_review: { label: "En revisión" },
     approved: { label: "Aprobado" },
@@ -27,7 +27,7 @@ function StatusBadge({ status }: { status: ApplicationRow["status"] }) {
   return <Badge variant="secondary">{map[status].label}</Badge>
 }
 
-export const columns: ColumnDef<ApplicationRow>[] = [
+export const columns: ColumnDef<ApplicationDetail>[] = [
   {
     accessorKey: "primerNombre",
     header: "Nombre",

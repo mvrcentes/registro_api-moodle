@@ -20,9 +20,6 @@ type Props = {
     institucion?: boolean
     dependencia?: boolean
     renglon?: boolean
-    profesion?: boolean
-    puesto?: boolean
-    sector?: boolean
   }
 }
 
@@ -92,33 +89,6 @@ const SignupInstitutionForm = ({
           placeholder="Seleccione el renglón presupuestario"
           fieldValues={RENGLON_OPTIONS}
           readonly={prefilledFields?.renglon || false}
-        />
-
-        <CustomFormField
-          name="profesion"
-          fieldType={FormFieldType.INPUT}
-          form={form}
-          label="Profesión"
-          placeholder="Profesión del usuario"
-          readonly={prefilledFields?.profesion || false}
-        />
-
-        <CustomFormField
-          name="puesto"
-          fieldType={FormFieldType.INPUT}
-          form={form}
-          label="Puesto"
-          placeholder="Puesto laboral"
-          readonly={prefilledFields?.puesto || false}
-        />
-
-        <CustomFormField
-          name="sector"
-          fieldType={FormFieldType.INPUT}
-          form={form}
-          label="Sector"
-          placeholder="Sector (Público/Privado)"
-          readonly={prefilledFields?.sector || false}
         />
       </div>
     </Form>

@@ -31,8 +31,11 @@ export const SignupCompleteSchema = z
       .min(13, "El DPI es obligatorio")
       .max(13, "El DPI debe tener 13 caracteres"),
 
-    email: z.email("Dirección de correo electrónico no válida"),
-    confirm_email: z.email("Dirección de correo electrónico no válida"),
+    correoPersonal: z.string().email("Correo personal no válido"),
+    confirm_correoPersonal: z.string().email("Correo personal no válido"),
+
+    correoInstitucional: z.string().email("Correo institucional no válido"),
+    confirm_correoInstitucional: z.string().email("Correo institucional no válido"),
 
     primerNombre: z.string().min(2, "El primer nombre es obligatorio"),
     segundoNombre: z.string().optional(),
@@ -51,19 +54,16 @@ export const SignupCompleteSchema = z
 
     pais: z.string().min(2, "El país es obligatorio"),
     ciudad: z.string().min(2, "La ciudad es obligatoria"),
-    correoInstitucional: z.union([
-      z.literal(""),
-      z.string().email("Correo institucional no válido"),
-    ]),
-    correoPersonal: z.union([
-      z.literal(""),
-      z.string().email("Correo personal no válido"),
-    ]),
   })
-  // Igualdad de emails
-  .refine((data) => data.email === data.confirm_email, {
-    message: "Los correos no coinciden",
-    path: ["confirm_email"], // el error se muestra bajo el campo de confirmación
+  // Igualdad de correo personal
+  .refine((data) => data.correoPersonal === data.confirm_correoPersonal, {
+    message: "Los correos personales no coinciden",
+    path: ["confirm_correoPersonal"],
+  })
+  // Igualdad de correo institucional
+  .refine((data) => data.correoInstitucional === data.confirm_correoInstitucional, {
+    message: "Los correos institucionales no coinciden",
+    path: ["confirm_correoInstitucional"],
   })
   // Igualdad de contraseñas
   .refine((data) => data.password === data.confirm_password, {
@@ -97,6 +97,9 @@ export const SignupInstitutionSchema = z.object({
   institucion: z.string().min(2, "La institución es obligatoria"),
   dependencia: z.string().optional(),
   renglon: z.string().min(2, "El renglón presupuestario es obligatorio"),
+})
+
+export const SignupProfessionalInfoSchema = z.object({
   profesion: z.union([
     z.literal(""),
     z.string().min(2, "Debe contener al menos 2 caracteres"),
@@ -109,9 +112,6 @@ export const SignupInstitutionSchema = z.object({
     z.literal(""),
     z.string().min(2, "Debe contener al menos 2 caracteres"),
   ]),
-})
-
-export const SignupProfessionalInfoSchema = z.object({
   colegio: z
     .string()
     .min(2, "El nombre del colegio profesional es obligatorio"),

@@ -1,37 +1,44 @@
+import { cookies } from "next/headers"
 import { columns } from "./components/applications-columns"
 import { DataTable } from "./components/applications-table"
-import { ApplicationRow } from "./components/types"
+import type { ApplicationDetail } from "./components/types"
 
-async function getApplications(): Promise<ApplicationRow[]> {
-  // TODO: reemplaza por fetch a tu API interna
-  return [
-    {
-      id: "app_001",
-      email: "maria@example.com",
-      primerNombre: "María",
-      segundoNombre: "Fernanda",
-      primerApellido: "López",
-      segundoApellido: "García",
-      dpi: "1234567890123",
-      entidad: "SECTOR EDUCACIÓN, CIENCIA, CULTURA Y DEPORTES",
-      institucion: "MINISTERIO DE EDUCACIÓN",
-      renglon: "PERSONAL PERMANENTE 011",
-      status: "pending",
-      submittedAt: "2025-09-10T15:30:00Z",
+const API_BASE_URL =
+  process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000/api/v1"
+
+async function getApplications(): Promise<ApplicationDetail[]> {
+  const baseUrl = API_BASE_URL.replace(/\/$/, "")
+  const cookieStore = await cookies()
+  const cookieHeader = cookieStore
+    .getAll()
+    .map(({ name, value }: { name: string; value: string }) => `${name}=${value}`)
+    .join("; ")
+
+  const response = await fetch(`${baseUrl}/applications`, {
+    method: "GET",
+    headers: {
+      Accept: "application/json",
+      ...(cookieHeader ? { cookie: cookieHeader } : {}),
     },
-    {
-      id: "app_002",
-      email: "juan@example.com",
-      primerNombre: "Juan",
-      primerApellido: "Pérez",
-      dpi: "9876543210987",
-      entidad: "SECTOR SALUD Y SEGURIDAD SOCIAL",
-      institucion: "MINISTERIO DE SALUD PÚBLICA Y ASISTENCIA SOCIAL",
-      renglon: "GRUPO 029",
-      status: "in_review",
-      submittedAt: "2025-09-12T17:45:00Z",
-    },
-  ]
+    cache: "no-store",
+  })
+
+  if (!response.ok) {
+    throw new Error(
+      `Failed to fetch applications (${response.status} ${response.statusText})`
+    )
+  }
+
+  const payload = (await response.json()) as {
+    ok?: boolean
+    data?: ApplicationDetail[]
+  }
+
+  if (payload.ok === false || !Array.isArray(payload.data)) {
+    throw new Error("Unexpected response while fetching applications")
+  }
+
+  return payload.data
 }
 
 export default async function ApplicationsPage() {

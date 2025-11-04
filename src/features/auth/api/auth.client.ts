@@ -385,52 +385,64 @@ export const signup = async (
   data: z.infer<typeof SignupAllSchema>
 ): Promise<ISignupCompleteResponseDTO> => {
   try {
-    // Obtener el token de autenticación
-    const token = await getAuthToken()
+    // Crear FormData para enviar archivos
+    const formData = new FormData()
 
-    // Crear usuario usando el endpoint de usuarios
-    const response = await externalApi.post(
-      "/usuarios",
-      {
-        dpi: data.dpi,
-        email: data.email,
-        password: data.password,
-        primerNombre: data.primerNombre,
-        segundoNombre: data.segundoNombre,
-        primerApellido: data.primerApellido,
-        segundoApellido: data.segundoApellido,
-        correoInstitucional: data.correoInstitucional,
-        correoPersonal: data.correoPersonal,
-        nit: data.nit,
-        sexo: data.sexo,
-        fechaNacimiento: data.fechaNacimiento,
-        departamento: data.departamento_residencia,
-        municipio: data.municipio_residencia,
-        telefono: data.telefono,
-        entidad: data.entidad,
-        institucion: data.institucion || data.entidad,
-        dependencia: data.dependencia,
-        renglon: data.renglon,
-        profesion: data.profesion,
-        puesto: data.puesto,
-        sector: data.sector,
-        colegio: data.colegio,
-        numeroColegiado: data.numeroColegiado,
-        pais: data.pais,
+    // Agregar todos los campos de texto
+    formData.append("dpi", data.dpi)
+    formData.append("email", data.correoPersonal)
+    formData.append("password", data.password)
+    formData.append("primerNombre", data.primerNombre)
+    if (data.segundoNombre) formData.append("segundoNombre", data.segundoNombre)
+    formData.append("primerApellido", data.primerApellido)
+    if (data.segundoApellido) formData.append("segundoApellido", data.segundoApellido)
+    if (data.correoInstitucional) formData.append("correoInstitucional", data.correoInstitucional)
+    formData.append("correoPersonal", data.correoPersonal)
+
+    // Demografía
+    formData.append("cui", data.cui)
+    formData.append("nit", data.nit)
+    formData.append("sexo", data.sexo)
+    formData.append("edad", String(data.edad))
+    formData.append("departamento_residencia", data.departamento_residencia)
+    formData.append("municipio_residencia", data.municipio_residencia)
+    formData.append("telefono", data.telefono)
+    formData.append("etnia", data.etnia)
+    formData.append("pais", data.pais)
+    formData.append("ciudad", data.ciudad)
+
+    // Institución
+    formData.append("entidad", data.entidad)
+    formData.append("institucion", data.institucion || data.entidad)
+    if (data.dependencia) formData.append("dependencia", data.dependencia)
+    formData.append("renglon", data.renglon)
+    if (data.profesion) formData.append("profesion", data.profesion)
+    if (data.puesto) formData.append("puesto", data.puesto)
+    if (data.sector) formData.append("sector", data.sector)
+
+    // Profesional
+    formData.append("colegio", data.colegio)
+    formData.append("numeroColegiado", data.numeroColegiado)
+
+    // Archivos PDF
+    if (data.pdf_dpi) formData.append("pdf_dpi", data.pdf_dpi)
+    if (data.pdf_contrato) formData.append("pdf_contrato", data.pdf_contrato)
+    if (data.pdf_certificado_profesional) formData.append("pdf_certificado_profesional", data.pdf_certificado_profesional)
+
+    // Enviar a nuestro backend local
+    const response = await apiLocal.post("/signup", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
       },
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    )
+    })
 
     if (response.data && (response.status === 200 || response.status === 201)) {
       return {
         success: true,
         data: {
-          userId: response.data.id || data.dpi,
-          message: "Usuario registrado exitosamente",
+          userId: response.data.data?.solicitudId || data.dpi,
+          message: response.data.data?.message || "Usuario registrado exitosamente",
+          status: response.data.data?.status,
         },
       }
     }
@@ -453,7 +465,7 @@ export const signup = async (
         success: false,
         error: {
           status: error.response.status,
-          message: "El usuario ya existe o datos inválidos",
+          message: error.response.data?.error || "El usuario ya existe o datos inválidos",
           error: "User Already Exists",
         },
       }

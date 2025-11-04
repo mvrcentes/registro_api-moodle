@@ -15,13 +15,17 @@ import { Separator } from "@/components/ui/separator"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { StatusModal } from "./StatusModal"
-
-import { ApplicationRow } from "../types"
+import { PDFViewer } from "@/components/reusable/PDFViewer"
+import { FileText } from "lucide-react"
 import {
-  EtniaValue,
-  DependenciaValue,
-  ColegioValue,
-} from "@/app/auth/signup/components/forms/types"
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
+
+import { ApplicationDetail, ApplicationRow, FileInfo } from "../types"
 
 // --- Helpers de presentación ---
 function Field({
@@ -76,13 +80,29 @@ function StatusBadge({ status }: { status: ApplicationRow["status"] }) {
   return <Badge variant="secondary">{map[status].label}</Badge>
 }
 
-// --- Tipo de detalle para el Sheet (extiende la fila de la tabla) ---
-export type ApplicationDetail = ApplicationRow & {
-  etnia?: EtniaValue
-  dependencia?: DependenciaValue
-  colegio?: ColegioValue
-  telefono?: string
-  direccion?: string
+// Función para determinar el label del archivo basado en su path
+function getFileLabel(file: FileInfo, index: number): string {
+  const path = file.path.toLowerCase()
+
+  // Intentar inferir el tipo de documento basado en el nombre del archivo
+  if (path.includes('dpi') || path.includes('identificacion')) {
+    return "DPI"
+  } else if (path.includes('contrato') || path.includes('contract')) {
+    return "Contrato"
+  } else if (path.includes('certificado') || path.includes('certificate')) {
+    return "Certificado"
+  } else if (path.includes('titulo') || path.includes('diploma')) {
+    return "Título"
+  } else if (path.includes('cv') || path.includes('curriculum')) {
+    return "CV"
+  } else if (path.includes('constancia')) {
+    return "Constancia"
+  } else if (path.includes('acuerdo')) {
+    return "Acuerdo"
+  } else {
+    // Si no se puede inferir, usar un nombre genérico
+    return `Documento ${index + 1}`
+  }
 }
 
 // --- Componente principal ---
@@ -97,6 +117,16 @@ export function InformationSheet({
   title?: string
   description?: string
 }) {
+  // Filtrar solo archivos PDF
+  const pdfFiles = React.useMemo(() => {
+    if (!data.files || !Array.isArray(data.files)) return []
+    return data.files.filter(file =>
+      file.mimeType === 'application/pdf' ||
+      file.path.toLowerCase().endsWith('.pdf')
+    )
+  }, [data.files])
+
+  const hasPdfFiles = pdfFiles.length > 0
   return (
     <Sheet>
       <SheetTrigger asChild>{trigger}</SheetTrigger>
@@ -164,6 +194,49 @@ export function InformationSheet({
             </div>
             <Field label="Dirección" value={data.direccion} />
           </section>
+
+          {/* Documentos adjuntos */}
+          {hasPdfFiles && (
+            <>
+              <Separator />
+              <section>
+                <h3 className="mb-3 text-sm font-semibold text-muted-foreground">
+                  Documentos adjuntos
+                </h3>
+                <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
+                  {pdfFiles.map((file, index) => (
+                    <Dialog key={file.id}>
+                      <DialogTrigger asChild>
+                        <Button
+                          variant="outline"
+                          className="h-auto flex-col gap-2 p-4"
+                        >
+                          <FileText className="h-8 w-8 text-muted-foreground" />
+                          <span className="text-xs font-medium">
+                            {getFileLabel(file, index)}
+                          </span>
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent className="w-[98vw] max-w-none max-h-[96vh] h-[96vh] flex flex-col p-0">
+                        <DialogHeader className="px-6 pt-6 pb-4 shrink-0">
+                          <DialogTitle className="flex items-center gap-2">
+                            <FileText className="h-5 w-5" />
+                            {getFileLabel(file, index)}
+                          </DialogTitle>
+                        </DialogHeader>
+                        <div className="flex-1 px-6 pb-6 min-h-0">
+                          <PDFViewer
+                            url={`/api/files/${file.id}`}
+                            className="w-full h-full"
+                          />
+                        </div>
+                      </DialogContent>
+                    </Dialog>
+                  ))}
+                </div>
+              </section>
+            </>
+          )}
         </div>
 
         <div className="mt-6 flex flex-wrap items-center justify-end gap-2">
