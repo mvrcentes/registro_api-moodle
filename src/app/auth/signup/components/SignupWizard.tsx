@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import type { StepConfig } from "@/components/reusable/step/stepper-types"
 import { useStepper } from "@/components/reusable/step/hooks/use-stepper"
 import { Step, Steps } from "@/components/reusable/step/stepper"
@@ -27,15 +27,17 @@ import {
   RENGLON_OPTIONS,
 } from "./forms/types"
 
-// remove
-const steps = [
+// Los pasos base (siempre presentes)
+const baseSteps = [
   { label: "DPI" },
   { label: "Cuenta" },
   { label: "Perfil" },
   { label: "Institución" },
   { label: "Profesional" },
-  { label: "Archivos" },
 ] satisfies StepConfig[]
+
+// Paso de archivos (solo si no está pre-llenado)
+const filesStep = { label: "Archivos" } satisfies StepConfig
 
 const normalizeText = (input?: string) =>
   (input ?? "")
@@ -91,6 +93,11 @@ export default function SignupWizard() {
   const [step2Valid, setStep2Valid] = useState(false)
   const [step3Valid, setStep3Valid] = useState(false)
   const [step4Valid, setStep4Valid] = useState(false)
+
+  // Debug: Log step4Valid changes
+  useEffect(() => {
+    console.log("[SignupWizard] step4Valid changed:", step4Valid)
+  }, [step4Valid])
   const [step5Valid, setStep5Valid] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isPrefilling, setIsPrefilling] = useState(false)
@@ -123,6 +130,9 @@ export default function SignupWizard() {
     colegio?: boolean
     numeroColegiado?: boolean
   }>({})
+
+  // Steps dinámicos basados en si está pre-llenado o no
+  const steps = isPrefilled ? baseSteps : [...baseSteps, filesStep]
 
   const {
     nextStep,
@@ -160,6 +170,7 @@ export default function SignupWizard() {
       edad: undefined,
       departamento_residencia: "",
       municipio_residencia: "",
+      etnia: undefined,
       telefono: "",
       // Paso 3 (institución)
       entidad: "",
@@ -516,7 +527,8 @@ export default function SignupWizard() {
   const handleSubmit = async (values: z.infer<typeof SignupAllSchema>) => {
     setIsSubmitting(true)
     try {
-      const result = await signup(values)
+      // Pasar isPrefilled para que el backend sepa si debe aprobar automáticamente
+      const result = await signup({ ...values, isPrefilled })
 
       if (result.success) {
         const status = result.data?.status || "PENDIENTE"
@@ -592,9 +604,11 @@ export default function SignupWizard() {
                 />
               </Step>
 
-              <Step index={5} label="Archivos">
-                <SignupFilesForm onValidityChange={setStep5Valid} />
-              </Step>
+              {!isPrefilled && (
+                <Step index={5} label="Archivos">
+                  <SignupFilesForm onValidityChange={setStep5Valid} />
+                </Step>
+              )}
             </Steps>
           </form>
         </FormProvider>
@@ -672,15 +686,30 @@ export default function SignupWizard() {
             {activeStep === 4 && (
               <Button
                 onClick={() => {
-                  if (!step4Valid) return
-                  nextStep()
+                  console.log("[Step4 Button] Click:", { step4Valid, isPrefilled, isSubmitting })
+                  if (!step4Valid) {
+                    console.log("[Step4 Button] Blocked: step4Valid is false")
+                    return
+                  }
+                  // Si está pre-llenado, no necesita archivos, ir directo a submit
+                  if (isPrefilled) {
+                    console.log("[Step4 Button] Submitting (prefilled)")
+                    methods.handleSubmit(handleSubmit)()
+                  } else {
+                    console.log("[Step4 Button] Going to next step")
+                    nextStep()
+                  }
                 }}
-                disabled={!step4Valid}>
-                Siguiente
+                disabled={!step4Valid || (isPrefilled && isSubmitting)}
+                type={isPrefilled ? "button" : "button"}>
+                {isPrefilled
+                  ? (isSubmitting ? "Registrando..." : "Registrar Usuario")
+                  : "Siguiente"
+                }
               </Button>
             )}
 
-            {activeStep === 5 && (
+            {activeStep === 5 && !isPrefilled && (
               <Button
                 type="submit"
                 form="signup-form"

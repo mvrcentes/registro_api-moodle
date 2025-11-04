@@ -27,8 +27,24 @@ const SignupProfessionalInfoform = ({
 
   useEffect(() => {
     if (onValidityChange) {
-      const computeValid = () =>
-        SignupProfessionalInfoSchema.safeParse(form.getValues()).success
+      const computeValid = () => {
+        // Solo validar los campos específicos de este paso
+        const allValues = form.getValues()
+        const step4Values = {
+          profesion: allValues.profesion,
+          puesto: allValues.puesto,
+          sector: allValues.sector,
+          colegio: allValues.colegio,
+          numeroColegiado: allValues.numeroColegiado,
+        }
+        const result = SignupProfessionalInfoSchema.safeParse(step4Values)
+        console.log("[SignupProfessionalInfo] Validation:", {
+          step4Values,
+          success: result.success,
+          errors: result.success ? null : result.error.flatten()
+        })
+        return result.success
+      }
 
       onValidityChange(computeValid())
 

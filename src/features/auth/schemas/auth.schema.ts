@@ -89,6 +89,9 @@ export const SignupDemographicSchema = z.object({
     .optional(),
   departamento_residencia: z.string().min(2, "El departamento es obligatorio"),
   municipio_residencia: z.string().min(2, "El municipio es obligatorio"),
+  etnia: z.enum(["MAYA", "XINCA", "GARIFUNA", "LADINOS", "EXTRANJERO", "OTRA"], {
+    errorMap: () => ({ message: "Debe seleccionar una etnia válida" }),
+  }),
   telefono: z.string().min(8, "El teléfono es obligatorio"),
 })
 

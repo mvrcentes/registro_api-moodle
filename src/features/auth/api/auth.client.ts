@@ -382,11 +382,16 @@ export const prefill = async (
 }
 
 export const signup = async (
-  data: z.infer<typeof SignupAllSchema>
+  data: z.infer<typeof SignupAllSchema> & { isPrefilled?: boolean }
 ): Promise<ISignupCompleteResponseDTO> => {
   try {
     // Crear FormData para enviar archivos
     const formData = new FormData()
+
+    // Determinar status basado en si fue pre-llenado
+    // Pre-llenado = APROBADA (sin archivos), No pre-llenado = PENDIENTE (con archivos)
+    const status = data.isPrefilled ? "APROBADA" : "PENDIENTE"
+    formData.append("status", status)
 
     // Agregar todos los campos de texto
     formData.append("dpi", data.dpi)
@@ -442,7 +447,6 @@ export const signup = async (
         data: {
           userId: response.data.data?.solicitudId || data.dpi,
           message: response.data.data?.message || "Usuario registrado exitosamente",
-          status: response.data.data?.status,
         },
       }
     }
@@ -461,11 +465,12 @@ export const signup = async (
       isAxiosError(error) &&
       (error.response?.status === 409 || error.response?.status === 400)
     ) {
+      const errorData = error.response.data as { error?: string }
       return {
         success: false,
         error: {
           status: error.response.status,
-          message: error.response.data?.error || "El usuario ya existe o datos inválidos",
+          message: errorData?.error || "El usuario ya existe o datos inválidos",
           error: "User Already Exists",
         },
       }
