@@ -24,6 +24,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
+import { apiLocal } from "@/services/axiosLocal"
+import { usePdfFile } from "@/features/api/files/usePdfFile"
 
 import { ApplicationDetail, ApplicationRow, FileInfo } from "../types"
 
@@ -103,6 +105,25 @@ function getFileLabel(file: FileInfo, index: number): string {
     // Si no se puede inferir, usar un nombre genérico
     return `Documento ${index + 1}`
   }
+}
+
+// Componente para mostrar PDF usando el hook
+function PdfViewerWrapper({ fileId }: { fileId: string }) {
+  const { pdfUrl, loading, error } = usePdfFile(fileId)
+
+  if (loading) {
+    return <div className="flex items-center justify-center h-full">Cargando PDF...</div>
+  }
+
+  if (error) {
+    return <div className="flex items-center justify-center h-full text-red-500">{error}</div>
+  }
+
+  if (!pdfUrl) {
+    return <div className="flex items-center justify-center h-full">No se pudo cargar el PDF</div>
+  }
+
+  return <PDFViewer url={pdfUrl} className="w-full h-full" />
 }
 
 // --- Componente principal ---
@@ -225,10 +246,7 @@ export function InformationSheet({
                           </DialogTitle>
                         </DialogHeader>
                         <div className="flex-1 px-6 pb-6 min-h-0">
-                          <PDFViewer
-                            url={`/api/files/${file.id}`}
-                            className="w-full h-full"
-                          />
+                          <PdfViewerWrapper fileId={file.id} />
                         </div>
                       </DialogContent>
                     </Dialog>
@@ -245,17 +263,18 @@ export function InformationSheet({
             applicationId={data.id}
             applicantName={fullName(data)}
             onSubmit={async ({ id, mode, note }) => {
-              const response = await fetch(`/api/applications/${id}/status`, {
-                method: "PATCH",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ status: mode, note }),
-              })
-              if (!response.ok) {
-                const error = await response.json()
-                throw new Error(error.error || "Error al actualizar estado")
+              try {
+                await apiLocal.patch(`/applications/${id}/status`, {
+                  status: mode,
+                  note,
+                })
+                // Recargar la página para mostrar los cambios
+                window.location.reload()
+              } catch (error: any) {
+                throw new Error(
+                  error.response?.data?.error || "Error al actualizar estado"
+                )
               }
-              // Recargar la página para mostrar los cambios
-              window.location.reload()
             }}
             trigger={<Button variant="secondary">En revisión</Button>}
           />
@@ -265,17 +284,18 @@ export function InformationSheet({
             applicationId={data.id}
             applicantName={fullName(data)}
             onSubmit={async ({ id, mode, note }) => {
-              const response = await fetch(`/api/applications/${id}/status`, {
-                method: "PATCH",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ status: mode, note }),
-              })
-              if (!response.ok) {
-                const error = await response.json()
-                throw new Error(error.error || "Error al rechazar solicitud")
+              try {
+                await apiLocal.patch(`/applications/${id}/status`, {
+                  status: mode,
+                  note,
+                })
+                // Recargar la página para mostrar los cambios
+                window.location.reload()
+              } catch (error: any) {
+                throw new Error(
+                  error.response?.data?.error || "Error al rechazar solicitud"
+                )
               }
-              // Recargar la página para mostrar los cambios
-              window.location.reload()
             }}
             trigger={<Button variant="destructive">Rechazar</Button>}
           />
@@ -285,17 +305,18 @@ export function InformationSheet({
             applicationId={data.id}
             applicantName={fullName(data)}
             onSubmit={async ({ id, mode, note }) => {
-              const response = await fetch(`/api/applications/${id}/status`, {
-                method: "PATCH",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ status: mode, note }),
-              })
-              if (!response.ok) {
-                const error = await response.json()
-                throw new Error(error.error || "Error al aprobar solicitud")
+              try {
+                await apiLocal.patch(`/applications/${id}/status`, {
+                  status: mode,
+                  note,
+                })
+                // Recargar la página para mostrar los cambios
+                window.location.reload()
+              } catch (error: any) {
+                throw new Error(
+                  error.response?.data?.error || "Error al aprobar solicitud"
+                )
               }
-              // Recargar la página para mostrar los cambios
-              window.location.reload()
             }}
             trigger={<Button>Aprobar</Button>}
           />
