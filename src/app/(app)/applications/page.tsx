@@ -1,48 +1,34 @@
-import { cookies } from "next/headers"
-import { columns } from "./components/applications-columns"
+"use client"
+
 import { DataTable } from "./components/applications-table"
-import type { ApplicationDetail } from "./components/types"
+import { columns } from "./components/applications-columns"
+import { useApplications } from "@/features/api/applications/useApplications"
 
-const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000/api/v1"
+export default function page() {
+  const { data, loading, error, reload } = useApplications()
 
-async function getApplications(): Promise<ApplicationDetail[]> {
-  const baseUrl = API_BASE_URL.replace(/\/$/, "")
-  const cookieStore = await cookies()
-  const cookieHeader = cookieStore
-    .getAll()
-    .map(({ name, value }: { name: string; value: string }) => `${name}=${value}`)
-    .join("; ")
-
-  const response = await fetch(`${baseUrl}/applications`, {
-    method: "GET",
-    headers: {
-      Accept: "application/json",
-      ...(cookieHeader ? { cookie: cookieHeader } : {}),
-    },
-    cache: "no-store",
-  })
-
-  if (!response.ok) {
-    throw new Error(
-      `Failed to fetch applications (${response.status} ${response.statusText})`
+  if (loading) {
+    return (
+      <p className="text-sm text-muted-foreground">Cargando solicitudes…</p>
     )
   }
 
-  const payload = (await response.json()) as {
-    ok?: boolean
-    data?: ApplicationDetail[]
+  if (error) {
+    return (
+      <div className="space-y-2">
+        <p className="text-sm text-red-500">
+          Error al cargar solicitudes: {error}
+        </p>
+        <button
+          type="button"
+          onClick={() => void reload()}
+          className="text-sm underline">
+          Reintentar
+        </button>
+      </div>
+    )
   }
 
-  if (payload.ok === false || !Array.isArray(payload.data)) {
-    throw new Error("Unexpected response while fetching applications")
-  }
-
-  return payload.data
-}
-
-export default async function ApplicationsPage() {
-  const data = await getApplications()
   return (
     <div className="w-full">
       <h1 className="mb-6 text-2xl font-semibold">Solicitudes</h1>
