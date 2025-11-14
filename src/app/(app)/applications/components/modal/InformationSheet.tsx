@@ -24,8 +24,9 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
-import { apiLocal } from "@/services/axiosLocal"
 import { usePdfFile } from "@/features/api/files/usePdfFile"
+import { ApplicationsApi } from "@/features/api/applications/applications.client"
+import { fullName, maskDPI, formatDate, getFileLabel } from "../../lib"
 
 import { ApplicationDetail, ApplicationRow, FileInfo } from "../types"
 
@@ -47,31 +48,6 @@ function Field({
   )
 }
 
-function fullName(r: ApplicationRow) {
-  return [r.primerNombre, r.segundoNombre, r.primerApellido, r.segundoApellido]
-    .filter(Boolean)
-    .join(" ")
-}
-
-function maskDPI(dpi: string) {
-  // Enmascara todos menos los últimos 4
-  return dpi.replace(/\d(?=\d{4})/g, "•")
-}
-
-function formatDate(iso: string) {
-  try {
-    return new Intl.DateTimeFormat("es-GT", {
-      year: "numeric",
-      month: "short",
-      day: "2-digit",
-      hour: "2-digit",
-      minute: "2-digit",
-    }).format(new Date(iso))
-  } catch {
-    return iso
-  }
-}
-
 function StatusBadge({ status }: { status: ApplicationRow["status"] }) {
   const map: Record<ApplicationRow["status"], { label: string }> = {
     pending: { label: "Pendiente" },
@@ -80,31 +56,6 @@ function StatusBadge({ status }: { status: ApplicationRow["status"] }) {
     rejected: { label: "Rechazado" },
   }
   return <Badge variant="secondary">{map[status].label}</Badge>
-}
-
-// Función para determinar el label del archivo basado en su path
-function getFileLabel(file: FileInfo, index: number): string {
-  const path = file.path.toLowerCase()
-
-  // Intentar inferir el tipo de documento basado en el nombre del archivo
-  if (path.includes('dpi') || path.includes('identificacion')) {
-    return "DPI"
-  } else if (path.includes('contrato') || path.includes('contract')) {
-    return "Contrato"
-  } else if (path.includes('certificado') || path.includes('certificate')) {
-    return "Certificado"
-  } else if (path.includes('titulo') || path.includes('diploma')) {
-    return "Título"
-  } else if (path.includes('cv') || path.includes('curriculum')) {
-    return "CV"
-  } else if (path.includes('constancia')) {
-    return "Constancia"
-  } else if (path.includes('acuerdo')) {
-    return "Acuerdo"
-  } else {
-    // Si no se puede inferir, usar un nombre genérico
-    return `Documento ${index + 1}`
-  }
 }
 
 // Componente para mostrar PDF usando el hook
@@ -234,7 +185,7 @@ export function InformationSheet({
                         >
                           <FileText className="h-8 w-8 text-muted-foreground" />
                           <span className="text-xs font-medium">
-                            {getFileLabel(file, index)}
+                            {getFileLabel(file.path, index)}
                           </span>
                         </Button>
                       </DialogTrigger>
@@ -242,7 +193,7 @@ export function InformationSheet({
                         <DialogHeader className="px-6 pt-6 pb-4 shrink-0">
                           <DialogTitle className="flex items-center gap-2">
                             <FileText className="h-5 w-5" />
-                            {getFileLabel(file, index)}
+                            {getFileLabel(file.path, index)}
                           </DialogTitle>
                         </DialogHeader>
                         <div className="flex-1 px-6 pb-6 min-h-0">
@@ -263,18 +214,8 @@ export function InformationSheet({
             applicationId={data.id}
             applicantName={fullName(data)}
             onSubmit={async ({ id, mode, note }) => {
-              try {
-                await apiLocal.patch(`/applications/${id}/status`, {
-                  status: mode,
-                  note,
-                })
-                // Recargar la página para mostrar los cambios
-                window.location.reload()
-              } catch (error: any) {
-                throw new Error(
-                  error.response?.data?.error || "Error al actualizar estado"
-                )
-              }
+              await ApplicationsApi.updateStatus({ id, status: mode, note })
+              window.location.reload()
             }}
             trigger={<Button variant="secondary">En revisión</Button>}
           />
@@ -284,18 +225,8 @@ export function InformationSheet({
             applicationId={data.id}
             applicantName={fullName(data)}
             onSubmit={async ({ id, mode, note }) => {
-              try {
-                await apiLocal.patch(`/applications/${id}/status`, {
-                  status: mode,
-                  note,
-                })
-                // Recargar la página para mostrar los cambios
-                window.location.reload()
-              } catch (error: any) {
-                throw new Error(
-                  error.response?.data?.error || "Error al rechazar solicitud"
-                )
-              }
+              await ApplicationsApi.updateStatus({ id, status: mode, note })
+              window.location.reload()
             }}
             trigger={<Button variant="destructive">Rechazar</Button>}
           />
@@ -305,18 +236,8 @@ export function InformationSheet({
             applicationId={data.id}
             applicantName={fullName(data)}
             onSubmit={async ({ id, mode, note }) => {
-              try {
-                await apiLocal.patch(`/applications/${id}/status`, {
-                  status: mode,
-                  note,
-                })
-                // Recargar la página para mostrar los cambios
-                window.location.reload()
-              } catch (error: any) {
-                throw new Error(
-                  error.response?.data?.error || "Error al aprobar solicitud"
-                )
-              }
+              await ApplicationsApi.updateStatus({ id, status: mode, note })
+              window.location.reload()
             }}
             trigger={<Button>Aprobar</Button>}
           />

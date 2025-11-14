@@ -15,11 +15,18 @@ type UsePdfFileResult = {
  */
 export function usePdfFile(fileId: string): UsePdfFileResult {
   const [pdfUrl, setPdfUrl] = useState<string | null>(null)
-  const [loading, setLoading] = useState<boolean>(false)
+  const [loading, setLoading] = useState<boolean>(true)
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
+    if (!fileId) {
+      setError('ID de archivo inválido')
+      setLoading(false)
+      return
+    }
+
     let objectUrl: string | null = null
+    let isMounted = true
 
     const fetchPdf = async () => {
       try {
@@ -27,13 +34,30 @@ export function usePdfFile(fileId: string): UsePdfFileResult {
         setError(null)
 
         const blob = await FilesApi.getFile(fileId)
-        objectUrl = URL.createObjectURL(blob)
-        setPdfUrl(objectUrl)
+
+        // Validar que el blob sea un PDF
+        if (!blob || blob.size === 0) {
+          throw new Error('El archivo está vacío')
+        }
+
+        if (blob.type && !blob.type.includes('pdf')) {
+          console.warn(`Tipo de archivo inesperado: ${blob.type}`)
+        }
+
+        // Solo actualizar el estado si el componente sigue montado
+        if (isMounted) {
+          objectUrl = URL.createObjectURL(blob)
+          setPdfUrl(objectUrl)
+        }
       } catch (err: any) {
         console.error('Error fetching PDF:', err)
-        setError(err.response?.data?.error || 'Error al cargar el archivo')
+        if (isMounted) {
+          setError(err.message || 'Error al cargar el archivo')
+        }
       } finally {
-        setLoading(false)
+        if (isMounted) {
+          setLoading(false)
+        }
       }
     }
 
@@ -41,6 +65,7 @@ export function usePdfFile(fileId: string): UsePdfFileResult {
 
     // Cleanup: revocar el object URL cuando el componente se desmonte
     return () => {
+      isMounted = false
       if (objectUrl) {
         URL.revokeObjectURL(objectUrl)
       }

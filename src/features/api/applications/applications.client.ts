@@ -32,4 +32,28 @@ export const ApplicationsApi = {
       )
     }
   },
+
+  updateStatus: async ({
+    id,
+    status,
+    note,
+  }: {
+    id: string
+    status: string
+    note?: string
+  }): Promise<void> => {
+    try {
+      await apiLocal.patch(`/applications/${id}/status`, {
+        status,
+        note,
+      })
+    } catch (error: unknown) {
+      const { status: errorStatus, message } = parseAxiosError(error)
+      throw new Error(
+        `Error al actualizar estado (${errorStatus ?? "?"}): ${
+          message || "Error inesperado"
+        }`
+      )
+    }
+  },
 }
