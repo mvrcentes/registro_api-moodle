@@ -1,6 +1,6 @@
 "use client"
 
-import { ColumnDef } from "@tanstack/react-table"
+import type { ColumnDef } from "@tanstack/react-table"
 import { MoreHorizontal, Eye } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 
 import { InformationSheet } from "./modal/InformationSheet"
-import { ApplicationDetail } from "./types"
+import type { ApplicationDetail } from "./types"
 import { fullName, maskDPI, formatDateShort } from "@/lib/utils"
 
 function StatusBadge({ status }: { status: ApplicationDetail["status"] }) {
