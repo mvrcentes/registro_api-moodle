@@ -30,6 +30,7 @@ export interface ISignupCompleteResponseDTO extends ApiResponse {
   data?: {
     userId: string
     message: string
+    status?: string
   }
 }
 
