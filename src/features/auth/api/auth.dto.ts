@@ -9,9 +9,14 @@ export interface User {
   created_at?: string
 }
 
+export enum UserRole {
+  ADMIN = "ADMIN",
+  APPLICANT = "APPLICANT",
+}
+
 export type CurrentUser = {
   id: string
-  role: "ADMIN" | "APPLICANT"
+  role: UserRole
   email?: string
   name?: string
 }

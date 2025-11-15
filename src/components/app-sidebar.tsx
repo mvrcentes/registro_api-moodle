@@ -123,7 +123,7 @@ export function AppSidebar() {
                           <SidebarMenuSubItem>
                             <SidebarMenuSubButton asChild>
                               <Link
-                                href="/settings/users/administrators"
+                                href="/settings/users/admins"
                                 className="flex items-center gap-2">
                                 <ShieldUser className="w-4 h-4" />
                                 <span>Amistrativos</span>
@@ -133,10 +133,10 @@ export function AppSidebar() {
                           <SidebarMenuSubItem>
                             <SidebarMenuSubButton asChild>
                               <Link
-                                href="/settings/users/residents"
+                                href="/settings/users/applicants"
                                 className="flex items-center gap-2">
                                 <CircleUserRound className="w-4 h-4" />
-                                <span>Aplicativos</span>
+                                <span>Solicitantes</span>
                               </Link>
                             </SidebarMenuSubButton>
                           </SidebarMenuSubItem>
@@ -160,7 +160,6 @@ export function AppSidebar() {
           </SidebarGroup>
         </Collapsible>
       </SidebarContent>
-      <SidebarFooter></SidebarFooter>
     </Sidebar>
   )
 }

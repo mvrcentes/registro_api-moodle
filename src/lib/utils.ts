@@ -1,7 +1,8 @@
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
-import { ColegioValue } from "@/app/auth/signup/components/forms/types"
-import { ApplicationRow } from "@/app/(app)/applications/components/types"
+import type { ColegioValue } from "@/app/auth/signup/components/forms/types"
+import type { ApplicationRow } from "@/app/(app)/applications/components/types"
+import type { Row, FilterFn } from "@tanstack/react-table"
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -163,5 +164,33 @@ export function formatFileSize(bytes?: number) {
   const dm = 2
   const sizes = ["B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"]
   const i = Math.floor(Math.log(bytes) / Math.log(k))
-  return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`
+  return `${Number.parseFloat((bytes / k ** i).toFixed(dm))} ${sizes[i]}`
 }
+
+export const normalizeText = (value: unknown): string => {
+  if (typeof value !== "string") return ""
+  return value
+    .normalize("NFD")
+    .replace(/\p{Diacritic}+/gu, "")
+    .toLowerCase()
+}
+
+// 👇 ahora es un FilterFn bien tipado (firma correcta)
+export function createAccentInsensitiveGlobalFilter<TData>(): FilterFn<TData> {
+  return (row, columnId, filterValue): boolean => {
+    const search = normalizeText(filterValue)
+    if (!search) return true
+
+    const value = row.getValue(columnId)
+
+    if (value == null) return false
+
+    if (Array.isArray(value)) {
+      return value.some((v) => normalizeText(v).includes(search))
+    }
+
+    return normalizeText(String(value)).includes(search)
+  }
+}
+
+export const accentInsensitiveGlobalFilter = createAccentInsensitiveGlobalFilter<unknown>()
