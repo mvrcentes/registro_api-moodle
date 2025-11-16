@@ -31,10 +31,3 @@ jobs:
           NEXT_PUBLIC_API_BASE_URL: "/api"
         run: |
           npm run build
-
-      - name: Deploy static files to nginx
-        run: |
-          TARGET_DIR=/var/www/html/form_registro_next
-          mkdir -p "$TARGET_DIR"
-          rm -rf "$TARGET_DIR"/*
-          cp -R out/* "$TARGET_DIR"/
