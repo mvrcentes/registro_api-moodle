@@ -15,7 +15,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Input } from "@/components/ui/input"
 import { Loader2 } from "lucide-react"
 
-type Mode = "approve" | "reject" | "in_review"
+type Mode = "approved" | "rejected" | "in_review"
 
 type Props = {
   /** Botón o trigger externo que abre el diálogo */
@@ -47,7 +47,7 @@ const COPY: Record<
     needsNote: boolean
   }
 > = {
-  approve: {
+  approved: {
     title: "Aprobar solicitud",
     step1:
       "Vas a aprobar esta solicitud. Asegúrate de haber verificado los datos y documentos necesarios.",
@@ -73,7 +73,7 @@ const COPY: Record<
     color: "secondary",
     needsNote: false,
   },
-  reject: {
+  rejected: {
     title: "Rechazar solicitud",
     step1:
       "Vas a rechazar esta solicitud. Explica brevemente el motivo; el texto puede mostrarse al solicitante.",
@@ -115,7 +115,7 @@ export function StatusModal({
     if (!next) reset()
   }
 
-  const canContinueStep1 = mode === "reject" ? note.trim().length >= 5 : true // pide mínimo contenido al rechazar
+  const canContinueStep1 = mode === "rejected" ? note.trim().length >= 5 : true // pide mínimo contenido al rechazar
 
   const canConfirm =
     token.trim().toUpperCase() === cfg.step2.token.toUpperCase() &&
