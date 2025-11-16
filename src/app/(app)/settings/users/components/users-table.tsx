@@ -20,13 +20,23 @@ import {
 import type { UserOverview } from "./users.types"
 import SearchFilter from "@/components/reusable/filters/SearchFilter"
 import { createAccentInsensitiveGlobalFilter } from "@/lib/utils"
+import { CreateAdminUserSheet } from "./modal/CreateAdminUserSheet"
+import { Button } from "@/components/ui/button"
+import { UserRole } from "@/features/auth/api/auth.dto"
 
 interface DataTableProps {
   columns: ColumnDef<UserOverview>[]
   data: UserOverview[]
+  admin?: boolean
+  onReload?: () => void
 }
 
-export function UsersTable({ columns, data }: DataTableProps) {
+export function UsersTable({
+  columns,
+  data,
+  admin = false,
+  onReload,
+}: DataTableProps) {
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
   )
@@ -46,11 +56,28 @@ export function UsersTable({ columns, data }: DataTableProps) {
 
   return (
     <div className="w-full space-y-4">
-      <SearchFilter
-        value={globalFilter}
-        onChange={setGlobalFilter}
-        placeholder="Buscar usuarios..."
-      />
+      <div className="flex flex-row gap-2">
+        <SearchFilter
+          value={globalFilter}
+          onChange={setGlobalFilter}
+          placeholder="Buscar usuarios..."
+        />
+
+        {admin && (
+          <CreateAdminUserSheet
+            title="Creación de un nuevo usuario administrativo"
+            description="Rellena el formulario para crear un nuevo usuario con privilegios administrativos."
+            trigger={<Button variant="default">Crear Usuario</Button>}
+            data={{
+              firstName: "",
+              lastName: "",
+              email: "",
+              role: UserRole.ADMIN,
+            }}
+            onSuccess={onReload}
+          />
+        )}
+      </div>
 
       <div className="overflow-x-auto rounded-md border">
         <Table>

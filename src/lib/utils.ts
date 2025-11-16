@@ -193,4 +193,42 @@ export function createAccentInsensitiveGlobalFilter<TData>(): FilterFn<TData> {
   }
 }
 
-export const accentInsensitiveGlobalFilter = createAccentInsensitiveGlobalFilter<unknown>()
+export const accentInsensitiveGlobalFilter =
+  createAccentInsensitiveGlobalFilter<unknown>()
+
+export function generateRandomPassword(): string {
+  const length = 8
+  const charset =
+    "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+~`|}{[]:;?><,./-="
+  let password = ""
+  for (let i = 0, n = charset.length; i < length; ++i) {
+    password += charset.charAt(Math.floor(Math.random() * n))
+  }
+  return password
+}
+
+// make a funciton that generates a csv file with email and password
+export function generateCSVEmailPassword(
+  emailsAndPasswords: { email: string; password: string }[]
+): string {
+  const header = "Email,Password\n"
+  const rows = emailsAndPasswords
+    .map(({ email, password }) => `${email},${password}`)
+    .join("\n")
+  return header + rows
+}
+export function downloadCSV(content: string, filename: string) {
+
+
+
+  
+  const blob = new Blob([content], { type: "text/csv;charset=utf-8;" })
+  const link = document.createElement("a")
+  const url = URL.createObjectURL(blob)
+  link.setAttribute("href", url)
+  link.setAttribute("download", filename)
+  link.style.visibility = "hidden"
+  document.body.appendChild(link)
+  link.click()
+  document.body.removeChild(link)
+}

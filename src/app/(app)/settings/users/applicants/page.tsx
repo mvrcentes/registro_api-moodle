@@ -32,7 +32,7 @@ const page = () => {
 
   return (
     <div className="w-full">
-      <h1 className="mb-6 text-2xl font-semibold">Usuarios</h1>
+      <h1 className="mb-6 text-2xl font-semibold">Usuarios Solicitantes</h1>
       <UsersTable
         columns={columns}
         data={data.filter((user) => user.role === UserRole.APPLICANT)}

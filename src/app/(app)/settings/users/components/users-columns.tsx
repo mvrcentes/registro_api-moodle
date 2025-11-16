@@ -5,13 +5,22 @@ import { MoreHorizontal, Eye } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import type { UserOverview } from "./users.types"
+import { UserOverviewSheet } from "./modal/UserOverviewSheet"
 
 export const columns: ColumnDef<UserOverview>[] = [
-    {
+  {
     accessorKey: "nombre",
     header: "Nombre",
     cell: ({ row }) => (
-      <div className="font-medium">{row.original.nombre}</div>
+      <div className="font-medium">{row.original.firstName}</div>
+    ),
+    enableSorting: true,
+  },
+  {
+    accessorKey: "apellido",
+    header: "Apellido",
+    cell: ({ row }) => (
+      <div className="font-medium">{row.original.lastName}</div>
     ),
     enableSorting: true,
   },
@@ -27,14 +36,18 @@ export const columns: ColumnDef<UserOverview>[] = [
     accessorKey: "actions",
     header: "",
     cell: ({ row }) => (
-        <div className="flex justify-end">
-            <Button
-                variant="ghost"
-                size="icon"
-            >
-                <Eye className="w-4 h-4" />
+      <div className="flex justify-end">
+        <UserOverviewSheet
+          trigger={
+            <Button variant="ghost" size="icon">
+              <Eye />
             </Button>
-        </div>
+          }
+          data={row.original}
+          title={`Información de ${row.original.firstName}`}
+          description="Detalles del usuario seleccionado"
+        />
+      </div>
     ),
-  }
+  },
 ]
