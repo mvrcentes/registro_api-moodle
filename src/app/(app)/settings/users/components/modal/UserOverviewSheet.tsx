@@ -45,7 +45,7 @@ export function UserOverviewSheet({
 }) {
   return (
     <Sheet>
-      <SheetTrigger>{trigger}</SheetTrigger>
+      <SheetTrigger asChild>{trigger}</SheetTrigger>
       <SheetContent className="overflow-y-auto p-4">
         <SheetHeader className="p-0">
           <SheetTitle>{title}</SheetTitle>
