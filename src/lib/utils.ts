@@ -1,7 +1,10 @@
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
 import type { ColegioValue } from "@/app/auth/signup/components/forms/types"
-import type { ApplicationRow } from "@/app/(app)/applications/components/types"
+import type {
+  ApplicationDetail,
+  ApplicationRow,
+} from "@/app/(app)/applications/components/types"
 import type { Row, FilterFn } from "@tanstack/react-table"
 
 export function cn(...inputs: ClassValue[]) {
@@ -218,10 +221,6 @@ export function generateCSVEmailPassword(
   return header + rows
 }
 export function downloadCSV(content: string, filename: string) {
-
-
-
-  
   const blob = new Blob([content], { type: "text/csv;charset=utf-8;" })
   const link = document.createElement("a")
   const url = URL.createObjectURL(blob)
@@ -231,4 +230,35 @@ export function downloadCSV(content: string, filename: string) {
   document.body.appendChild(link)
   link.click()
   document.body.removeChild(link)
+}
+
+const statusLabels: Record<ApplicationDetail["status"], string> = {
+  pending: "PENDIENTE",
+  in_review: "EN REVISIÓN",
+  approved: "APROBADA",
+  rejected: "RECHAZADA",
+}
+
+export function buildApplicationsCSV(rows: ApplicationDetail[]): string {
+  const header = "Nombre completo,Email,DPI,Estado,Fecha\n"
+
+  const escapeCSV = (value: string): string => `"${value.replace(/"/g, '""')}"`
+
+  const lines = rows.map((app) => {
+    const nombreCompleto = fullName(app)
+    const email = app.email ?? ""
+    const dpi = app.dpi ?? ""
+    const estado = statusLabels[app.status]
+    const fecha = formatDateShort(app.submittedAt)
+
+    return [
+      escapeCSV(nombreCompleto),
+      escapeCSV(email),
+      escapeCSV(dpi),
+      escapeCSV(estado),
+      escapeCSV(fecha),
+    ].join(",")
+  })
+
+  return header + lines.join("\n")
 }

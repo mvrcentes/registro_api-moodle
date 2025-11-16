@@ -15,22 +15,50 @@ import {
 
 import { InformationSheet } from "./modal/InformationSheet"
 import type { ApplicationDetail } from "./types"
-import { fullName, maskDPI, formatDateShort } from "@/lib/utils"
+import { fullName, maskDPI, formatDateShort, cn } from "@/lib/utils"
 
 function StatusBadge({ status }: { status: ApplicationDetail["status"] }) {
-  const map: Record<ApplicationDetail["status"], { label: string }> = {
-    pending: { label: "Pendiente" },
-    in_review: { label: "En revisión" },
-    approved: { label: "Aprobado" },
-    rejected: { label: "Rechazado" },
+  const map: Record<
+    ApplicationDetail["status"],
+    { label: string; className: string }
+  > = {
+    pending: {
+      label: "Pendiente",
+      className: "bg-amber-500 text-white",
+    },
+    in_review: {
+      label: "En revisión",
+      className: "bg-sky-500 text-white",
+    },
+    approved: {
+      label: "Aprobado",
+      className: "bg-emerald-600 text-white",
+    },
+    rejected: {
+      label: "Rechazado",
+      className: "bg-red-600 text-white",
+    },
   }
-  return <Badge variant="secondary">{map[status].label}</Badge>
+
+  const { label, className } = map[status]
+
+  return (
+    <Badge
+      variant="outline"
+      className={cn(
+        "border-none px-3 py-0.5 text-[11px] font-semibold uppercase tracking-wide",
+        className
+      )}>
+      {label}
+    </Badge>
+  )
 }
 
 export const columns: ColumnDef<ApplicationDetail>[] = [
   {
-    accessorKey: "primerNombre",
-    header: "Nombre",
+    id: "fullName",
+    header: "Nombre completo",
+    accessorFn: (row) => fullName(row),
     cell: ({ row }) => (
       <div className="font-medium">{fullName(row.original)}</div>
     ),
@@ -47,9 +75,7 @@ export const columns: ColumnDef<ApplicationDetail>[] = [
   {
     accessorKey: "dpi",
     header: "DPI",
-    cell: ({ row }) => (
-      <span className="tabular-nums">{maskDPI(row.original.dpi)}</span>
-    ),
+    cell: ({ row }) => <span className="tabular-nums">{row.original.dpi}</span>,
   },
   {
     accessorKey: "entidad",

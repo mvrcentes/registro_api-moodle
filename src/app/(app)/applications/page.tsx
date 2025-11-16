@@ -1,9 +1,11 @@
 "use client"
 
+import * as React from "react"
 import { DataTable } from "./components/applications-table"
 import { columns } from "./components/applications-columns"
 import { useApplications } from "@/features/api/applications/useApplications"
 import MetricCards from "./components/modal/MetricCards"
+import { ApplicationDetail } from "./components/types"
 
 export default function page() {
   const { data, loading, error, reload } = useApplications()
@@ -30,13 +32,20 @@ export default function page() {
     )
   }
 
+  const multipliedData: ApplicationDetail[] = data.flatMap((item) =>
+    Array.from({ length: 100 }, () => item)
+  )
+
   return (
-    <div className="w-full flex flex-col space-y-6">
+    <div className="flex h-[calc(100vh-6rem)] w-full flex-col space-y-6">
       <h1 className="mb-6 text-2xl font-semibold">Solicitudes</h1>
 
       <MetricCards />
 
-      <DataTable columns={columns} data={data} />
+      {/* 👇 contenedor que le da altura y permite scroll interno a la tabla */}
+      <div className="flex-1 min-h-0">
+        <DataTable columns={columns} data={multipliedData} />
+      </div>
     </div>
   )
 }
