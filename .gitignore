@@ -47,7 +47,6 @@ next-env.d.ts
 **/*.tgz
 **/*.log
 
-package-lock.json
 **/*.bun
 
 # pnpm specific
