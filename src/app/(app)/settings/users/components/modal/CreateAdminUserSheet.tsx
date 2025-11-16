@@ -27,7 +27,6 @@ import {
 } from "@/lib/utils"
 import PasswordDialog from "./PasswordDialog"
 import { UserRole } from "@/features/auth/api/auth.dto"
-import { on } from "events"
 
 type UserValues = z.infer<typeof UserSchema>
 

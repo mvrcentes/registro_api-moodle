@@ -1,9 +1,8 @@
 "use client"
 
 import * as React from "react"
+import type { ColumnDef, ColumnFiltersState } from "@tanstack/react-table"
 import {
-  ColumnDef,
-  ColumnFiltersState,
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
@@ -20,7 +19,7 @@ import {
   TableRow,
 } from "@/components/ui/table"
 
-import { ApplicationDetail } from "./types"
+import type { ApplicationDetail } from "./types"
 import TableFilters from "./filter/TableFilters"
 
 interface DataTableProps {

@@ -1,11 +1,16 @@
 "use client"
 
-import axios from "axios"
-import { isAxiosError, parseAxiosError } from "@/lib/api-utils"
+import { parseAxiosError } from "@/lib/api-utils"
 // #region Local API
 import { apiLocal } from "@/services/axiosLocal"
-import type { ApplicationDetail } from "@/app/(app)/applications/components/types"
-import type { ApplicationsListResponseDTO } from "./applications.dto"
+import type {
+  ApplicationDetail,
+  ApplicationStatus,
+} from "@/app/(app)/applications/components/types"
+import type {
+  ApplicationsListResponseDTO,
+  ApplicationsMetricsResponseDTO,
+} from "./applications.dto"
 
 export const ApplicationsApi = {
   list: async (): Promise<ApplicationDetail[]> => {
@@ -51,6 +56,30 @@ export const ApplicationsApi = {
       const { status: errorStatus, message } = parseAxiosError(error)
       throw new Error(
         `Error al actualizar estado (${errorStatus ?? "?"}): ${
+          message || "Error inesperado"
+        }`
+      )
+    }
+  },
+  metrics: async (): Promise<{
+    totalApplications: number
+    applicationsByStatus: Record<ApplicationStatus, number>
+  }> => {
+    try {
+      const res = await apiLocal.get<ApplicationsMetricsResponseDTO>(
+        "/applications/metrics"
+      )
+
+      if (!res.data?.ok || !res.data.data) {
+        throw new Error("Unexpected applications metrics response shape")
+      }
+
+      return res.data.data
+    } catch (error: unknown) {
+      const { status, message } = parseAxiosError(error)
+
+      throw new Error(
+        `Error al obtener métricas (${status ?? "?"}): ${
           message || "Error inesperado"
         }`
       )

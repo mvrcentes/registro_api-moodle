@@ -3,6 +3,7 @@
 import { DataTable } from "./components/applications-table"
 import { columns } from "./components/applications-columns"
 import { useApplications } from "@/features/api/applications/useApplications"
+import MetricCards from "./components/modal/MetricCards"
 
 export default function page() {
   const { data, loading, error, reload } = useApplications()
@@ -30,8 +31,11 @@ export default function page() {
   }
 
   return (
-    <div className="w-full">
+    <div className="w-full flex flex-col space-y-6">
       <h1 className="mb-6 text-2xl font-semibold">Solicitudes</h1>
+
+      <MetricCards />
+
       <DataTable columns={columns} data={data} />
     </div>
   )

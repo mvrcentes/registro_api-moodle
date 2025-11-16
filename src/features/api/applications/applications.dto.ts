@@ -1,4 +1,7 @@
-import type { ApplicationDetail } from "@/app/(app)/applications/components/types"
+import type {
+  ApplicationDetail,
+  ApplicationStatus,
+} from "@/app/(app)/applications/components/types"
 
 // Respuesta del endpoint GET /applications
 export interface ApplicationsListResponseDTO {
@@ -10,4 +13,12 @@ export interface ApplicationsListResponseDTO {
 export interface ApplicationDetailResponseDTO {
   ok: boolean
   data: ApplicationDetail
+}
+
+export interface ApplicationsMetricsResponseDTO {
+  ok: boolean
+  data: {
+    totalApplications: number
+    applicationsByStatus: Record<ApplicationStatus, number>
+  }
 }
