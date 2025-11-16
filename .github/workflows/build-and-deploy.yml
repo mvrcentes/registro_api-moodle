@@ -32,10 +32,6 @@ jobs:
         run: |
           npm run build
 
-      - name: Export static site
-        run: |
-          npx next export -o out
-
       - name: Deploy static files to nginx
         run: |
           TARGET_DIR=/var/www/html/form_registro_next
