@@ -19,6 +19,8 @@ jobs:
         run: docker info
 
       - name: Build Docker image
+        env:
+            DOCKER_CONFIG: /tmp/.docker
         run: |
           docker build -t registro-frontend:latest .
 
