@@ -28,11 +28,17 @@ jobs:
         run: |
           docker stop registro-frontend || true
           docker rm registro-frontend || true
+        
+      - name: Create env file
+        run: |
+          cat << 'EOF' > .env.production
+          NEXT_PUBLIC_API_BASE_URL=${{ secrets.NEXT_PUBLIC_API_URL }}
+          EOF
 
       - name: Run new container
         run: |
           docker run -d \
             --name registro-frontend \
             -p 3000:3000 \
-            --env-file /var/www/registro/.env.production \
+            --env-file .env.production \
             registro-frontend:latest
