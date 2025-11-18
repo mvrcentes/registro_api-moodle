@@ -1,11 +1,9 @@
-
-
 name: Build and deploy frontend
 
 on:
   push:
     branches:
-      - main
+      - cicd
   workflow_dispatch:
 
 jobs:
@@ -16,18 +14,31 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: "22"
+      # Opcional: si quieres ver info de Docker en logs
+      - name: Show Docker info
+        run: docker info
 
-      - name: Install dependencies
-        run: |
-          npm install
-
-      - name: Build Next.js app
+      - name: Build Docker image
         env:
-          NODE_ENV: production
-          NEXT_PUBLIC_API_BASE_URL: "/api"
+            DOCKER_CONFIG: /tmp/.docker
         run: |
-          npm run build
+          docker build -t registro-frontend:latest .
+
+      - name: Stop previous container
+        run: |
+          docker stop registro-frontend || true
+          docker rm registro-frontend || true
+        
+      - name: Create env file
+        run: |
+          cat << 'EOF' > .env.production
+          NEXT_PUBLIC_API_BASE_URL=${{ secrets.NEXT_PUBLIC_API_URL }}
+          EOF
+
+      - name: Run new container
+        run: |
+          docker run -d \
+            --name registro-frontend \
+            -p 3000:3000 \
+            --env-file .env.production \
+            registro-frontend:latest
