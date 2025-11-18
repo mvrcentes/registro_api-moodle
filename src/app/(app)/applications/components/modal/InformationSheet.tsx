@@ -28,7 +28,7 @@ import { usePdfFile } from "@/features/api/files/usePdfFile"
 import { ApplicationsApi } from "@/features/api/applications/applications.client"
 import { fullName, maskDPI, formatDate, getFileLabel } from "../../lib"
 
-import { ApplicationDetail, ApplicationRow, FileInfo } from "../types"
+import type { ApplicationDetail, ApplicationRow, FileInfo } from "../types"
 
 // --- Helpers de presentación ---
 function Field({
@@ -221,7 +221,7 @@ export function InformationSheet({
           />
 
           <StatusModal
-            mode="reject"
+            mode="rejected"
             applicationId={data.id}
             applicantName={fullName(data)}
             onSubmit={async ({ id, mode, note }) => {
@@ -232,7 +232,7 @@ export function InformationSheet({
           />
 
           <StatusModal
-            mode="approve"
+            mode="approved"
             applicationId={data.id}
             applicantName={fullName(data)}
             onSubmit={async ({ id, mode, note }) => {
